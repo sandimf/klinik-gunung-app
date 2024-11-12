@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "baseUrl": ".",
+        "paths": {
+            "@/*": ["resources/js/*"],
+            "ziggy-js": ["./vendor/tightenco/ziggy"],
+            "@components/*": ["resources/js/Components/*"],
+            "@utils/*": ["resources/js/Utils/*"],
+            "@ui/*": ["resources/js/Components/ui/*"]
+        },
+        "jsx": "react",
+        "target": "es6",
+        "module": "esnext",
+        "moduleResolution": "node",
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true
+    },
+    "exclude": ["node_modules", "public"]
+}
