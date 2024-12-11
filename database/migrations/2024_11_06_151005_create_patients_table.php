@@ -15,21 +15,16 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id')->nullable();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            // $table->unsignedBigInteger('paramedis_id')->nullable();
-            // $table->foreign('paramedis_id')->references('id')->on('paramedis')->onDelete('cascade');
-            // $table->unsignedBigInteger('doctor_id')->nullable();
-            // $table->foreign('doctor_id')->references('id')->on('doctors')->onDelete('cascade');
             $table->string('nik')->unique();
-            // $table->string('images_ktp');
             $table->string('name');
             $table->string('email')->unique();
             $table->integer('age')->nullable();
             $table->enum('gender', ['male', 'female', 'other'])->nullable();
             $table->string('contact')->nullable();
             $table->enum('screening_status', ['completed', 'pending', 'cancelled'])->nullable();
-            $table->enum('health_status', ['pending', 'healthy', 'sick', 'under treatment'])->default('pending');
-            $table->enum('health_check_status', ['pending', 'completed'])->default('pending');
-            $table->enum('payment_status', ['completed', 'pending', 'cancelled'])->default('pending');
+            $table->enum('health_status', ['pending', 'healthy', 'sick', 'under treatment'])->nullable();
+            $table->enum('health_check_status', ['pending', 'completed'])->nullable();
+            $table->enum('payment_status', ['completed', 'pending', 'cancelled'])->nullable();
             $table->timestamps();
         });
     }

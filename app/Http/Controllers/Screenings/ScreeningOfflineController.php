@@ -17,14 +17,16 @@ class ScreeningOfflineController extends Controller
     {
         $userId = Auth::id();
 
+        
         // Fetch the patient and their related questionnaire answers
         $screening = Patients::with('answers') // Eager load answers
             ->where('user_id', $userId)
             ->orderBy('created_at', 'desc')
             ->first();
 
-        return Inertia::render('Dashboard/Patients/Screenings/Index', [
+        return Inertia::render('Dashboard/Patients/Screenings/Offline/Index', [
             'screening' => $screening,
+            // Kirim data pasien jika ada
         ]);
     }
 
@@ -32,8 +34,13 @@ class ScreeningOfflineController extends Controller
     {
         $questions = ScreeningQuestions::all();
 
-        return Inertia::render('Dashboard/Patients/Screenings/ScreeningOffline', [
+        $user = Auth::user();
+        
+        $patient = $user->patient;
+
+        return Inertia::render('Dashboard/Patients/Screenings/Offline/ScreeningOffline', [
             'questions' => $questions,
+            'patient' => $patient, 
         ]);
     }
 

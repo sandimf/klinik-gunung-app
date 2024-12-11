@@ -11,6 +11,7 @@ class Payments extends Model
     use HasFactory;
 
     protected $fillable = [
+        'cashier_id',
         'patient_id',
         'payment_status',
         'amount_paid',
@@ -22,7 +23,7 @@ class Payments extends Model
 
     public function cashier()
     {
-        return $this->belongsTo(User::class, 'cashier_id'); // Assuming User model is used for cashiers
+        return $this->belongsTo(User::class, 'cashier_id');
     }
 
     public function medicineBatch()

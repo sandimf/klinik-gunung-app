@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\Users;
 
+use App\Http\Controllers\Controller;
 use App\Models\Users\Manager;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use App\Http\Controllers\Controller;
+
 class ManagerController extends Controller
 {
     /**

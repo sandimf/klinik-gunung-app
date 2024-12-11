@@ -13,17 +13,16 @@ export default function Index({ users }) {
                     <CardTitle className="text-2xl font-bold">
                         Daftar Tenaga Medis
                     </CardTitle>
-                    {/* <Link href={route("users.create")}>
+                    <Link href={route("users.create")}>
                         <Button>
                             <PlusIcon className="mr-2 h-4 w-4" />
                             Tambah Tenaga Medis
                         </Button>
-                    </Link> */}
+                    </Link>
                 </CardHeader>
                 <CardContent>
                     <Table>
                         <TableCaption>
-
                         </TableCaption>
                         <TableHeader>
                                 <TableRow>
@@ -32,6 +31,7 @@ export default function Index({ users }) {
                                     <TableHead>Nik</TableHead>
                                     <TableHead>Telepon</TableHead>
                                     <TableHead>Peran</TableHead>
+                                    <TableHead>Tanggal Dibuat</TableHead>
                                 </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -42,6 +42,7 @@ export default function Index({ users }) {
                                 <TableCell>{user.nik}</TableCell>
                                 <TableCell>{user.phone}</TableCell>
                                 <TableCell>{user.role}</TableCell>
+                                <TableCell>{new Date(user.created_at).toLocaleDateString()}</TableCell>
                             </TableRow>
                         ))}
                         </TableBody>

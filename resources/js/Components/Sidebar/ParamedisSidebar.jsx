@@ -5,12 +5,11 @@ import {
   Command,
   MessageCirclePlus,
   Home,
-  UserPlus,
+  Bandage,
   Settings2,
-  ShoppingBag,
   Users,
   ChevronRight,
-  Pill,
+  History,
 } from "lucide-react"
 import { NavUser } from "@/Components/Nav/NavUser"
 import { TeamSwitcher } from "@/Components/Nav/TeamSwitcher"
@@ -58,12 +57,12 @@ export function AppSidebar({ ...sidebarProps }) {
       {
         title: "Screening Offline",
         url: route("paramedis.screening"),
-        icon: MessageCirclePlus,
+        icon: Bandage,
       },
       {
         title: "Screening Offline History",
         url: route("paramedis.screening"),
-        icon: MessageCirclePlus,
+        icon: History,
       },
       {
         title: "Community",
@@ -72,11 +71,7 @@ export function AppSidebar({ ...sidebarProps }) {
         items: [
           {
             title: "Community",
-            url: route('dashboard'),
-          },
-          {
-            title: "Persetujuan Postingan",
-            url: route('dashboard'),
+            url: route('community.index'),
           },
         ],
       },

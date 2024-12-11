@@ -9,12 +9,14 @@ use App\Models\Users\Admin;
 use App\Models\Users\Cashier;
 use App\Models\Users\Doctor;
 use App\Models\Users\Paramedis;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
 
 class MedicalPersonnelController extends Controller
 {
+    // Halaman daftar tenaga medis
     public function index()
     {
         // Fetch doctors, cashiers, paramedis, and admins with user data, selecting all relevant fields
@@ -29,6 +31,8 @@ class MedicalPersonnelController extends Controller
                 'address' => $doctor->address,
                 'date_of_birth' => $doctor->date_of_birth,
                 'phone' => $doctor->phone,
+                'created_at' => $doctor->created_at,
+                'updated_at' => $doctor->updated_at,
             ];
         }));
 
@@ -43,6 +47,8 @@ class MedicalPersonnelController extends Controller
                 'address' => $cashier->address,
                 'date_of_birth' => $cashier->date_of_birth,
                 'phone' => $cashier->phone,
+                'created_at' => $cashier->created_at,
+                'updated_at' => $cashier->updated_at,
             ];
         }));
 
@@ -57,6 +63,8 @@ class MedicalPersonnelController extends Controller
                 'address' => $paramedi->address,
                 'date_of_birth' => $paramedi->date_of_birth,
                 'phone' => $paramedi->phone,
+                'created_at' => $paramedi->created_at,
+                'updated_at' => $paramedi->updated_at,
             ];
         }));
 
@@ -71,6 +79,8 @@ class MedicalPersonnelController extends Controller
                 'address' => $admin->address,
                 'date_of_birth' => $admin->date_of_birth,
                 'phone' => $admin->phone,
+                'created_at' => $admin->created_at,
+                'updated_at' => $admin->updated_at,
             ];
         }));
 
@@ -83,23 +93,27 @@ class MedicalPersonnelController extends Controller
         ]);
     }
 
+    // Form untuk menampilkan penambahan tenaga medis
     public function create()
     {
         return Inertia::render('Dashboard/Admin/MedicalPersonnel/AddPersonnel/Create');
     }
 
+    // Memebuat tenaga medis baru
     public function store(MedicalPersonnelRequest $request)
     {
 
         DB::beginTransaction();
 
         try {
-            // Buat pengguna baru
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
+                'email_verified_at' => Carbon::now(),
                 'role' => $request->role,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
             ]);
 
             // Siapkan data untuk jenis medical personnel
@@ -136,4 +150,7 @@ class MedicalPersonnelController extends Controller
             return redirect()->back()->with('error', 'Failed to add user: '.$e->getMessage());
         }
     }
+
+    // Manajemen Staff
+    public function show() {}
 }

@@ -43,12 +43,11 @@ class PhysicalExaminationController extends Controller
             'health_status' => 'required|in:healthy,butuh_dokter,butuh_pendamping',
         ]);
 
-        // Initialize examiner id and role-related variables
         $examinerId = $user->id;
         $paramedisId = null;
         $doctorId = null;
 
-        // Check the user role and set the appropriate examiner details
+     
         if ($user->role === 'paramedis') {
             $paramedisId = $examinerId;  // Set paramedis_id for 'paramedis' role
         } elseif ($user->role === 'doctor') {
@@ -76,6 +75,8 @@ class PhysicalExaminationController extends Controller
         // Update patient's screening status to 'completed'
         $patient = Patients::find($request->patient_id);
         $patient->screening_status = 'completed';
+        $patient->health_status = $request->health_status;
+        $patient->health_check_status = 'completed';
         $patient->save();
 
         // Return a successful response with the examination details

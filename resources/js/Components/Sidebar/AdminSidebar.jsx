@@ -3,7 +3,6 @@
 import React, { useState } from "react"
 import {
   Command,
-  Scan,
   Home,
   UserPlus,
   Settings2,
@@ -62,12 +61,20 @@ export function AppSidebar({ ...sidebarProps }) {
         icon: CalendarHeart,
         items: [
         {
-            title: "Daftar Questionnaire",
+            title: "Questionnaire Offline",
             url: route('questioner.index'),
         },
         {
-            title: "Buat Questionnaire",
+            title: "Buat Questionnaire Offline",
             url: route('questioner.create'),
+        },
+        {
+            title: "Questionnaire Online",
+            url: route('questioner-online.index'),
+        },
+        {
+            title: "Buat Questionnaire Online",
+            url: route('questioner-online.create'),
         },
         ]
       },
@@ -109,7 +116,7 @@ export function AppSidebar({ ...sidebarProps }) {
         items: [
           {
             title: "Community",
-            url: route('dashboard'),
+            url: route('community.index'),
           },
           {
             title: "Persetujuan Postingan",
@@ -123,8 +130,8 @@ export function AppSidebar({ ...sidebarProps }) {
         icon: Settings2,
         items: [
             {
-              title: "Manajemen Staff",
-              url: route('dashboard'),
+              title: "Manajement Staff",
+              url: route('manajement-staff.index'),
             },
         ],
       },

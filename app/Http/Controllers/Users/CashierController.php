@@ -23,20 +23,6 @@ class CashierController extends Controller
     {
         return Inertia::render('Profile/Cashier');
     }
-
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
     /**
      * Display screening offline
      */
@@ -59,27 +45,26 @@ class CashierController extends Controller
         ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Cashier $cashier)
-    {
-        //
-    }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Cashier $cashier)
+    public function historyPaymentsOffline()
     {
-        //
+        // Ambil data pasien dengan pembayaran dan screening yang relevan
+        $patients = Patients::with([
+            'payments',                // Relasi ke payments
+            'answers.question',        // Relasi ke jawaban dan pertanyaan screening
+        ])
+        ->whereHas('payments', function ($query) {
+            $query->where('payment_status', true); // Hanya yang sudah selesai pembayarannya
+        })
+        ->get();
+    
+        // Muat semua data obat dengan pricing
+        $medicines = Medicine::with('pricing')->get();
+    
+        return Inertia::render('Dashboard/Cashier/Payments/HistoryPaymentsScreeningOffline', [
+            'patients' => $patients,
+            'medicines' => $medicines,
+        ]);
     }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Cashier $cashier)
-    {
-        //
-    }
+    
 }

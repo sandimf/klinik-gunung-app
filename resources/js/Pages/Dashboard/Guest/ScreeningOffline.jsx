@@ -8,7 +8,7 @@ import { Checkbox } from "@/Components/ui/checkbox";
 import { Textarea } from "@/Components/ui/textarea";
 import { Button } from "@/Components/ui/button";
 
-export default function ScreeningOffline({ questions, errors }) {
+export default function ScreeningOffline({ questions, errors }) {   
     const [answers, setAnswers] = useState({});
     const [patientData, setPatientData] = useState({
         nik: '',

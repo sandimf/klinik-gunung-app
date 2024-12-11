@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Head, usePage } from '@inertiajs/react';
 import CashierSidebar from "@/Layouts/Dashboard/CashierSidebarLayout";
 import { Input } from "@/Components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/Components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/Components/ui/table";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/Components/ui/pagination";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
@@ -15,15 +14,14 @@ const ScreeningOfflineIndex = ({ screenings = [], medicines }) => {
     console.log(medicines);
     const { errors } = usePage().props;
     const [searchTerm, setSearchTerm] = useState('');
-    const [selectedType, setSelectedType] = useState('all');
+
     const [currentPage, setCurrentPage] = useState(1);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [paymentScreening, setPaymentScreening] = useState(null);
     const itemsPerPage = 10;
 
     const filteredScreenings = screenings.filter(screening =>
-        screening.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-        (selectedType === 'all' || screening.type === selectedType)
+        screening.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     const totalPages = Math.ceil(filteredScreenings.length / itemsPerPage);
@@ -58,16 +56,7 @@ const ScreeningOfflineIndex = ({ screenings = [], medicines }) => {
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className="max-w-sm"
                         />
-                        <Select value={selectedType} onValueChange={setSelectedType}>
-                            <SelectTrigger className="max-w-[180px]">
-                                <SelectValue placeholder="Pilih tipe screening" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all">Semua</SelectItem>
-                                <SelectItem value="a">Tipe 1</SelectItem>
-                                <SelectItem value="type2">Tipe 2</SelectItem>
-                            </SelectContent>
-                        </Select>
+
                     </div>
 
                     <Table>

@@ -1,22 +1,31 @@
 <?php
 
-use App\Http\Controllers\Users\AdminController;
-use App\Http\Controllers\Users\CashierController;
-use App\Http\Controllers\Clinic\MedicalPersonnelController;
-use App\Http\Controllers\Clinic\PhysicalExaminationController;
-use App\Http\Controllers\Users\DoctorController;
-use App\Http\Controllers\Users\ManagerController;
-use App\Http\Controllers\Medicines\MedicineController;
-use App\Http\Controllers\Users\ParamedisController;
-use App\Http\Controllers\Users\PatientsController;
-use App\Http\Controllers\Payments\PaymentsController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\Questioner\QuestionerController;
-use App\Http\Controllers\Screenings\GuestController;
-use App\Http\Controllers\Screenings\ScreeningOfflineController;
-use Illuminate\Foundation\Application;
-use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Foundation\Application;
+use App\Http\Controllers\Users\AdminController;
+use App\Http\Controllers\Users\DoctorController;
+use App\Http\Controllers\Clinic\OfficeController;
+use App\Http\Controllers\Users\CashierController;
+use App\Http\Controllers\Users\ManagerController;
+use App\Http\Controllers\Users\PatientsController;
+use App\Http\Controllers\Users\ParamedisController;
+use App\Http\Controllers\Users\WarehouseController;
+use App\Http\Controllers\Screenings\GuestController;
+use App\Http\Controllers\Data\PatientsDataController;
+use App\Http\Controllers\Payments\PaymentsController;
+use App\Http\Controllers\Medicines\MedicineController;
+use App\Http\Controllers\Community\CommunityController;
+use App\Http\Controllers\Questioner\QuestionerController;
+use App\Http\Controllers\Clinic\ManagementStaffController;
+use App\Http\Controllers\Clinic\MedicalPersonnelController;
+use App\Http\Controllers\Community\CreateAccountController;
+use App\Http\Controllers\Appointments\AppointmentController;
+use App\Http\Controllers\Community\ProfileAccountController;
+use App\Http\Controllers\Clinic\PhysicalExaminationController;
+use App\Http\Controllers\Screenings\ScreeningOnlineController;
+use App\Http\Controllers\Questioner\QuestionerOnlineController;
+use App\Http\Controllers\Screenings\ScreeningOfflineController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -25,12 +34,6 @@ Route::get('/', function () {
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
     ]);
-});
-
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
 // Guest Screening Offline
@@ -47,6 +50,16 @@ Route::prefix('dashboard')->middleware(['auth', 'role:patients'])->group(functio
     Route::resource('screening', ScreeningOfflineController::class)
         ->only(['index', 'store', 'update', 'create', 'show'])
         ->middleware(['auth', 'role:patients']);
+
+    Route::resource('information', PatientsDataController::class)
+        ->only(['index', 'store']);
+
+    Route::resource('appointments', AppointmentController::class)
+        ->only(['index', 'store']);
+
+    Route::resource('screening-online', ScreeningOnlineController::class)
+        ->only(['index','create','store']);
+
 });
 
 // Doctor
@@ -64,6 +77,7 @@ Route::prefix('dashboard/paramedis')->middleware(['auth', 'role:paramedis'])->gr
     Route::get('profile', [ParamedisController::class, 'profile'])->name('paramedis.profile');
 
     Route::get('screening', [ParamedisController::class, 'showScreeningOffline'])->name('paramedis.screening');
+    Route::get('screening/detail/{id}', [ParamedisController::class, 'show'])->name('paramedis.detail');
 
     Route::resource('physicalexamination', PhysicalExaminationController::class)
         ->only(['store'])
@@ -82,21 +96,25 @@ Route::prefix('dashboard/cashier')->middleware(['auth', 'role:cashier'])->group(
     Route::resource('payments', PaymentsController::class)
         ->only(['store'])
         ->middleware(['auth']);
+
+    // Office
+    Route::resource('office', OfficeController::class)
+        ->only(['index'])
+        ->middleware(['auth']);
+
+    Route::get('history', [CashierController::class, 'historyPaymentsOffline'])->name('history.cashier');
 });
 
 // Admin
 Route::prefix('dashboard/admin')->middleware(['auth', 'role:admin'])->group(function () {
-
     // Dashboard Admin
     Route::get('/', [AdminController::class, 'index'])->name('admin.dashboard');
-
     /**
      * Rute untuk obat (list obat, edit obat,hapus, menambahkan obat)
      */
     Route::resource('medicine', MedicineController::class)
         ->only(['index', 'store', 'update'])
         ->middleware(['auth', 'role:admin']);
-
     /**
      * Rute untuk menambahkan tenaga medis dan list tenaga medis
      */
@@ -111,6 +129,14 @@ Route::prefix('dashboard/admin')->middleware(['auth', 'role:admin'])->group(func
         ->only(['index', 'store', 'update', 'create', 'show'])
         ->middleware(['auth']);
 
+        Route::resource('questioner-online', QuestionerOnlineController::class)
+        ->only(['index', 'store', 'update', 'create', 'show'])
+        ->middleware(['auth']);
+
+    Route::resource('manajement-staff', ManagementStaffController::class)
+        ->only(['index'])
+        ->middleware(['auth']);
+
     // Profile Edit
     Route::get('profile', [AdminController::class, 'profile'])->name('admin.profile');
 });
@@ -123,6 +149,35 @@ Route::prefix('dashboard/manager')->middleware(['auth', 'role:manager'])->group(
     Route::get('profile', [ManagerController::class, 'profile'])->name('manager.profile');
 });
 
+Route::prefix('dashboard/warehouse')->middleware(['auth', 'role:warehouse'])->group(function () {
+    // Dashboard
+    Route::get('/', [WarehouseController::class, 'index'])->name('warehouse.dashboard');
+});
 
+
+
+
+
+Route::middleware(['auth'])->group(function () {
+
+
+    // Rute untuk pembuatan akun komunitas
+    Route::resource('community/create-account', CreateAccountController::class)
+        ->only(['index', 'store']);
+
+    Route::resource('community/profile', ProfileAccountController::class)
+        ->only(['index', 'store', 'update']);
+
+    // Rute yang membutuhkan username di komunitas
+    Route::middleware(['check.username'])->group(function () {
+        Route::resource('community', CommunityController::class)
+            ->only(['index']);
+
+        Route::get('community/new-post', [CommunityController::class, 'create'])->name('community.create');
+
+        Route::get('/community/{slug}', [CreateAccountController::class, 'profile'])
+            ->name('profile.show');
+    });
+});
 
 require __DIR__.'/auth.php';

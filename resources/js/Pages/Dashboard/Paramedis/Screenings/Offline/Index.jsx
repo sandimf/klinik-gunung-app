@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Head, usePage } from '@inertiajs/react'
+import { Head, usePage, Link } from '@inertiajs/react'
 import ParamedisSidebar from "@/Layouts/Dashboard/ParamedisSidebarLayout"
 import { Input } from "@/Components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/Components/ui/select"
@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card"
 import { Button } from '@/Components/ui/button'
 import { Stethoscope } from 'lucide-react'
 import ScreeningDialog from './Partials/PhysicalExamination'
+import { Badge } from '@/Components/ui/badge'
 
 const ScreeningOfflineIndex = ({ screenings = [] }) => {
     const { errors } = usePage().props
@@ -38,7 +39,6 @@ const ScreeningOfflineIndex = ({ screenings = [] }) => {
     const handleDialogSuccess = () => {
         setIsDialogOpen(false)
         setExaminingScreening(null)
-        // You might want to refresh the screenings data here
     }
 
     return (
@@ -62,8 +62,6 @@ const ScreeningOfflineIndex = ({ screenings = [] }) => {
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="all">Semua</SelectItem>
-                                <SelectItem value="baru">Baru</SelectItem>
-                                <SelectItem value="type2">Lama</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
@@ -73,21 +71,23 @@ const ScreeningOfflineIndex = ({ screenings = [] }) => {
                             <TableRow>
                                 <TableHead>Nomor Antrian</TableHead>
                                 <TableHead>Nama Pasien</TableHead>
-                                <TableHead>NIK</TableHead>
-                                <TableHead>Email</TableHead>
+                                <TableHead>Kuesioner</TableHead>
                                 <TableHead>Aksi</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {paginatedScreenings.map((screening) => (
                                 <TableRow key={screening.id}>
-                                    <TableCell>{screening.id}</TableCell>
+                                    <TableCell>{screening.answers[0].queue}</TableCell>
                                     <TableCell>{screening.name}</TableCell>
-                                    <TableCell>{screening.nik}</TableCell>
-                                    <TableCell>{screening.email}</TableCell>
+                                    <TableCell>
+                                    <Link href={route('paramedis.detail', { id: screening.id })}>
+                                        Kuesioner
+                                    </Link>
+                                    </TableCell>
                                     <TableCell>
                                         {screening.screening_status === 'completed' ? (
-                                            <span>{screening.screening_status}</span>
+                                            <Badge>{screening.screening_status}</Badge>
                                         ) : (
                                             <Button onClick={() => handleExamine(screening)}>
                                                 <Stethoscope className="h-4 w-4 mr-2" />

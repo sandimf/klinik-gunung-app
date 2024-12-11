@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Users;
 
+use App\Http\Controllers\Controller;
 use App\Models\Users\Paramedis;
 use App\Models\Users\Patients;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use App\Http\Controllers\Controller;
 
 class ParamedisController extends Controller
 {
@@ -48,34 +48,21 @@ class ParamedisController extends Controller
             ->whereHas('answers', function ($query) {
                 $query->whereNotNull('answer_text');
             })
-            ->get();  // Paginate with 10 items per page
+            ->get();
 
         return Inertia::render('Dashboard/Paramedis/Screenings/Offline/Index', [
             'screenings' => $screenings,
         ]);
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Paramedis $paramedis)
+    public function show($id)
     {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Paramedis $paramedis)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Paramedis $paramedis)
-    {
-        //
+       
+        $patient = Patients::with(['answers.question'])
+            ->findOrFail($id); // Mencari pasien berdasarkan ID yang diberikan
+    
+        // Kembalikan data ke Inertia untuk menampilkan halaman detail
+        return Inertia::render('Dashboard/Paramedis/Screenings/Offline/Details/Index', [
+            'patient' => $patient, // Mengirim data pasien untuk ditampilkan
+        ]);
     }
 }

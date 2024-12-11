@@ -3,15 +3,15 @@
 import React, { useState } from "react"
 import {
   Command,
-  MessageCirclePlus,
+  FileClock,
   Home,
-  UserPlus,
   Settings2,
   ShoppingBag,
   Users,
   ChevronRight,
   Pill,
   CreditCard,
+  ChartPie,
 } from "lucide-react"
 import { NavUser } from "@/Components/Nav/NavUser"
 import { TeamSwitcher } from "@/Components/Nav/TeamSwitcher"
@@ -57,14 +57,24 @@ export function AppSidebar({ ...sidebarProps }) {
         icon: Home,
       },
       {
-        title: "Pembayaran Screening",
+        title: "Pembayaran Screening Offline",
         url: route("cashier.screening"),
         icon: CreditCard,
       },
       {
-        title: "Office",
+        title: "Pembayaran Screening Online",
         url: route("cashier.screening"),
-        icon: MessageCirclePlus,
+        icon: CreditCard,
+      },
+      {
+        title: "Riwayat Pembayaran",
+        url: route("history.cashier"),
+        icon: FileClock,
+      },
+      {
+        title: "Office",
+        url: route("office.index"),
+        icon: ChartPie,
       },
       {
         title: "Products",

@@ -23,6 +23,8 @@ class RoleMiddleware
 
     const ROLE_PATIENTS = 'patients';
 
+    const ROLE_WAREHOUSE = 'warehouse';
+
     /**
      * Handle an incoming request.
      *
@@ -48,6 +50,7 @@ class RoleMiddleware
                 self::ROLE_CORDI => 'cordi.dashboard',
                 self::ROLE_MANAGER => 'manager.dashboard',
                 self::ROLE_PARAMEDIS => 'paramedis.dashboard',
+                self::ROLE_WAREHOUSE => 'warehouse.dashboard',
                 self::ROLE_PATIENTS => 'dashboard',
             ];
             $route = $roleRedirects[$user->role] ?? 'login';

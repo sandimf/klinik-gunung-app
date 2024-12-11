@@ -3,16 +3,15 @@
 import React, { useState } from "react"
 import {
   Command,
-  Scan,
   Home,
-  UserPlus,
   Settings2,
   ShoppingBag,
   Users,
   ChevronRight,
-  Pill,
   Bandage,
+  CalendarClock,
   CircleUser,
+  ScanQrCode,
 } from "lucide-react"
 import { NavUser } from "@/Components/Nav/NavUser"
 import { TeamSwitcher } from "@/Components/Nav/TeamSwitcher"
@@ -64,8 +63,13 @@ export function AppSidebar({ ...sidebarProps }) {
       },
       {
         title: "Screening Online",
-        url: route("screening.index"),
-        icon: Bandage,
+        url: route("screening-online.index"),
+        icon: ScanQrCode,
+      },
+      {
+        title: "Appointments",
+        url: route("appointments.index"),
+        icon: CalendarClock,
       },
 
       {

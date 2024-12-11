@@ -3,10 +3,12 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Users\Cashier;
 use App\Models\Users\Patients;
+use App\Models\Community\Community;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
@@ -21,6 +23,7 @@ class User extends Authenticatable
     protected $fillable = [
         'role',
         'name',
+        'email_verified_at',
         'email',
         'password',
     ];
@@ -53,4 +56,16 @@ class User extends Authenticatable
     {
         return $this->hasOne(Patients::class, 'user_id');
     }
+
+    public function community()
+    {
+        return $this->hasOne(Community::class);
+    }
+
+
+    public function cashier()
+    {
+        return $this->hasOne(Cashier::class, 'user_id', 'id');
+    }
+
 }

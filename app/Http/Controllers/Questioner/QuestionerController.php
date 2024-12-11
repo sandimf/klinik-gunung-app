@@ -44,4 +44,29 @@ class QuestionerController extends Controller
         // Redirect back with success message
         return redirect()->back()->with('success', 'Pertanyaan berhasil ditambahkan.');
     }
+    
+    public function update(Request $request, $id)
+    {
+        // Validasi input
+        $request->validate([
+            'question_text' => 'required|string',
+            'answer_type' => 'required|string',
+            'options' => 'nullable|array',
+        ]);
+    
+        // Cari dan perbarui data berdasarkan ID
+        $questioner = ScreeningQuestions::findOrFail($id);
+    
+        $questioner->update([
+            'question_text' => $request->question_text,
+            'answer_type' => $request->answer_type,
+            'options' => $request->options,
+        ]);
+    
+        // Kembalikan respons
+        return redirect()->route('questioner.index')
+                         ->with('success', 'Questioner updated successfully.');
+    }
+
+
 }

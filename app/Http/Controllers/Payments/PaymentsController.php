@@ -2,38 +2,18 @@
 
 namespace App\Http\Controllers\Payments;
 
-use App\Models\Payments;
-
-use Illuminate\Http\Request;
-use App\Models\Users\Patients;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
 use App\Models\Medicines\MedicineBatch;
+use App\Models\Payments;
+use App\Models\Users\Patients;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PaymentsController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        // Ambil ID kasir dari user yang sedang login
+        
         $cashierId = Auth::user()->cashier->id;  // Mengambil cashier_id yang terkait dengan user yang sedang login
 
         $request->validate([
@@ -64,10 +44,10 @@ class PaymentsController extends Controller
         $payment = Payments::create($data);
 
         // Update status pembayaran pasien jika pembayaran selesai
-        Patients::where('id', $data['patient_id'])->update(['payment_status' => "completed"]);
+        Patients::where('id', $data['patient_id'])->update(['payment_status' => 'completed']);
 
         // Jika ada produk yang dibeli, kurangi stok pada batch yang terkait
-        if (!empty($data['quantity_product']) && !empty($data['medicine_batch_id'])) {
+        if (! empty($data['quantity_product']) && ! empty($data['medicine_batch_id'])) {
             $batch = MedicineBatch::findOrFail($data['medicine_batch_id']);
             if ($batch->quantity >= $data['quantity_product']) {
                 $batch->quantity -= $data['quantity_product'];
@@ -77,43 +57,8 @@ class PaymentsController extends Controller
                 return redirect()->back()->withErrors(['quantity_product' => 'Stok tidak mencukupi untuk batch obat yang dipilih.']);
             }
         }
-
         // Mengarahkan kembali dengan pesan sukses
-        return redirect()->route('payments.index')->with('success', 'Pembayaran berhasil diproses.');
+        return redirect()->route('cashier.screening')->with('success', 'Pembayaran berhasil diproses.');
     }
 
-
-
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Payments $payments)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Payments $payments)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Payments $payments)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Payments $payments)
-    {
-        //
-    }
 }

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { router,usePage } from "@inertiajs/react";
+import { router,usePage,Head } from "@inertiajs/react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
 import { Input } from "@/Components/ui/input";
 import { Label } from "@/Components/ui/label";
@@ -9,17 +9,19 @@ import { Textarea } from "@/Components/ui/textarea";
 import { Button } from "@/Components/ui/button";
 import PatientSidebar from "@/Layouts/Dashboard/PatientsSidebarLayout";
 
-export default function Index({ questions, errors }) {
+export default function Index({ questions, errors,patient }) {
     const user = usePage().props.auth.user;
     const [answers, setAnswers] = useState({});
     const [patientData, setPatientData] = useState({
-        nik: '',
-        name: '',
-        age: '',
-        email: user.email,
-        contact: '',
-        gender: 'male',
+        nik: patient?.nik || '',
+        name: patient?.name || '',
+        age: patient?.age || '',
+        email: patient?.email || user.email,
+        contact: patient?.contact || '',
+        gender: patient?.gender || 'male',
     });
+
+    const isReadOnly = Boolean(patient);
 
     // Handle change for answers and patient data
     const handleAnswerChange = (questionId, answer) => {
@@ -47,18 +49,17 @@ export default function Index({ questions, errors }) {
         }));
 
         // Submit the answers and patient data to the backend
-        router.post(route('screening.store'), {
+        router.post(route('screening-online.store'), {
             ...patientData,
             answers: formattedAnswers,
-        }).then(() => {
-            // If errors are returned, they will be captured in the `errors` prop
         });
     };
 
     return (
         <PatientSidebar header={'Screening Now'}>
         <div className="space-y-8">
-            <h1 className="text-2xl font-bold">Screening Questionnaire</h1>
+            <Head title="screening"/>
+            <h1 className="text-2xl font-bold">Screening Online</h1>
 
             <form onSubmit={handleSubmit}>
                 {/* Patient Information Inputs */}
@@ -77,6 +78,7 @@ export default function Index({ questions, errors }) {
                                 value={patientData.nik}
                                 onChange={handlePatientDataChange}
                                 placeholder="Enter NIK"
+                                readOnly={isReadOnly}
                             />
                             {errors.nik && <p className="text-sm text-red-500">{errors.nik}</p>}
                         </div>
@@ -91,6 +93,7 @@ export default function Index({ questions, errors }) {
                                 value={patientData.name}
                                 onChange={handlePatientDataChange}
                                 placeholder="Enter name"
+                                readOnly={isReadOnly}
                             />
                             {errors.name && <p className="text-sm text-red-500">{errors.name}</p>}
                         </div>
@@ -105,6 +108,7 @@ export default function Index({ questions, errors }) {
                                 value={patientData.age}
                                 onChange={handlePatientDataChange}
                                 placeholder="Enter age"
+                                readOnly={isReadOnly}
                             />
                             {errors.age && <p className="text-sm text-red-500">{errors.age}</p>}
                         </div>
@@ -119,6 +123,7 @@ export default function Index({ questions, errors }) {
                                 value={patientData.contact}
                                 onChange={handlePatientDataChange}
                                 placeholder="Enter contact number"
+                                readOnly={isReadOnly}
                             />
                             {errors.contact && <p className="text-sm text-red-500">{errors.contact}</p>}
                         </div>
@@ -133,6 +138,7 @@ export default function Index({ questions, errors }) {
                                 value={patientData.email}
                                 onChange={handlePatientDataChange}
                                 placeholder={user.email}
+                                readOnly={isReadOnly}
                             />
                             {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
                         </div>
@@ -144,8 +150,10 @@ export default function Index({ questions, errors }) {
                                 id="gender"
                                 name="gender"
                                 value={patientData.gender}
+                                
                                 onValueChange={(value) => setPatientData((prevData) => ({ ...prevData, gender: value }))}
                             >
+                                 
                                 <SelectTrigger>
                                     <SelectValue placeholder="Select gender" />
                                 </SelectTrigger>
@@ -170,7 +178,6 @@ export default function Index({ questions, errors }) {
                             {/* Text Input */}
                             {question.answer_type === 'text' && (
                                 <div>
-                                    <Label>Answer</Label>
                                     <Input
                                         type="text"
                                         value={answers[question.id] || ''}

@@ -1,9 +1,11 @@
-import { Link } from "@inertiajs/react";
+import { Head, Link } from "@inertiajs/react";
 
-export default function Index() {
+export default function Welcome() {
     return (
-        <Link href={route('login')}>
-        Login
-        </Link>
-    )
+        <>
+        <Head title="Home" />
+            <h1 className="font-bold">Klinik Gunung</h1>
+            <Link href={route("login")}>Login</Link>
+        </>
+    );
 }

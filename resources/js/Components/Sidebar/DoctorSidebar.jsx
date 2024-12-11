@@ -98,7 +98,7 @@ export function AppSidebar({ ...sidebarProps }) {
         items: [
           {
             title: "Community",
-            url: route('dashboard'),
+            url: route('community.index'),
           },
           {
             title: "Persetujuan Postingan",

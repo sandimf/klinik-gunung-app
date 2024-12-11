@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Users;
 
-use Inertia\Inertia;
-use Illuminate\Http\Request;
-use App\Models\Users\Patients;
-use App\Models\Activity\UserVisit;
-use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
+use App\Models\Activity\UserVisit;
+use App\Models\Users\Patients;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
+
 class PatientsController extends Controller
 {
     /**
@@ -22,7 +23,7 @@ class PatientsController extends Controller
                 ->whereDate('visit_date', now()->toDateString())
                 ->first();
 
-            if (!$todayVisit) {
+            if (! $todayVisit) {
                 UserVisit::create([
                     'user_id' => $userId,
                     'visit_date' => now(),
@@ -34,7 +35,7 @@ class PatientsController extends Controller
             ->count();
 
         return Inertia::render('Dashboard/Patients/Index', [
-            "visitCount" => $visitCount,
+            'visitCount' => $visitCount,
         ]);
     }
 
