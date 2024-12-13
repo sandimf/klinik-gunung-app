@@ -61,4 +61,6 @@ class PaymentsController extends Controller
         return redirect()->route('cashier.screening')->with('success', 'Pembayaran berhasil diproses.');
     }
 
+
+    
 }

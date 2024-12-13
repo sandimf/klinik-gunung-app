@@ -30,7 +30,7 @@ export default function Dashboard({ auth, screening, visitCount }) {
                                     </CardTitle>
                                     <CalendarDays className="h-4 w-4 text-muted-foreground" />
                                 </CardHeader>
-                                {/* <CardContent>
+                                <CardContent>
                                     {screening ? (
                                         <>
                                             <div className="text-2xl font-bold">
@@ -46,7 +46,7 @@ export default function Dashboard({ auth, screening, visitCount }) {
                                     ) : (
                                         <p className="text-center text-muted-foreground">You haven't had a screening.</p>
                                     )}
-                                </CardContent> */}
+                                </CardContent>
                             </Card>
                             <Card>
                                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

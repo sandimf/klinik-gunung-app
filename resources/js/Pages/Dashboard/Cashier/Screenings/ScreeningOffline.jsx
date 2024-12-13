@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/Components/ui/pagination";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
 import { Button } from '@/Components/ui/button';
-import { CreditCard, Stethoscope } from 'lucide-react';
+import { CreditCard, ArrowRight } from 'lucide-react';
 import PaymentDialog from './Payments/OfflinePayments';
 import { Toaster } from 'sonner';
 
@@ -39,6 +39,8 @@ const ScreeningOfflineIndex = ({ screenings = [], medicines }) => {
         setIsDialogOpen(false);
         setPaymentScreening(null);
     };
+
+
 
     return (
         <CashierSidebar header={'Daftar Screening Offline'}>

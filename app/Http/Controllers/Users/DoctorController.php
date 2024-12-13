@@ -69,4 +69,8 @@ class DoctorController extends Controller
     {
         //
     }
+
+    public function appointments(){
+        return Inertia::render('Dashboard/Doctor/Appointments/Index');
+    }
 }

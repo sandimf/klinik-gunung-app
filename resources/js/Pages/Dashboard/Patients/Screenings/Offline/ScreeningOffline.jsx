@@ -61,7 +61,7 @@ export default function Index({ questions, errors,patient }) {
         <PatientSidebar header={'Screening Now'}>
         <div className="space-y-8">
             <Head title="screening"/>
-            <h1 className="text-2xl font-bold">Screening Questionnaire</h1>
+            <h1 className="text-2xl font-bold">Screening</h1>
 
             <form onSubmit={handleSubmit}>
                 {/* Patient Information Inputs */}

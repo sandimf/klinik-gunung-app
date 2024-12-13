@@ -47,7 +47,7 @@ export default function Component({ auth }) {
       },
       onError: (errors) => {
         toast.error("Gagal menambahkan user. Silakan periksa kesalahan dan coba lagi.", {
-          icon: <AlertCircle className="h-5 w-5 text-red-500" />,
+          icon: <X className="h-5 w-5 text-red-500" />,
         });
         console.error(errors);
       },

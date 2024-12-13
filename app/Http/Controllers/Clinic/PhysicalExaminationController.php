@@ -10,21 +10,6 @@ use Illuminate\Support\Facades\Auth;
 
 class PhysicalExaminationController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $user = Auth::user(); // Get the authenticated user
@@ -86,35 +71,6 @@ class PhysicalExaminationController extends Controller
         ]);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(PhysicalExamination $phhysicalExamination)
-    {
-        //
-    }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(PhysicalExamination $physicalExamination)
-    {
-        //
-    }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, PhysicalExamination $physicalExamination)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(PhysicalExamination $physicalExamination)
-    {
-        //
-    }
 }

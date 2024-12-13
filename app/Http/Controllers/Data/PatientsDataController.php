@@ -48,7 +48,7 @@ class PatientsDataController extends Controller
 
         // Redirect dengan pesan sukses
         return redirect()
-            ->route('dashboard')
+            ->route('appointments.index')
             ->with('success', 'Patient profile created successfully.');
     }
 

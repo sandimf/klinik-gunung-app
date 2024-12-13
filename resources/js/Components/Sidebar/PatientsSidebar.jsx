@@ -84,18 +84,8 @@ export function AppSidebar({ ...sidebarProps }) {
       },
       {
         title: "Community",
-        url: route("dashboard"),
+        url: route("community.index"),
         icon: Users,
-        items: [
-          {
-            title: "Community",
-            url: route('dashboard'),
-          },
-          {
-            title: "Persetujuan Postingan",
-            url: route('dashboard'),
-          },
-        ],
       },
       {
         title: "Settings",

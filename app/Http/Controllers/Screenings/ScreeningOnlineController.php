@@ -18,7 +18,7 @@ class ScreeningOnlineController extends Controller
         $userId = Auth::id();
 
         // Fetch the patient and their related questionnaire answers
-        $screening = PatientsOnline::with('answers') // Eager load answers
+        $screening = PatientsOnline::with('answers', 'payment','result') // Eager load answers
             ->where('user_id', $userId)
             ->orderBy('created_at', 'desc')
             ->first();
@@ -101,6 +101,22 @@ class ScreeningOnlineController extends Controller
         });
 
         return response()->json(['message' => 'Jawaban dan data pasien disimpan dengan sukses.'], 201);
+    }
+
+    public function payments()
+    {
+        $userId = Auth::id();
+
+        // Fetch the patient and their related questionnaire answers
+        $screening = PatientsOnline::with('answers','payment') // Eager load answers
+            ->where('user_id', $userId)
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        return Inertia::render('Dashboard/Patients/Screenings/Online/Index', [
+            'screening' => $screening,
+            'payment' => $screening->payment,
+        ]);
     }
 
 }

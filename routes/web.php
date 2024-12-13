@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AI\AiController;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
@@ -20,12 +21,16 @@ use App\Http\Controllers\Questioner\QuestionerController;
 use App\Http\Controllers\Clinic\ManagementStaffController;
 use App\Http\Controllers\Clinic\MedicalPersonnelController;
 use App\Http\Controllers\Community\CreateAccountController;
+use App\Http\Controllers\Payments\PaymentsOnlineController;
 use App\Http\Controllers\Appointments\AppointmentController;
+use App\Http\Controllers\Appointments\AppointmentDoctorController;
 use App\Http\Controllers\Community\ProfileAccountController;
 use App\Http\Controllers\Clinic\PhysicalExaminationController;
 use App\Http\Controllers\Screenings\ScreeningOnlineController;
 use App\Http\Controllers\Questioner\QuestionerOnlineController;
 use App\Http\Controllers\Screenings\ScreeningOfflineController;
+use App\Http\Controllers\Clinic\PhysicalExaminationOnlineController;
+use App\Http\Controllers\Data\QrcodeController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -35,6 +40,9 @@ Route::get('/', function () {
         'phpVersion' => PHP_VERSION,
     ]);
 });
+
+Route::resource('ai', AiController::class)
+->only(['index']);
 
 // Guest Screening Offline
 Route::resource('screening-now', GuestController::class)
@@ -55,10 +63,17 @@ Route::prefix('dashboard')->middleware(['auth', 'role:patients'])->group(functio
         ->only(['index', 'store']);
 
     Route::resource('appointments', AppointmentController::class)
-        ->only(['index', 'store']);
+        ->only(['index', 'store','update']);
 
     Route::resource('screening-online', ScreeningOnlineController::class)
         ->only(['index','create','store']);
+
+    Route::get('/payment/{screeningId}', [PaymentsOnlineController::class, 'create'])->name('payment.create');
+    Route::post('payment/check', [PaymentsOnlineController::class, 'store'])->name('payments.online.store');
+
+    Route::resource('result-screening', QrcodeController::class)
+        ->only(['show']);
+
 
 });
 
@@ -68,6 +83,8 @@ Route::prefix('dashboard/doctor')->middleware(['auth', 'role:doctor'])->group(fu
     Route::get('/', [DoctorController::class, 'index'])->name('doctor.dashboard');
     // Profile Edit Page
     Route::get('profile', [DoctorController::class, 'profile'])->name('doctor.profile');
+
+    Route::get('appointments',[AppointmentDoctorController::class, 'index'])->name('appointments.doctor');
 });
 
 // Paramedis
@@ -79,9 +96,19 @@ Route::prefix('dashboard/paramedis')->middleware(['auth', 'role:paramedis'])->gr
     Route::get('screening', [ParamedisController::class, 'showScreeningOffline'])->name('paramedis.screening');
     Route::get('screening/detail/{id}', [ParamedisController::class, 'show'])->name('paramedis.detail');
 
+
+    // History Screening Offline
+    Route::get('history', [ParamedisController::class, 'showHistoryScreening'])->name('paramedis.history');
+
     Route::resource('physicalexamination', PhysicalExaminationController::class)
         ->only(['store'])
         ->middleware(['auth']);
+
+    Route::get('screening-online', [ParamedisController::class, 'showScreeningOnline'])->name('screening-online.paramedis');
+    
+    Route::resource('physicalexamination-online', PhysicalExaminationOnlineController::class)
+        ->only(['store']);
+
 });
 
 // cashier
@@ -90,6 +117,7 @@ Route::prefix('dashboard/cashier')->middleware(['auth', 'role:cashier'])->group(
     Route::get('/', [CashierController::class, 'index'])->name('cashier.dashboard');
     // Profile Edit
     Route::get('profile', [CashierController::class, 'profile'])->name('cashier.profile');
+
     Route::get('screening', [CashierController::class, 'showScreeningOffline'])->name('cashier.screening');
 
     // Pembayaran Screening
@@ -103,6 +131,13 @@ Route::prefix('dashboard/cashier')->middleware(['auth', 'role:cashier'])->group(
         ->middleware(['auth']);
 
     Route::get('history', [CashierController::class, 'historyPaymentsOffline'])->name('history.cashier');
+
+    Route::get('screening-online', [CashierController::class, 'showScreeningOnline'])->name('cashier.screening-online');
+    Route::get('screening-online/payments/{id}', [CashierController::class, 'showPayment'])->name('cashier.payments-online');
+
+
+    Route::post('/payments/{id}/confirm', [PaymentsOnlineController::class, 'confirmPayment'])
+    ->name('payments.confirm');
 });
 
 // Admin
@@ -137,6 +172,10 @@ Route::prefix('dashboard/admin')->middleware(['auth', 'role:admin'])->group(func
         ->only(['index'])
         ->middleware(['auth']);
 
+    Route::post('scanning', [QrcodeController::class, 'decrypt'])->name('decrypt.scan');
+
+    Route::get('scan', [AdminController::class, 'scanner'])->name('admin.scan');
+
     // Profile Edit
     Route::get('profile', [AdminController::class, 'profile'])->name('admin.profile');
 });
@@ -153,9 +192,6 @@ Route::prefix('dashboard/warehouse')->middleware(['auth', 'role:warehouse'])->gr
     // Dashboard
     Route::get('/', [WarehouseController::class, 'index'])->name('warehouse.dashboard');
 });
-
-
-
 
 
 Route::middleware(['auth'])->group(function () {

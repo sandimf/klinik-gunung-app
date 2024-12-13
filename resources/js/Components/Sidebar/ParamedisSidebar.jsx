@@ -55,13 +55,18 @@ export function AppSidebar({ ...sidebarProps }) {
         icon: Home,
       },
       {
-        title: "Screening Offline",
+        title: "Screening",
         url: route("paramedis.screening"),
         icon: Bandage,
       },
       {
-        title: "Screening Offline History",
-        url: route("paramedis.screening"),
+        title: "Screening Online",
+        url: route("screening-online.paramedis"),
+        icon: Bandage,
+      },
+      {
+        title: "Riwayat Pemeriksaan",
+        url: route("paramedis.history"),
         icon: History,
       },
       {

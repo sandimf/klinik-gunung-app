@@ -3,11 +3,11 @@
 import React, { useState } from "react"
 import {
   Command,
+  CalendarPlus,
   Scan,
   Home,
-  UserPlus,
   Settings2,
-  ShoppingBag,
+  SquareActivity,
   Users,
   ChevronRight,
   Pill,
@@ -56,40 +56,24 @@ export function AppSidebar({ ...sidebarProps }) {
         icon: Home,
       },
       {
-        title: "Scan QrCode",
+        title: "Appointments",
+        url: route("appointments.doctor"),
+        icon: CalendarPlus,
+      },
+      {
+        title: "Rekam Medis",
+        url: route("dashboard"),
+        icon: SquareActivity,
+      },
+      {
+        title: "Screening",
         url: route("dashboard"),
         icon: Scan,
       },
       {
-        title: "Tenaga Medis",
-        url: route('dashboard'),
-        icon: UserPlus,
-        items: [
-            {
-                title: "Daftar Tenaga Medis",
-                url: route('users.index'),
-            },
-            {
-                title: "Tambah Tenaga Medis",
-                url: route('users.create'),
-            },
-        ]
-      },
-      {
-        title: "Products",
+        title: "Manajemen Resep",
         url: route("dashboard"),
-        icon: ShoppingBag,
-      },
-      {
-        title: "Apotek",
-        url: "#",
         icon: Pill,
-        items: [
-          {
-            title: "Obat",
-            url: route('medicine.index'),
-          },
-        ],
       },
       {
         title: "Community",

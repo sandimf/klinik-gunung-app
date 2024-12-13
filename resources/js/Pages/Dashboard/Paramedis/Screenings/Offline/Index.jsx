@@ -7,7 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/Components/ui/pagination"
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card"
 import { Button } from '@/Components/ui/button'
-import { Stethoscope } from 'lucide-react'
+import { Stethoscope,ArrowRight } from 'lucide-react'
 import ScreeningDialog from './Partials/PhysicalExamination'
 import { Badge } from '@/Components/ui/badge'
 
@@ -46,7 +46,7 @@ const ScreeningOfflineIndex = ({ screenings = [] }) => {
             <Head title="Screening Offline" />
             <Card>
                 <CardHeader>
-                    <CardTitle>Daftar Screening Offline</CardTitle>
+                    <CardTitle>Daftar Screening</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="flex flex-col md:flex-row gap-4 mb-4">
@@ -82,8 +82,14 @@ const ScreeningOfflineIndex = ({ screenings = [] }) => {
                                     <TableCell>{screening.name}</TableCell>
                                     <TableCell>
                                     <Link href={route('paramedis.detail', { id: screening.id })}>
-                                        Kuesioner
-                                    </Link>
+                <Button
+                    variant="outline"
+                    className="mb-4"
+                >
+                    <ArrowRight className="mr-2 h-4 w-4" /> Kuesioner
+                </Button>
+            </Link>
+                                    
                                     </TableCell>
                                     <TableCell>
                                         {screening.screening_status === 'completed' ? (

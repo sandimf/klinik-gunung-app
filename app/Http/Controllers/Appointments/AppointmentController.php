@@ -14,53 +14,84 @@ class AppointmentController extends Controller
     public function index()
     {
         $user = Auth::user();
-    
+        
         // Periksa apakah data pasien ada di tabel `patients`
         $patient = Patients::where('user_id', $user->id)->first();
-    
+        
         if (!$patient) {
             // Redirect ke halaman untuk melengkapi data pasien
             return redirect()->route('information.index')
                 ->with('warning', 'Please complete your patient profile before accessing appointments.');
         }
-    
-        $appointments = Appointments::where('patient_id', $patient->id)
-            ->latest('appointment_date')
+        
+        // Ambil semua janji temu dengan data pasien (eager loading)
+        $appointments = Appointments::with('patient')
+            ->where('patient_id', $patient->id)
+            ->latest('created_at')  // Mengurutkan berdasarkan created_at
             ->get();
-    
+        
         return Inertia::render('Dashboard/Patients/Appointments/Index', [
             'appointments' => $appointments,
         ]);
     }
     
+    
+    
 
     public function store(Request $request)
-    {
-        // Ambil user yang sedang login
-        $user = Auth::user();
+{
 
-        // Validasi input
-        $validated = $request->validate([
-            'appointment_date' => 'required|date',
-            'is_scheduled' => 'required|boolean',
-        ]);
+    // Ambil user yang sedang login
+    $user = Auth::user();
 
-        // Simpan data ke database
-        $appointment = Appointments::create([
-            'appointment_date' => $validated['appointment_date'],
-            'is_scheduled' => $validated['is_scheduled'],
-            'patient_id' => $user->id, // Ambil ID pasien dari pengguna yang sedang login
-        ]);
+    // Cari record pasien yang terkait dengan pengguna yang sedang login
+    $patient = Patients::where('user_id', $user->id)->first();
 
-        // Berikan respon sukses
+    // Jika pasien tidak ditemukan, kembalikan error
+    if (!$patient) {
         return response()->json([
-            'message' => 'Appointment created successfully!',
-            'appointment' => $appointment,
-        ], 201);
+            'message' => 'Patient record not found for the logged-in user.',
+        ], 404);
     }
 
+    // Validasi input
+    $validated = $request->validate([
+        'appointment_date' => 'required|date',               // Harus berupa tanggal
+        'appointment_time' => 'required|date_format:H:i:s',  // Harus sesuai format HH:mm:ss
+        'is_scheduled' => 'required|boolean',                // Harus berupa boolean
+    ]);
 
-    public function update(){
-        
+    // Simpan data ke database
+    $appointment = Appointments::create([
+        'appointment_date' => $validated['appointment_date'],
+        'appointment_time' => $validated['appointment_time'],
+        'is_scheduled' => $validated['is_scheduled'],
+        'patient_id' => $patient->id,
+        'status' => 'pending',
+    ]);
+
+    // Berikan respon sukses
+    return redirect()->route('appointments.index')
+        ->with('success', 'Appointment created successfully!');
+}
+    
+
+
+public function update(Request $request, $id)
+{
+    // Cari appointment berdasarkan ID
+    $appointment = Appointments::find($id);
+
+    // Periksa apakah appointment ditemukan
+    if (!$appointment) {
+        return response()->json(['message' => 'Appointment not found.'], 404);
     }
+
+    // Perbarui status menjadi Cancelled
+    $appointment->status = 'cancelled';
+    $appointment->save();
+
+    return redirect()->route('appointments.index')
+    ->with('success', 'Appointment cancelled successfully!');
+}
 }

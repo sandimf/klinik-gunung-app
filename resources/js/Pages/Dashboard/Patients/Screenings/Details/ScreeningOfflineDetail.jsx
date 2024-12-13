@@ -1,43 +1,3 @@
-// import React from "react";
-
-// const Online = ({ screening }) => {
-//     return (
-//         <div>
-//             <h1>Detail Screening</h1>
-//             <div className="patient-details">
-//                 <h2>{screening.name}</h2>
-//                 <p><strong>Age:</strong> {screening.age}</p>
-//                 <p><strong>Email:</strong> {screening.email}</p>
-//                 <p><strong>Gender:</strong> {screening.gender}</p>
-//                 <p><strong>Contact:</strong> {screening.contact}</p>
-//             </div>
-
-//             <div className="screening-answers">
-//                 <h3>Screening Answers</h3>
-//                 {screening.answers.length > 0 ? (
-//                     <ul>
-//                         {screening.answers.map((answer) => (
-//                             <li key={answer.id} className="screening-answer">
-//                                 <p>
-//                                     <strong>{answer.question.question_text}</strong>
-//                                 </p>
-//                                 <p>
-//                                     {typeof answer.answer_text === 'object'
-//                                         ? JSON.stringify(answer.answer_text)
-//                                         : answer.answer_text}
-//                                 </p>
-//                             </li>
-//                         ))}
-//                     </ul>
-//                 ) : (
-//                     <p>No answers available.</p>
-//                 )}
-//             </div>
-//         </div>
-//     );
-// };
-
-// export default Online;
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/Components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/Components/ui/tabs"
 import SideBar from "@/Layouts/Dashboard/PatientsSidebarLayout"
@@ -56,7 +16,7 @@ export default function ScreeningDetails({ screening, question }) {
 
   return (
     <SideBar header={`Detail Screening ${screening.name}`}>
-      <Head title={`Detail Screening - ${screening.name}`} />
+      <Head title={`${screening.name}`} />
 
         <Card className="w-full">
           <CardHeader>

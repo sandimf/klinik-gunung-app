@@ -72,4 +72,8 @@ class AdminController extends Controller
     {
         //
     }
+
+    public function scanner(){
+        return Inertia::render('Dashboard/Admin/Scaner/Index');
+    }
 }

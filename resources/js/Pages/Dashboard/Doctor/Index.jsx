@@ -6,7 +6,7 @@ export default function Index() {
     const user = usePage().props.auth.user;
     return (
         <DoctorSidebar header={'Dashboard'}>
-
+            <Head title='Dashboard Dokter' />
         <div>
             <h1>Welcome to my app {user.name}</h1>
         </div>

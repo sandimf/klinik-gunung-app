@@ -13,13 +13,15 @@ return new class extends Migration
     {
         Schema::create('payments_online', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('patient_id')->constrained('patients');
+            $table->string('name')->nullable();
+            $table->foreignId('patient_id')->constrained('patients_online');
             $table->foreignId('screening_online_answer_id')->nullable()->constrained('screening_online_answers')->onDelete('set null');
-            $table->unsignedBigInteger('cashier_id')->constrained('cashiers');
+            $table->unsignedBigInteger('cashier_id')->nullable()->constrained('cashiers');  
             $table->boolean('payment_status')->default(false);
             $table->decimal('amount_paid', 10, 2)->nullable();
             $table->string('payment_method')->nullable();
             $table->string('payment_proof')->nullable();
+            $table->enum('status', ['pending','checking', 'completed'])->default('pending');
             $table->string('qr_code')->nullable();
             $table->timestamps();
         });

@@ -3,8 +3,11 @@
 namespace App\Models\Users;
 
 use App\Models\User;
+use App\Models\Payments\PaymentOnline;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Clinic\PhysicalExaminationOnline;
 use App\Models\Screenings\ScreeningOnlineAnswers;
+use App\Models\Screenings\ScreeningOnlineQuestions;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class PatientsOnline extends Model
@@ -24,8 +27,25 @@ class PatientsOnline extends Model
         return $this->hasMany(ScreeningOnlineAnswers::class, 'patient_id');
     }
 
-    // public function physicalExaminations()
-    // {
-    //     return $this->hasMany(PhysicalExamination::class, 'patient_id');
-    // }
+    public function payment()
+    {
+        return $this->hasOne(PaymentOnline::class, 'patient_id', 'id');
+    }
+
+    public function patient()
+    {
+        return $this->belongsTo(PatientsOnline::class, 'patient_id', 'id');
+    }
+
+    public function result()
+    {
+        return $this->hasMany(PhysicalExaminationOnline::class, 'patient_id');
+    }
+
+    public function question()
+    {
+        return $this->hasMany(ScreeningOnlineQuestions::class, 'patient_id');
+    }
+
+    
 }

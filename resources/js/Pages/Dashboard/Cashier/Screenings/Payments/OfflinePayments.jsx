@@ -11,7 +11,7 @@ import { useForm } from '@inertiajs/react';
 
 export default function PaymentDialog({ isOpen, onClose, medicines, screening }) {
     if (!screening) {
-        return null; // Jika screening tidak ada, jangan render dialog
+        return null;
     }
     console.log('Screening Data:', screening);
     const [hasPurchasedProduct, setHasPurchasedProduct] = useState(false);

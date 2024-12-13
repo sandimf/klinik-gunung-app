@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Users;
 
 use App\Http\Controllers\Controller;
-use App\Models\Users\Paramedis;
 use App\Models\Users\Patients;
+use App\Models\Users\PatientsOnline;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -48,21 +48,76 @@ class ParamedisController extends Controller
             ->whereHas('answers', function ($query) {
                 $query->whereNotNull('answer_text');
             })
+            ->where('screening_status', 'pending') // Tambahkan kondisi untuk screening_status
             ->get();
-
+    
         return Inertia::render('Dashboard/Paramedis/Screenings/Offline/Index', [
             'screenings' => $screenings,
         ]);
     }
+    
     public function show($id)
     {
-       
         $patient = Patients::with(['answers.question'])
-            ->findOrFail($id); // Mencari pasien berdasarkan ID yang diberikan
-    
-        // Kembalikan data ke Inertia untuk menampilkan halaman detail
+            ->findOrFail($id); // Mengambil pasien dan data relasi jawaban dengan pertanyaan
+
+        // Menyiapkan data pertanyaan dan jawaban
+        $questionsAndAnswers = $patient->answers->map(function ($answer) {
+            return [
+                'question' => $answer->question->question_text,
+                'answer' => $answer->answer_text,
+                'queue' => $answer->queue, // Menambahkan nomor antrian
+            ];
+        });
+
+        // Mengirim data ke halaman Inertia
         return Inertia::render('Dashboard/Paramedis/Screenings/Offline/Details/Index', [
-            'patient' => $patient, // Mengirim data pasien untuk ditampilkan
+            'patient' => $patient,
+            'questionsAndAnswers' => $questionsAndAnswers,
+            'queue' => $patient->answers->max('queue'),
         ]);
     }
+
+    public function showHistoryScreening()
+    {
+        // Query screenings from Patients model
+        $offlineScreenings = Patients::with(['answers.question'])
+            ->whereHas('answers', function ($query) {
+                $query->whereNotNull('answer_text');
+            })
+            ->where('screening_status', 'completed')
+            ->get();
+    
+        // Query screenings from PatientsOnline model
+        $onlineScreenings = PatientsOnline::with(['answers.question'])
+            ->whereHas('answers', function ($query) {
+                $query->whereNotNull('answer_text');
+            })
+            ->where('screening_status', 'completed')
+            ->get();
+    
+        // Combine both offline and online screenings into a single collection
+        $screenings = collect([])->merge($offlineScreenings)->merge($onlineScreenings);
+    
+        // Return to the Inertia view with screenings data
+        return Inertia::render('Dashboard/Paramedis/Screenings/History/Index', [
+            'screenings' => $screenings->all(), // Ensure screenings is returned as an array
+        ]);
+    }
+
+    public function showScreeningOnline()
+    {
+        $screenings = PatientsOnline::with(['answers.question'])
+            ->whereHas('answers', function ($query) {
+                $query->whereNotNull('answer_text');
+            })
+            ->where('screening_status', 'pending') // Tambahkan kondisi untuk screening_status
+            ->get();
+    
+        return Inertia::render('Dashboard/Paramedis/Screenings/Online/Index', [
+            'screenings' => $screenings,
+        ]);
+    }
+    
+
 }

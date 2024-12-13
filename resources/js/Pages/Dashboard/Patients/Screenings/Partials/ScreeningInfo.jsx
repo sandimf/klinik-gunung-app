@@ -19,7 +19,7 @@ const StatusIcon = ({ status }) => {
     }
 };
 
-const ScreeningInfo = ({ screening, detailRouteName }) => {
+const ScreeningInfo = ({ screening, detailRouteName,RouteName }) => {
     const handleDownload = () => {
         window.location.href = route('generate.screening.pdf', `${screening.id}`);
     };
@@ -94,19 +94,23 @@ const ScreeningInfo = ({ screening, detailRouteName }) => {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-end">
+                
             <Button
                 variant="outline"
                 onClick={handleDownload}
                 className="flex items-center"
-                disabled={screening.screening_status === 'pending'}
-            >
+                disabled={
+                    screening.screening_status === 'pending' || 
+                    screening.payment_status === 'pending' // Tambahkan kondisi payment_status
+                }>
                 <FileDown className="h-4 w-4 mr-2" />
                 Download PDF
             </Button>
 
+
                 <Button asChild>
                     <Link href={detailRouteName}>
-                        Detail Screening
+                        {RouteName}
                         <ArrowRight className="h-4 w-4 ml-2" />
                     </Link>
                 </Button>

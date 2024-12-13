@@ -21,10 +21,10 @@ return new class extends Migration
             $table->integer('age')->nullable();
             $table->enum('gender', ['male', 'female', 'other'])->nullable();
             $table->string('contact')->nullable();
-            $table->enum('screening_status', ['completed', 'pending', 'cancelled'])->nullable();
+            $table->enum('screening_status', ['completed','checking', 'pending', 'cancelled'])->nullable();
             $table->enum('health_status', ['pending', 'healthy', 'sick', 'under treatment'])->nullable();
             $table->enum('health_check_status', ['pending', 'completed'])->nullable();
-            $table->enum('payment_status', ['completed', 'pending', 'cancelled'])->nullable();
+            $table->enum('payment_status', ['completed', 'pending', 'cancelled','checking'])->nullable();
             $table->timestamps();
         });
     }

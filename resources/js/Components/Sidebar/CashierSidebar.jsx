@@ -63,7 +63,7 @@ export function AppSidebar({ ...sidebarProps }) {
       },
       {
         title: "Pembayaran Screening Online",
-        url: route("cashier.screening"),
+        url: route("cashier.screening-online"),
         icon: CreditCard,
       },
       {

@@ -8,6 +8,7 @@ use App\Models\Medicines\Medicine;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Clinic\PhysicalExamination;
 use App\Models\Screenings\ScreeningAnswers;
+use App\Models\Screenings\ScreeningQuestions;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Patients extends Model
@@ -26,6 +27,10 @@ class Patients extends Model
     public function answers()
     {
         return $this->hasMany(ScreeningAnswers::class, 'patient_id');
+    }
+    public function question()
+    {
+        return $this->hasMany(ScreeningQuestions::class, 'patient_id');
     }
 
     public function physicalExaminations()

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('physical_examinations_online', function (Blueprint $table) {
             $table->id();
             // Relasi ke tabel patients
-            $table->foreignId('patient_id')->constrained('patients');
+            $table->foreignId('patient_id')->constrained('patients_online');
             $table->unsignedBigInteger('paramedis_id')->nullable();
             $table->unsignedBigInteger('doctor_id')->nullable();
             // Kolom-kolom untuk data pemeriksaan fisik
@@ -26,6 +26,7 @@ return new class extends Migration
             $table->text('physical_assessment')->nullable();
             $table->text('reason')->nullable();
             $table->text('medical_advice')->nullable();
+            $table->text('qrcode')->nullable();
             $table->enum('health_status', ['healthy', 'butuh_dokter', 'butuh_pendamping'])->nullable();
             $table->timestamps();
         });

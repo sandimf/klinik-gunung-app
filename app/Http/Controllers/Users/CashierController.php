@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Medicines\Medicine;
 use App\Models\Users\Cashier;
 use App\Models\Users\Patients;
+use App\Models\Users\PatientsOnline;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -66,5 +67,34 @@ class CashierController extends Controller
             'medicines' => $medicines,
         ]);
     }
-    
+
+    public function showScreeningOnline(){
+        $screenings = PatientsOnline::with(['answers.question'])
+            ->where('payment_status', 'checking')
+            ->whereHas('answers', function ($query) {
+                $query->whereNotNull('answer_text');
+            })
+            ->get();
+
+        return Inertia::render('Dashboard/Cashier/Screenings/ScreeningOnline', [
+            'screenings' => $screenings,
+        ]);
+    }
+
+    public function showPayment($id)
+    {
+        $screening = PatientsOnline::with(['payment'])
+            ->where('id', $id)
+            ->first();
+
+        if (!$screening) {
+            return redirect()->route('cashier.screening-online')->with('error', 'Screening tidak ditemukan.');
+        }
+        $payment = $screening->payment;
+
+        return Inertia::render('Dashboard/Cashier/Screenings/Payments/OnlinePayments', [
+            'screening' => $screening,
+            'payment' => $payment,
+        ]);
+    }
 }

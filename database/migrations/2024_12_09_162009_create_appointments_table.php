@@ -14,8 +14,10 @@ return new class extends Migration
         Schema::create('appointments', function (Blueprint $table) {
             $table->id(); // Primary key
             $table->date('appointment_date'); // Tanggal janji temu
+            $table->time('appointment_time');
             $table->boolean('is_scheduled')->default(false); // Apakah terjadwal
-            $table->foreignId('patient_id')->constrained()->onDelete('cascade'); // Relasi ke tabel patients
+            $table->foreignId('patient_id')->constrained('patients')->onDelete('cascade'); // Relasi ke tabel patients
+            $table->enum('status', ['pending','cancelled' ,'completed'])->default('pending');
             $table->timestamps(); 
         });
     }
