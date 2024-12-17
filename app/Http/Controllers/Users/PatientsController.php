@@ -17,7 +17,15 @@ class PatientsController extends Controller
     public function index()
     {
         $userId = Auth::id();
+        
+        $user = Auth::user();
+        $patient = Patients::where('user_id', $user->id)->first();
 
+        if (!$patient) {
+            // Redirect ke halaman untuk melengkapi data pasien
+            return redirect()->route('information.index')
+                ->with('warning', 'Please complete your patient profile before accessing appointments.');
+        }
         if (Auth::check()) {
             $todayVisit = UserVisit::where('user_id', $userId)
                 ->whereDate('visit_date', now()->toDateString())

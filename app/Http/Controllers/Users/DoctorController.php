@@ -73,4 +73,8 @@ class DoctorController extends Controller
     public function appointments(){
         return Inertia::render('Dashboard/Doctor/Appointments/Index');
     }
+
+    public function emr(){
+        return Inertia::render('Dashboard/Doctor/MedicalRecord/Index');
+    }
 }

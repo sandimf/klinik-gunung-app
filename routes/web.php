@@ -1,14 +1,16 @@
 <?php
 
-use App\Http\Controllers\AI\AiController;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
+use App\Http\Controllers\AI\AiController;
+use App\Http\Controllers\Data\QrcodeController;
 use App\Http\Controllers\Users\AdminController;
 use App\Http\Controllers\Users\DoctorController;
 use App\Http\Controllers\Clinic\OfficeController;
 use App\Http\Controllers\Users\CashierController;
 use App\Http\Controllers\Users\ManagerController;
+use App\Http\Controllers\Ai\KtpAnalysisController;
 use App\Http\Controllers\Users\PatientsController;
 use App\Http\Controllers\Users\ParamedisController;
 use App\Http\Controllers\Users\WarehouseController;
@@ -23,14 +25,13 @@ use App\Http\Controllers\Clinic\MedicalPersonnelController;
 use App\Http\Controllers\Community\CreateAccountController;
 use App\Http\Controllers\Payments\PaymentsOnlineController;
 use App\Http\Controllers\Appointments\AppointmentController;
-use App\Http\Controllers\Appointments\AppointmentDoctorController;
 use App\Http\Controllers\Community\ProfileAccountController;
 use App\Http\Controllers\Clinic\PhysicalExaminationController;
 use App\Http\Controllers\Screenings\ScreeningOnlineController;
 use App\Http\Controllers\Questioner\QuestionerOnlineController;
 use App\Http\Controllers\Screenings\ScreeningOfflineController;
+use App\Http\Controllers\Appointments\AppointmentDoctorController;
 use App\Http\Controllers\Clinic\PhysicalExaminationOnlineController;
-use App\Http\Controllers\Data\QrcodeController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -43,12 +44,14 @@ Route::get('/', function () {
 
 Route::resource('ai', AiController::class)
 ->only(['index']);
+Route::post('analyze-ktp', [KtpAnalysisController::class, 'analyze'])->name('ktp.analysis');
 
 // Guest Screening Offline
 Route::resource('screening-now', GuestController::class)
     ->only(['index', 'store']);
 
-// Patients
+
+// Dashboard Patients
 Route::prefix('dashboard')->middleware(['auth', 'role:patients'])->group(function () {
     // Dashboard Page
     Route::get('/', [PatientsController::class, 'index'])->name('dashboard');
@@ -73,11 +76,12 @@ Route::prefix('dashboard')->middleware(['auth', 'role:patients'])->group(functio
 
     Route::resource('result-screening', QrcodeController::class)
         ->only(['show']);
+    
 
 
 });
 
-// Doctor
+// Dashboard Doctor
 Route::prefix('dashboard/doctor')->middleware(['auth', 'role:doctor'])->group(function () {
     // Dashboard
     Route::get('/', [DoctorController::class, 'index'])->name('doctor.dashboard');
@@ -85,6 +89,13 @@ Route::prefix('dashboard/doctor')->middleware(['auth', 'role:doctor'])->group(fu
     Route::get('profile', [DoctorController::class, 'profile'])->name('doctor.profile');
 
     Route::get('appointments',[AppointmentDoctorController::class, 'index'])->name('appointments.doctor');
+    Route::get('appointments/emr/{appointment_id}',[AppointmentDoctorController::class, 'show'])->name('appointments.emr');
+    Route::post('appointments/start',[AppointmentDoctorController::class, 'store'])->name('appointments.start');
+
+    Route::get('appointments/history', [AppointmentDoctorController::class, 'history'])->name('doctor.history.appointments');
+    
+    Route::get('emr', [DoctorController::class, 'emr'])->name('emr.doctor');
+
 });
 
 // Paramedis
@@ -108,6 +119,8 @@ Route::prefix('dashboard/paramedis')->middleware(['auth', 'role:paramedis'])->gr
     
     Route::resource('physicalexamination-online', PhysicalExaminationOnlineController::class)
         ->only(['store']);
+
+
 
 });
 
@@ -215,5 +228,7 @@ Route::middleware(['auth'])->group(function () {
             ->name('profile.show');
     });
 });
+
+
 
 require __DIR__.'/auth.php';

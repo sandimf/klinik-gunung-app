@@ -19,6 +19,17 @@ class Patients extends Model
 
     protected $fillable = ['user_id', 'images_ktp', 'nik', 'name', 'age', 'gender', 'email','contact', 'screening_status', 'payment_status', 'health_status', 'health_check_status'];
 
+
+    public function attributesToArray()
+    {
+        $attributes = parent::attributesToArray();
+    
+        // Mengubah semua atribut string menjadi Title Case
+        return array_map(function ($value) {
+            return is_string($value) ? ucwords(strtolower($value)) : $value;
+        }, $attributes);
+    }
+    
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');

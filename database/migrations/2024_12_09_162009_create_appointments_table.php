@@ -17,7 +17,7 @@ return new class extends Migration
             $table->time('appointment_time');
             $table->boolean('is_scheduled')->default(false); // Apakah terjadwal
             $table->foreignId('patient_id')->constrained('patients')->onDelete('cascade'); // Relasi ke tabel patients
-            $table->enum('status', ['pending','cancelled' ,'completed'])->default('pending');
+            $table->enum('status', ['pending','confirmed','cancelled' ,'completed'])->default('pending');
             $table->timestamps(); 
         });
     }

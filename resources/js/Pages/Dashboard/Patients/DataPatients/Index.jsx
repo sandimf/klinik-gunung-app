@@ -17,7 +17,7 @@ export default function DataPatients({ patient }) {
         contact: patient?.contact || "",
     });
 
-    const isReadOnly = Boolean(patient); // Jika ada data pasien, form jadi read-only
+    const isReadOnly = Boolean(patient);
 
     const handleSubmit = (e) => {
         e.preventDefault();

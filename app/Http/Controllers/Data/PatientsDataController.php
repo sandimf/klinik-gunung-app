@@ -25,6 +25,7 @@ class PatientsDataController extends Controller
 
     public function store(Request $request)
     {
+        dd($request->all());
         // Validasi input
         $validated = $request->validate([
             'nik' => 'required|string|unique:patients,nik|max:20',

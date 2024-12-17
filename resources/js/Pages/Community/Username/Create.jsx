@@ -1,12 +1,13 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { Head, useForm } from '@inertiajs/react'
+import { useForm } from '@inertiajs/react'
 import { Button } from "@/Components/ui/button"
 import { Input } from "@/Components/ui/input"
 import { Label } from "@/Components/ui/label"
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/Components/ui/card"
 import { ChevronRight, Loader2 } from 'lucide-react'
-import { Toaster, toast } from 'sonner'
+import { toast } from 'sonner'
 
 export default function EditProfile() {
   const [error, setError] = useState('')
@@ -74,38 +75,33 @@ export default function EditProfile() {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-background">
-      <Head title='Community' />
-      <Toaster />
-      <div className="w-full max-w-md bg-white rounded-lg shadow-md">
-        {/* Header */}
-        <div className="p-4">
-          <h1 className="text-xl font-semibold text-center">Buat Akun</h1>
-        </div>
-
-        {/* Profile Form */}
-        <form onSubmit={createUsername} className="p-6 space-y-6">
-          {/* Username Section */}
-          <div className="space-y-2">
-            <Label htmlFor="username" className="text-sm font-medium">Username</Label>
-            <Input 
-              id="username"
-              name="username"
-              placeholder="Enter your username" 
-              className="w-full h-10"
-              value={data.username}
-              onChange={handleUsernameChange}
-            />
-            {((isSubmitted && errors.username) || error) && (
-              <p className="text-sm text-red-500">{errors.username || error}</p>
-            )}
-          </div>
-
-          {/* Submit Button */}
+      <Card className="w-full max-w-md">
+        <CardHeader>
+          <CardTitle className="text-2xl font-semibold text-center">Buat Akun</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={createUsername} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="username">Username</Label>
+              <Input 
+                id="username"
+                name="username"
+                placeholder="Enter your username" 
+                value={data.username}
+                onChange={handleUsernameChange}
+              />
+              {((isSubmitted && errors.username) || error) && (
+                <p className="text-sm text-destructive">{errors.username || error}</p>
+              )}
+            </div>
+          </form>
+        </CardContent>
+        <CardFooter>
           <Button 
             type="submit" 
             className="w-full" 
-            variant="outline"
             disabled={!!error || isLoading}
+            onClick={createUsername}
           >
             {isLoading ? (
               <>
@@ -119,8 +115,8 @@ export default function EditProfile() {
               </>
             )}
           </Button>
-        </form>
-      </div>
+        </CardFooter>
+      </Card>
     </div>
   )
 }

@@ -38,7 +38,7 @@ export function NavUser() {
                       src={
                         user?.avatar
                           ? (user.avatar.startsWith('http') ? user.avatar : `/storage/${user.avatar}`)
-                          : '/storage/avatar/avatar.webp' // Gunakan avatar default jika tidak ada
+                          : '/storage/avatar/avatar.jpg' // Gunakan avatar default jika tidak ada
                       }
                       alt={user?.name || 'Default Avatar'}
                     />

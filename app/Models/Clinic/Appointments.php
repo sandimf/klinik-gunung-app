@@ -19,20 +19,16 @@ class Appointments extends Model
         'patient_id',
         'status',
     ];
-
-    /**
-     * Define the relationship with the Patient model.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
     public function patient()
     {
         return $this->belongsTo(Patients::class, 'patient_id', 'id');
     }
 
-    /**
-     * Define the relationship with the Doctor model.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
+        public function getStatusAttribute($value)
+    {
+        // Mengubah huruf pertama menjadi kapital
+        return ucfirst(strtolower($value));
+    }
+        
+     
 }

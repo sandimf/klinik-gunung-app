@@ -13,20 +13,22 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/Components/ui/breadcrumb";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight } from 'lucide-react';
 import PageContainer from "./PageContainer";
+import { ModeToggle } from "@/Components/mode-toggle";
+import { NotificationButton } from "@/Components/NotificationButton";
+import { ProfileButton } from "@/Components/ProfileButton";
 
-export default function Layout({
-  header,
-  children
-}){
+export default function Layout({ header, children }) {
   return (
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
         <main>
-          {/* Header section with Sidebar Trigger and Breadcrumb */}
+
+          {/* Header section with Sidebar Trigger, Breadcrumb, and new Components */}
           <header className="flex items-center justify-between p-4 border-b">
+            
             <div className="flex items-center space-x-4">
               <SidebarTrigger />
               <Breadcrumb>
@@ -45,8 +47,13 @@ export default function Layout({
                 </BreadcrumbList>
               </Breadcrumb>
             </div>
+            <div className="flex items-center space-x-4">
+              <ModeToggle/>
+              <NotificationButton />
+              <ProfileButton />
+            </div>
           </header>
-
+          
           {/* Content area with PageContainer */}
           <div className="min-h-[100vh] flex-1 rounded-xl">
             <PageContainer>{children}</PageContainer>
@@ -56,3 +63,4 @@ export default function Layout({
     </SidebarProvider>
   );
 }
+
