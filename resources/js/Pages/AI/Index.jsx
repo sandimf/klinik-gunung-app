@@ -8,7 +8,7 @@ import { Label } from "@/Components/ui/label"
 import { Button } from "@/Components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card"
 import { Alert, AlertDescription, AlertTitle } from "@/Components/ui/alert"
-import { Terminal, Camera, Upload } from 'lucide-react'
+import { Terminal, Upload } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/Components/ui/tabs"
 import {
   Select,
@@ -21,7 +21,7 @@ import {
 } from "@/Components/ui/select"
 import  WebcamComponent from "./webcam"
 
-const genAI = new GoogleGenerativeAI("AIzaSyALKU_1CT5xmPPMnjV1KOp65Z1N6v-MRUs")
+const genAI = new GoogleGenerativeAI("API_KEY")
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" })
 
 export default function PatientDataEntry({ patient }) {
