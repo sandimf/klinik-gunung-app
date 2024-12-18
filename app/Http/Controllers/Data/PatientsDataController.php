@@ -25,15 +25,30 @@ class PatientsDataController extends Controller
 
     public function store(Request $request)
     {
-        dd($request->all());
         // Validasi input
         $validated = $request->validate([
-            'nik' => 'required|string|unique:patients,nik|max:20',
+            'nik' => 'required|string|unique:patients,nik|max:16',
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:patients,email',
-            'age' => 'nullable|integer|min:0',
+            'place_of_birth' => 'required|string|max:255',
+            'date_of_birth' => 'required|date',
+            'rt_rw' => 'nullable|string|max:10',
+            'address' => 'required|string|max:255',
+            'village' => 'required|string|max:255',
+            'district' => 'required|string|max:255',
+            // 'city' => 'required|string|max:255',
+            'religion' => 'required|string|max:50',
+            'marital_status' => 'required|string|max:50',
+            'occupation' => 'required|string|max:255',
+            'nationality' => 'required|string|max:50',
             'gender' => 'nullable|in:male,female,other',
-            'contact' => 'nullable|string|max:15',
+            'email' => 'required|email|unique:patients,email|max:255',
+            'age' => 'nullable|integer|min:0',
+            'contact' => 'required|string|unique:patients,contact|max:15',
+            'ktp_images' => 'nullable|string|max:255',
+            'screening_status' => 'nullable|in:completed,pending,cancelled',
+            'health_status' => 'nullable|in:pending,healthy,sick,under treatment',
+            'health_check_status' => 'nullable|in:pending,completed',
+            'payment_status' => 'nullable|in:completed,pending,cancelled',
         ]);
 
         // Simpan data pasien ke dalam database
@@ -41,15 +56,31 @@ class PatientsDataController extends Controller
             'user_id' => Auth::id(),
             'nik' => $validated['nik'],
             'name' => $validated['name'],
+            'place_of_birth' => $validated['place_of_birth'],
+            'date_of_birth' => $validated['date_of_birth'],
+            'rt_rw' => $validated['rt_rw'] ?? null,
+            'address' => $validated['address'],
+            'village' => $validated['village'],
+            'district' => $validated['district'],
+            // 'city' => $validated['city'],
+            'religion' => $validated['religion'],
+            'marital_status' => $validated['marital_status'],
+            'occupation' => $validated['occupation'],
+            'nationality' => $validated['nationality'],
+            'gender' => $validated['gender'] ?? null,
             'email' => $validated['email'],
             'age' => $validated['age'] ?? null,
-            'gender' => $validated['gender'] ?? null,
-            'contact' => $validated['contact'] ?? null,
+            'contact' => $validated['contact'],
+            'ktp_images' => $validated['ktp_images'] ?? null,
+            'screening_status' => $validated['screening_status'] ?? null,
+            'health_status' => $validated['health_status'] ?? null,
+            'health_check_status' => $validated['health_check_status'] ?? null,
+            'payment_status' => $validated['payment_status'] ?? null,
         ]);
 
         // Redirect dengan pesan sukses
         return redirect()
-            ->route('appointments.index')
+            ->route('appointments.index') // Ganti sesuai rute yang relevan jika berbeda
             ->with('success', 'Patient profile created successfully.');
     }
 

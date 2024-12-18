@@ -17,7 +17,30 @@ class Patients extends Model
 
     protected $table = 'patients';
 
-    protected $fillable = ['user_id', 'images_ktp', 'nik', 'name', 'age', 'gender', 'email','contact', 'screening_status', 'payment_status', 'health_status', 'health_check_status'];
+    protected $fillable = [
+        'user_id',
+        'nik',
+        'name',
+        'place_of_birth',
+        'date_of_birth',
+        'rt_rw',
+        'address',
+        'village',
+        'district',
+        'religion',
+        'marital_status',
+        'occupation',
+        'nationality',
+        'gender',
+        'email',
+        'age',
+        'contact',
+        'ktp_images',
+        'screening_status',
+        'health_status',
+        'health_check_status',
+        'payment_status',
+    ];
 
 
     public function attributesToArray()

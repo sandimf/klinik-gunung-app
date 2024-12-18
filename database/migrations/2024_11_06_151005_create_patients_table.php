@@ -23,8 +23,6 @@ return new class extends Migration
             $table->string('address');
             $table->string('village'); // Kelurahan/Desa
             $table->string('district'); // Kecamatan
-            $table->string('city'); // Kota/Kabupaten
-            $table->string('province'); // Provinsi
             $table->string('religion'); // Agama
             $table->string('marital_status'); // Status Perkawinan
             $table->string('occupation'); // Pekerjaan

@@ -6,8 +6,9 @@ import { Label } from "@/Components/ui/label"
 import { Button } from "@/Components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card"
 import { Alert, AlertDescription, AlertTitle } from "@/Components/ui/alert"
-import { Terminal, Upload } from 'lucide-react'
+import { Terminal, Upload,CheckCircle2 } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/Components/ui/tabs"
+import {toast,Toaster} from "sonner"
 import {
     Select,
     SelectContent,
@@ -20,7 +21,7 @@ import {
 import WebcamComponent from "./_components/webcam"
 import Sidebar from "@/Layouts/Dashboard/PatientsSidebarLayout";
 
-const genAI = new GoogleGenerativeAI("API_KEY")
+const genAI = new GoogleGenerativeAI("AIzaSyALKU_1CT5xmPPMnjV1KOp65Z1N6v-MRUs")
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" })
 
 export default function PatientDataEntry({ patient }) {
@@ -50,14 +51,26 @@ export default function PatientDataEntry({ patient }) {
         nationality: patient?.nationality || "",
         valid_until: patient?.valid_until || "",
         blood_type: patient?.blood_type || "",
+        age: patient?.age || "",
     })
 
     const isReadOnly = Boolean(patient)
 
     const handleSubmit = (e) => {
-        e.preventDefault()
-        post(route("information.store"))
-    }
+        e.preventDefault();
+        post(route("information.store"), {
+            onSuccess: () => {
+                toast.success(`Berhasil`, {
+                  icon: <CheckCircle2 className="h-5 w-5 text-green-500" />,
+                }); // Tampilkan pesan sukses
+            },
+            onError: (errors) => {
+                // Tangani error
+                alert("Terjadi kesalahan. Periksa kembali data Anda.");
+                console.error(errors);
+            },
+        });
+    };
 
     const handleFileChange = (event) => {
         const file = event.target.files?.[0]
@@ -85,8 +98,6 @@ export default function PatientDataEntry({ patient }) {
             reader.readAsDataURL(file)
         })
     }
-
-
     const analyzeImage = async (file) => {
         setIsAnalyzing(true)
         setAnalysisError(null)
@@ -155,6 +166,7 @@ export default function PatientDataEntry({ patient }) {
 
     return (
         <Sidebar header={'Patient Information'}>
+            <Toaster position="top-center" />
             <Card >
                 <Head title="Patient Information" />
                 <CardHeader>
@@ -247,6 +259,7 @@ export default function PatientDataEntry({ patient }) {
                                 <Input
                                     id="nik"
                                     value={data.nik}
+                                    placeholder="NIK"
                                     onChange={(e) => setData("nik", e.target.value)}
                                     readOnly={isReadOnly}
                                 />
@@ -302,25 +315,20 @@ export default function PatientDataEntry({ patient }) {
                                 />
                             </div>
                             <div>
-                                <Label htmlFor="gender">Gender</Label>
-                                <Select
-                                    id="gender"
-                                    value={data.gender}
-                                    onChange={(e) => setData("gender", e.target.value)}
-                                    className="w-full border rounded p-2"
-                                >
-                                    <SelectTrigger className="w-[180px]">
-                                        <SelectValue placeholder="Select a Gender" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectGroup>
-                                            <SelectLabel>Select Gender</SelectLabel>
-                                            <SelectItem value="male">Male</SelectItem>
-                                            <SelectItem value="female">Female</SelectItem>
-                                            <SelectItem value="other">Other</SelectItem>
-                                        </SelectGroup>
-                                    </SelectContent>
-                                </Select>
+                            <Label htmlFor="gender">Gender</Label>
+                            <Select value={data.gender} onValueChange={(value) => setData("gender", value)}>
+                                <SelectTrigger className="w-full border rounded p-2">
+                                    <SelectValue placeholder="Select a Gender" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectGroup>
+                                        <SelectLabel>Select Gender</SelectLabel>
+                                        <SelectItem value="male">Male</SelectItem>
+                                        <SelectItem value="female">Female</SelectItem>
+                                        <SelectItem value="other">Other</SelectItem>
+                                    </SelectGroup>
+                                </SelectContent>
+                            </Select>
                                 {errors.gender && <p className="text-red-600">{errors.gender}</p>}
                             </div>
                             <div>
@@ -410,6 +418,15 @@ export default function PatientDataEntry({ patient }) {
                                     id="blood_type"
                                     value={data.blood_type}
                                     onChange={(e) => setData("blood_type", e.target.value)}
+                                    readOnly={isReadOnly}
+                                />
+                            </div>
+                            <div>
+                                <Label htmlFor="age">Age</Label>
+                                <Input
+                                    id="age"
+                                    value={data.age}
+                                    onChange={(e) => setData("age", e.target.value)}
                                     readOnly={isReadOnly}
                                 />
                             </div>

@@ -15,6 +15,9 @@ import {
 } from "@/Components/ui/breadcrumb";
 import { ChevronRight } from "lucide-react";
 import PageContainer from "./PageContainer";
+import { ModeToggle } from "@/Components/mode-toggle";
+// import { NotificationButton } from "@/Components/NotificationButton";
+import { ProfileButton } from "@/Components/ProfileButton";
 
 export default function Layout({
   header,
@@ -44,6 +47,11 @@ export default function Layout({
                   </BreadcrumbItem>
                 </BreadcrumbList>
               </Breadcrumb>
+            </div>
+            <div className="flex items-center space-x-4">
+              <ModeToggle/>
+              {/* <NotificationButton /> */}
+              <ProfileButton />
             </div>
           </header>
 

@@ -18,6 +18,7 @@ class ScreeningOfflineController extends Controller
         $userId = Auth::id();
 
         $user = Auth::user();
+        
         $patient = Patients::where('user_id', $user->id)->first();
 
         if (!$patient) {
