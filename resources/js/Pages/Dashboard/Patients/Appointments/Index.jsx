@@ -18,7 +18,6 @@ export default function Appointments({ appointments: initialAppointments }) {
   const { put, processing } = useForm();
 
   const createAppointment = (newAppointment) => {
-    // Implement your create appointment logic here
     setAppointments([
       ...appointments,
       { ...newAppointment, id: appointments.length + 1 }

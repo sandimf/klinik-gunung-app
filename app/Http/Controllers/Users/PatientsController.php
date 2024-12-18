@@ -49,6 +49,14 @@ class PatientsController extends Controller
 
     public function profile()
     {
+        $user = Auth::user();
+        $patient = Patients::where('user_id', $user->id)->first();
+
+        if (!$patient) {
+            // Redirect ke halaman untuk melengkapi data pasien
+            return redirect()->route('information.index')
+                ->with('warning', 'Please complete your patient profile before accessing appointments.');
+        }
         return Inertia::render('Profile/Patients');
     }
 

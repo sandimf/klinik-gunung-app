@@ -10,7 +10,7 @@ import {
   Users,
   ChevronRight,
   Pill,
-  CalendarHeart,
+  NotebookPen,
 } from "lucide-react"
 import { NavUser } from "@/Components/Nav/NavUser"
 import { TeamSwitcher } from "@/Components/Nav/TeamSwitcher"
@@ -58,23 +58,15 @@ export function AppSidebar({ ...sidebarProps }) {
       {
         title: "Questionnaire",
         url: route("questioner.create"),
-        icon: CalendarHeart,
+        icon: NotebookPen,
         items: [
         {
             title: "Questionnaire Offline",
             url: route('questioner.index'),
         },
         {
-            title: "Buat Questionnaire Offline",
-            url: route('questioner.create'),
-        },
-        {
             title: "Questionnaire Online",
             url: route('questioner-online.index'),
-        },
-        {
-            title: "Buat Questionnaire Online",
-            url: route('questioner-online.create'),
         },
         ]
       },
@@ -86,10 +78,6 @@ export function AppSidebar({ ...sidebarProps }) {
             {
                 title: "Daftar Tenaga Medis",
                 url: route('users.index'),
-            },
-            {
-                title: "Tambah Tenaga Medis",
-                url: route('users.create'),
             },
         ]
       },
@@ -130,7 +118,15 @@ export function AppSidebar({ ...sidebarProps }) {
         icon: Settings2,
         items: [
             {
-              title: "Manajement Staff",
+              title: "Aplication Name",
+              url: route('manajement-staff.index'),
+            },
+            {
+              title: "PDF",
+              url: route('manajement-staff.index'),
+            },
+            {
+              title: "Theme",
               url: route('manajement-staff.index'),
             },
         ],

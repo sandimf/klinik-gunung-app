@@ -96,7 +96,7 @@ class MedicalPersonnelController extends Controller
     // Form untuk menampilkan penambahan tenaga medis
     public function create()
     {
-        return Inertia::render('Dashboard/Admin/MedicalPersonnel/AddPersonnel/Create');
+        return Inertia::render('Dashboard/Admin/MedicalPersonnel/New');
     }
 
     // Memebuat tenaga medis baru

@@ -3,24 +3,16 @@ import AdminSidebar from "@/Layouts/Dashboard/AdminSidebarLayout";
 import { Head, Link } from "@inertiajs/react";
 import { Button } from "@/Components/ui/button";
 import { PlusIcon } from "lucide-react";
+import MedicalHeader from './_components/table-header';
+
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/Components/ui/table";
 export default function Index({ users }) {
     return (
         <AdminSidebar header={'Daftar Tenaga Medis'}>
             <Head title="Daftar Tenaga Medis" />
-            <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-2xl font-bold">
-                        Daftar Tenaga Medis
-                    </CardTitle>
-                    <Link href={route("users.create")}>
-                        <Button>
-                            <PlusIcon className="mr-2 h-4 w-4" />
-                            Tambah Tenaga Medis
-                        </Button>
-                    </Link>
-                </CardHeader>
-                <CardContent>
+            <MedicalHeader
+                routeName={route('users.create')}
+            />
                     <Table>
                         <TableCaption>
                         </TableCaption>
@@ -47,9 +39,6 @@ export default function Index({ users }) {
                         ))}
                         </TableBody>
                     </Table>
-                </CardContent>
-            </Card>
-
         </AdminSidebar>
     );
 }

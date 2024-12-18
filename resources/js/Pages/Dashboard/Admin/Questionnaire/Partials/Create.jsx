@@ -10,7 +10,6 @@ import { AlertCircle, Plus, Trash2 } from "lucide-react"
 import { Alert, AlertDescription } from "@/Components/ui/alert"
 import AdminSidebar from "@/Layouts/Dashboard/AdminSidebarLayout";
 
-
 export default function CreateQuestionnaire() {
   const { data, setData, post, errors } = useForm({
     question_text: "",

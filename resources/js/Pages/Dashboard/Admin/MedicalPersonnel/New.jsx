@@ -1,3 +1,5 @@
+"use client"
+
 import React from "react";
 import { useForm } from "@inertiajs/react";
 import { Button } from "@/Components/ui/button";
@@ -20,9 +22,20 @@ import {
 } from "@/Components/ui/select";
 import { Toaster, toast } from "sonner";
 import AdminSidebar from "@/Layouts/Dashboard/AdminSidebarLayout";
-import { AlertCircle, CheckCircle2 } from "lucide-react";
+import { CheckCircle2, X, CalendarIcon } from "lucide-react";
+import { Calendar } from "@/Components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/Components/ui/popover";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/Components/ui/form"
 
-export default function Component({ auth }) {
+export default function CreatePersonal({ auth }) {
   const initialData = {
     name: "",
     email: "",
@@ -31,11 +44,25 @@ export default function Component({ auth }) {
     phone: "",
     address: "",
     nik: "",
-    date_of_birth: "",
+    date_of_birth: "", // tanggal lahir disimpan dalam bentuk string 'YYYY-MM-DD'
   };
 
+  // State untuk menyimpan tanggal yang dipilih
+  const [selectedDate, setSelectedDate] = React.useState(new Date());
+
+  // Mengatur tanggal ketika dipilih
+  const handleDateSelect = (date) => {
+    setSelectedDate(date);
+    if (date) {
+      // Simpan tanggal yang dipilih dalam format 'YYYY-MM-DD'
+      setData("date_of_birth", date.toISOString().split("T")[0]); // YYYY-MM-DD
+    }
+  };
+
+  // Form dari @inertiajs/react
   const { data, setData, post, processing, errors } = useForm(initialData);
 
+  // Submit handler untuk form
   const handleSubmit = (e) => {
     e.preventDefault();
     post(route("users.store"), {
@@ -66,6 +93,7 @@ export default function Component({ auth }) {
           </CardDescription>
         </CardHeader>
         <CardContent>
+
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-4">
               {/* Nama Lengkap */}
@@ -126,15 +154,33 @@ export default function Component({ auth }) {
 
               {/* Tanggal Lahir */}
               <div className="space-y-2">
-                <Label htmlFor="date_of_birth">Tanggal Lahir</Label>
-                <Input
-                  id="date_of_birth"
-                  type="date"
-                  name="date_of_birth"
-                  value={data.date_of_birth}
-                  onChange={(e) => setData("date_of_birth", e.target.value)}
-                  required
-                />
+                <Label htmlFor="date_of_birth" className="block text-sm font-medium ">
+                  Tanggal Lahir
+                </Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="w-[240px] pl-3 text-left font-normal"
+                    >
+                      {data.date_of_birth ? (
+                        data.date_of_birth // Menampilkan tanggal yang dipilih dalam format YYYY-MM-DD
+                      ) : (
+                        <span>Pick a date</span>
+                      )}
+                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={selectedDate}
+                      onSelect={handleDateSelect}
+                      disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
                 {errors.date_of_birth && (
                   <p className="text-sm text-red-500" role="alert">
                     {errors.date_of_birth}
@@ -199,13 +245,13 @@ export default function Component({ auth }) {
 
               {/* Role */}
               <div className="space-y-2">
-                <Label htmlFor="role">Role</Label>
+                <Label htmlFor="role">Peran</Label>
                 <Select
                   value={data.role}
                   onValueChange={(value) => setData("role", value)}
                 >
                   <SelectTrigger id="role">
-                    <SelectValue placeholder="Pilih Role" />
+                    <SelectValue placeholder="Pilih Peran" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="admin">Admin</SelectItem>

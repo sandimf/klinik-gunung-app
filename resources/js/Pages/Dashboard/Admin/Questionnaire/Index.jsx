@@ -1,18 +1,16 @@
 import React, { useState } from 'react';
 import AdminSidebar from "@/Layouts/Dashboard/AdminSidebarLayout";
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
+import QuestionerHeader from './_components/table-header';
 import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+    Table,
+    TableBody,
+    TableCaption,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
 } from "@/Components/ui/table";
-import { Button } from "@/Components/ui/button";
-import { PencilIcon, TrashIcon } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
 import EditQuestionModal from './Partials/Edit';
 
 export default function Index({ questions }) {
@@ -33,44 +31,39 @@ export default function Index({ questions }) {
     };
 
     return (
-        <AdminSidebar header={'Daftar Kuesioner'}>
-            <Head title="Daftar Kuesioner" />
-            <div className="container mx-auto py-10">
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="text-3xl font-bold">Daftar Pertanyaan Kuesioner</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <Table>
-                            <TableCaption>Daftar pertanyaan kuesioner</TableCaption>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>No</TableHead>
-                                    <TableHead>Teks Pertanyaan</TableHead>
-                                    <TableHead>Tipe Jawaban</TableHead>
-                                    <TableHead>Opsi</TableHead>
-                                    <TableHead>Aksi</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {questionList.map((question, index) => (
-                                    <TableRow key={question.id}>
-                                        <TableCell>{index + 1}</TableCell>
-                                        <TableCell>{question.question_text}</TableCell>
-                                        <TableCell>{question.answer_type}</TableCell>
-                                        <TableCell>{question.options ? question.options.join(', ') : '-'}</TableCell>
-                                        <TableCell>
-                                            <div className="flex space-x-2">
-                                            <EditQuestionModal question={question}/>
-                                            </div>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </CardContent>
-                </Card>
-            </div>
+        <AdminSidebar header={'Questioner List'}>
+            <Head title="Questioner List" />
+            
+            <QuestionerHeader
+                title="Questioner List"
+                buttonText="Create Question"
+                routeName={route('questioner.create')}
+            />
+            <Table>
+                <TableCaption>Questioner List</TableCaption>
+                <TableHeader>
+                    <TableRow>
+                        <TableHead>No</TableHead>
+                        <TableHead>Teks Pertanyaan</TableHead>
+                        <TableHead>Tipe Jawaban</TableHead>
+                        <TableHead>Opsi</TableHead>
+                        <TableHead>Aksi</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {questionList.map((question, index) => (
+                        <TableRow key={question.id}>
+                            <TableCell>{index + 1}</TableCell>
+                            <TableCell>{question.question_text}</TableCell>
+                            <TableCell>{question.answer_type}</TableCell>
+                            <TableCell>{question.options ? question.options.join(', ') : '-'}</TableCell>
+                            <TableCell>
+                                <EditQuestionModal question={question} />
+                            </TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
         </AdminSidebar>
     );
 }
