@@ -13,7 +13,10 @@ return new class extends Migration
     {
         Schema::create('medical_records', function (Blueprint $table) {
             $table->id(); // Primary key
-            $table->foreignId('appointment_id')->constrained('appointments')->onDelete('cascade'); // Relasi ke tabel appointments
+            $table->foreignId('appointment_id')->constrained('appointments')->onDelete('cascade');
+            $table->foreignId('physical_examintaion_id')->constrained('physical_examinations')->onDelete('cascade');
+            $table->foreignId('patients_id')->constrained('patients')->onDelete('cascade');
+            $table->string('record_number')->unique(); 
             $table->text('special_notes')->nullable(); // Catatan khusus untuk rekam medis
             $table->string('prescription')->nullable(); // Data resep (misalnya nama obat-obatan)
             $table->string('follow_up_schedule')->nullable(); // Tanggal dan waktu janji tindak lanjut dalam format string

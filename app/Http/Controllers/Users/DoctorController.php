@@ -77,4 +77,8 @@ class DoctorController extends Controller
     public function emr(){
         return Inertia::render('Dashboard/Doctor/MedicalRecord/Index');
     }
+
+    public function screening(){
+        return Inertia::render('Dashboard/Doctor/Screenings/Offline');
+    }
 }

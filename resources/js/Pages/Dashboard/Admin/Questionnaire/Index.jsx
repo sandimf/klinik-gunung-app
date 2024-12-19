@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import AdminSidebar from "@/Layouts/Dashboard/AdminSidebarLayout";
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link,usePage } from '@inertiajs/react';
+import { Info } from 'lucide-react';
 import QuestionerHeader from './_components/table-header';
 import {
     Table,
@@ -12,6 +13,8 @@ import {
     TableRow,
 } from "@/Components/ui/table";
 import EditQuestionModal from './Partials/Edit';
+import {toast,Toaster} from "sonner"
+
 
 export default function Index({ questions }) {
     const [questionList, setQuestionList] = useState(questions.data || []);
@@ -30,10 +33,20 @@ export default function Index({ questions }) {
         setIsEditModalOpen(false);
     };
 
+
+    const { flash } = usePage().props;
+    useEffect(() => {
+        if (flash.message) {
+            toast(flash.message, {
+                icon: <Info className="h-5 w-5 text-green-500"/>
+            });
+        }
+    }, [flash.message]);
+
     return (
         <AdminSidebar header={'Questioner List'}>
             <Head title="Questioner List" />
-            
+            <Toaster position="top-center" />
             <QuestionerHeader
                 title="Questioner List"
                 buttonText="Create Question"
@@ -44,7 +57,7 @@ export default function Index({ questions }) {
                 <TableHeader>
                     <TableRow>
                         <TableHead>No</TableHead>
-                        <TableHead>Teks Pertanyaan</TableHead>
+                        <TableHead>Pertanyaan</TableHead>
                         <TableHead>Tipe Jawaban</TableHead>
                         <TableHead>Opsi</TableHead>
                         <TableHead>Aksi</TableHead>

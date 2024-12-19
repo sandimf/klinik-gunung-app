@@ -12,11 +12,9 @@ export default function Appointments({ appointments }) {
     <Sidebar header={'History Appointments'}>
       <Head title="History Appointments" />
       <Toaster position="top-center" />
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-2xl font-bold">History Appointments</CardTitle>
-        </CardHeader>
-        <CardContent>
+      <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold">Janji Mendatang</h2>
+            </div>
           <Table>
             <TableHeader>
               <TableRow>
@@ -24,8 +22,6 @@ export default function Appointments({ appointments }) {
                 <TableHead>Tanggal Janji Temu</TableHead>
                 <TableHead>Jam</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>Informasi Pasien</TableHead>
-                <TableHead>Medical Record</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -35,14 +31,10 @@ export default function Appointments({ appointments }) {
                   <TableCell>{appointment.appointment_date}</TableCell>
                   <TableCell>{appointment.appointment_time}</TableCell>
                   <TableCell>{appointment.status}</TableCell>
-                  <TableCell>{appointment.status}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
-        </CardContent>
-      </Card>
-      
     </Sidebar>
   );
 }

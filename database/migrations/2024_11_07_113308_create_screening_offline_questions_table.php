@@ -15,7 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string('question_text');
             $table->enum('answer_type', ['text', 'number', 'date', 'textarea', 'select', 'checkbox', 'checkbox_textarea']);
-            $table->json('options')->nullable(); // Jika ada pilihan (select atau checkbox)
+            $table->string('condition_value')->nullable(); // Nilai jawaban yang memicu kondisi
+            $table->boolean('requires_doctor')->default(false); // Apakah jawaban ini memerlukan dokter
+            $table->json('options')->nullable();
             $table->timestamps();
         });
     }

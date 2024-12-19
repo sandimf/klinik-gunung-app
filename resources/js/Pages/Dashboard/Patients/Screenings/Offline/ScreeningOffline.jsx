@@ -196,7 +196,7 @@ export default function Index({ questions, errors,patient }) {
                             {/* Checkbox Input */}
                             {question.answer_type === 'checkbox' && (
                                 <div>
-
+                                    
                                     {Array.isArray(question.options) && question.options.map((option, index) => (
                                         <div key={index}>
                                             <Checkbox
@@ -206,6 +206,8 @@ export default function Index({ questions, errors,patient }) {
                                                         ? [...(answers[question.id] || []), option]
                                                         : (answers[question.id] || []).filter((answer) => answer !== option);
                                                     handleAnswerChange(question.id, updatedAnswers);
+                                                     // Debugging
+
                                                 }}
                                             />
                                             {option}
