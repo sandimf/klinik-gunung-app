@@ -22,9 +22,8 @@ class ScreeningOfflineController extends Controller
         $patient = Patients::where('user_id', $user->id)->first();
 
         if (!$patient) {
-            // Redirect ke halaman untuk melengkapi data pasien
             return redirect()->route('information.index')
-                ->with('warning', 'Please complete your patient profile before accessing appointments.');
+                ->with('message', 'Masukan data diri kamu terlebih dahulu sebelum melakukan screening.');
         }
         
         // Fetch the patient and their related questionnaire answers

@@ -21,7 +21,7 @@ class AppointmentController extends Controller
         if (!$patient) {
             // Redirect ke halaman untuk melengkapi data pasien
             return redirect()->route('information.index')
-                ->with('warning', 'Please complete your patient profile before accessing appointments.');
+                ->with('message', 'Please complete your patient profile before accessing appointments.');
         }
 
         // Ambil semua janji temu dengan data pasien (eager loading)

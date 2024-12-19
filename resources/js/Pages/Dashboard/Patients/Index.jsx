@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/Components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
 import { CalendarDays, Activity, Pill, Phone } from "lucide-react";
 
-export default function Dashboard({ auth, screening, visitCount }) {
+export default function Dashboard({ screening, visitCount }) {
     const user = usePage().props.auth.user;
     return (
         <Sidebar header={'Patient Dashboard'}>

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react"
+import React, { useState, useRef,useEffect } from "react"
 import { Head, useForm,usePage } from "@inertiajs/react"
 import { GoogleGenerativeAI } from "@google/generative-ai"
 import { Input } from "@/Components/ui/input"
@@ -6,7 +6,7 @@ import { Label } from "@/Components/ui/label"
 import { Button } from "@/Components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card"
 import { Alert, AlertDescription, AlertTitle } from "@/Components/ui/alert"
-import { Terminal, Upload,CheckCircle2 } from 'lucide-react'
+import { Terminal, Upload,CheckCircle2,Info } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/Components/ui/tabs"
 import {toast,Toaster} from "sonner"
 import {
@@ -164,8 +164,18 @@ export default function PatientDataEntry({ patient }) {
         }
     }
 
+    const { flash } = usePage().props;
+    useEffect(() => {
+        if (flash.message) {
+            toast(flash.message, {
+                icon: <Info className="h-5 w-5 text-green-500"/>
+            });
+        }
+    }, [flash.message]);
+
     return (
         <Sidebar header={'Patient Information'}>
+
             <Toaster position="top-center" />
             <Card >
                 <Head title="Patient Information" />

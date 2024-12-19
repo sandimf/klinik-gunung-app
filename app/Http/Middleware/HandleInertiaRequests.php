@@ -37,6 +37,10 @@ class HandleInertiaRequests extends Middleware
                 ? $request->user()->community->toArray() 
                 : null,
             ],
+
+            'flash' => [
+                'message' => fn () => $request->session()->get('message'),
+            ],
         ];
     }
 }

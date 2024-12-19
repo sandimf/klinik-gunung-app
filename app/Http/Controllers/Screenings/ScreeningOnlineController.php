@@ -17,6 +17,17 @@ class ScreeningOnlineController extends Controller
     {
         $userId = Auth::id();
 
+        $user = Auth::user();
+
+        // Periksa apakah data pasien ada di tabel `patients`
+        $patient = PatientsOnline::where('user_id', $user->id)->first();
+
+        if (!$patient) {
+            // Redirect ke halaman untuk melengkapi data pasien
+            return redirect()->route('information.index')
+                ->with('message', 'Please complete your patient profile before accessing screening online.');
+        }
+
         // Fetch the patient and their related questionnaire answers
         $screening = PatientsOnline::with('answers', 'payment','result') // Eager load answers
             ->where('user_id', $userId)
