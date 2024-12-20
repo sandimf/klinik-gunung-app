@@ -1,8 +1,8 @@
 import { Head, usePage } from "@inertiajs/react";
 import { Alert, AlertDescription, AlertTitle } from "@/Components/ui/alert";
 import SideBar from "@/Layouts/Dashboard/PatientsSidebarLayout";
-import ScreeningInfo from "@/Pages/Dashboard/Patients/Screenings/Partials/ScreeningInfo";
-import NoScreeningData from "@/Pages/Dashboard/Patients/Screenings/Partials/NoScreeningData";
+import ScreeningInfo from "@/Pages/Dashboard/Patients/Screenings/_components/ScreeningInfo";
+import NoScreeningData from "@/Pages/Dashboard/Patients/Screenings/_components/NoScreeningData";
 import { CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
 import { CardContent } from "@/Components/ui/card";
 

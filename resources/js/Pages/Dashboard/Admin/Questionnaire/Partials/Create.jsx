@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useForm, usePage } from "@inertiajs/react";
+import { Head, useForm, usePage } from "@inertiajs/react";
 import { Button } from "@/Components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
 import { Input } from "@/Components/ui/input";
@@ -51,7 +51,6 @@ export default function CreateQuestionnaire() {
                 toast.success("Pertanyaan berhasil ditambahkan!");
             },
             onError: (errors) => {
-                // Menampilkan semua error dalam toast
                 Object.values(errors).forEach((error) => {
                     toast.error(error);
                 });
@@ -62,6 +61,7 @@ export default function CreateQuestionnaire() {
     return (
         // Admin Sidebar
         <AdminSidebar header={"Buat Kuisioner"}>
+            <Head title="Create Questionner" />
             <Toaster position="top-center" />
             <Card>
                 <CardHeader>

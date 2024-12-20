@@ -40,8 +40,6 @@ const ScreeningOfflineIndex = ({ screenings = [], medicines }) => {
         setPaymentScreening(null);
     };
 
-
-
     return (
         <CashierSidebar header={'Daftar Screening Offline'}>
             <Head title="Screening Offline" />

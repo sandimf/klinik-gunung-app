@@ -15,7 +15,6 @@ import {
 import EditQuestionModal from './Partials/Edit';
 import {toast,Toaster} from "sonner"
 
-
 export default function Index({ questions }) {
     const [questionList, setQuestionList] = useState(questions.data || []);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);

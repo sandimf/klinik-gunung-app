@@ -6,6 +6,7 @@ namespace App\Models;
 use App\Models\Users\Cashier;
 use App\Models\Users\Patients;
 use App\Models\Community\Community;
+use App\Models\Users\PatientsOnline;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -55,6 +56,11 @@ class User extends Authenticatable
     public function patient()
     {
         return $this->hasOne(Patients::class, 'user_id');
+    }
+
+    public function patient_online()
+    {
+        return $this->hasOne(PatientsOnline::class, 'user_id');
     }
 
     public function community()

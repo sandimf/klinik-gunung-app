@@ -25,15 +25,6 @@ import AdminSidebar from "@/Layouts/Dashboard/AdminSidebarLayout";
 import { CheckCircle2, X, CalendarIcon } from "lucide-react";
 import { Calendar } from "@/Components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/Components/ui/popover";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/Components/ui/form"
 
 export default function CreatePersonal({ auth }) {
   const initialData = {
@@ -73,10 +64,9 @@ export default function CreatePersonal({ auth }) {
         setData(initialData);
       },
       onError: (errors) => {
-        toast.error("Gagal menambahkan user. Silakan periksa kesalahan dan coba lagi.", {
+        toast.error(errors, {
           icon: <X className="h-5 w-5 text-red-500" />,
         });
-        console.error(errors);
       },
     });
   };

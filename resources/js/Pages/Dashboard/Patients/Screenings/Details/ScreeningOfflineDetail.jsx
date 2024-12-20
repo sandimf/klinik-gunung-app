@@ -1,10 +1,11 @@
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/Components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/Components/ui/tabs"
 import SideBar from "@/Layouts/Dashboard/PatientsSidebarLayout"
 import { Head } from "@inertiajs/react"
 import { User, Calendar, Phone, Clipboard, Activity, HelpCircle } from "lucide-react"
+import MedicalHeader from '../_components/header';
 
-export default function ScreeningDetails({ screening, question }) {
+export default function ScreeningDetails({ screening }) {
   const screeningDetails = [
     { label: "Nama", value: screening.name, icon: <User className="h-4 w-4" /> },
     { label: "Umur", value: screening.age, icon: <User className="h-4 w-4" /> },
@@ -17,17 +18,12 @@ export default function ScreeningDetails({ screening, question }) {
   return (
     <SideBar header={`Detail Screening ${screening.name}`}>
       <Head title={`${screening.name}`} />
-
-        <Card className="w-full">
-          <CardHeader>
-            <CardTitle className="text-2xl">Detail Screening {screening.name}</CardTitle>
-            <CardDescription>Informasi lengkap hasil screening pendakian</CardDescription>
-          </CardHeader>
-          <CardContent>
+      <MedicalHeader title="Screening Detail"/>
             <Tabs defaultValue="personal-info" className="w-full">
-              <TabsList className="grid w-full grid-cols-2">
+              <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="personal-info">Informasi Pribadi</TabsTrigger>
                 <TabsTrigger value="questionnaire">Kuesioner</TabsTrigger>
+                <TabsTrigger value="result">Result</TabsTrigger>
               </TabsList>
               <TabsContent value="personal-info" className="mt-4">
                 <Card>
@@ -80,9 +76,36 @@ export default function ScreeningDetails({ screening, question }) {
                   </CardContent>
                 </Card>
               </TabsContent>
+              <TabsContent value="result" className="mt-4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Hasil Pemeriksaan</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-6">
+                    {screening.answers.length > 0 ? (
+                    <ul>
+                        {screening.answers.map((answer) => (
+                            <li key={answer.id} className="screening-answer">
+                                <p>
+                                    <strong>{answer.question.question_text}</strong>
+                                </p>
+                                <p>
+                                    {typeof answer.answer_text === 'object'
+                                        ? JSON.stringify(answer.answer_text)
+                                        : answer.answer_text}
+                                </p>
+                            </li>
+                        ))}
+                    </ul>
+                ) : (
+                    <p>No answers available.</p>
+                )}
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
             </Tabs>
-          </CardContent>
-        </Card>
 
     </SideBar>
   )

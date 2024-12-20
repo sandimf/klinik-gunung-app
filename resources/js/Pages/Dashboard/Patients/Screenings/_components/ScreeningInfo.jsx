@@ -1,27 +1,39 @@
 import { Button } from "@/Components/ui/button";
 import { Card, CardContent } from "@/Components/ui/card";
 import { Badge } from "@/Components/ui/badge";
-import { Users, Mail, Calendar, FileDown, ArrowRight, CheckCircle, Clock, AlertCircle } from "lucide-react";
-import { Link } from '@inertiajs/react';
+import {
+    Users,
+    Mail,
+    Calendar,
+    FileDown,
+    ArrowRight,
+    CheckCircle,
+    Clock,
+    AlertCircle,
+} from "lucide-react";
+import { Link } from "@inertiajs/react";
 
-import StatusMessage from './StatusMessage';
+import StatusMessage from "./StatusMessage";
 
 const StatusIcon = ({ status }) => {
     switch (status) {
-        case 'completed':
+        case "completed":
             return <CheckCircle className="h-8 w-8 text-green-500" />;
-        case 'pending':
+        case "pending":
             return <Clock className="h-8 w-8 text-yellow-500" />;
-        case 'cancelled':
+        case "cancelled":
             return <AlertCircle className="h-8 w-8 text-red-500" />;
         default:
             return null;
     }
 };
 
-const ScreeningInfo = ({ screening, detailRouteName,RouteName }) => {
+const ScreeningInfo = ({ screening, detailRouteName, RouteName }) => {
     const handleDownload = () => {
-        window.location.href = route('generate.screening.pdf', `${screening.id}`);
+        window.location.href = route(
+            "generate.screening.pdf",
+            `${screening.id}`
+        );
     };
 
     return (
@@ -30,14 +42,22 @@ const ScreeningInfo = ({ screening, detailRouteName,RouteName }) => {
                 <div className="flex items-center gap-4 mb-4 md:mb-0">
                     <StatusIcon status={screening.screening_status} />
                     <div>
-                        <h2 className="text-2xl font-bold mb-1">{screening.name}</h2>
-                        <StatusMessage status={screening.screening_status} isOnline={screening.answers[0]?.isOnline} />
+                        <h2 className="text-2xl font-bold mb-1">
+                            Screening {screening.name}
+                        </h2>
+                        <StatusMessage
+                            status={screening.screening_status}
+                            isOnline={screening.answers[0]?.isOnline}
+                        />
                     </div>
                 </div>
                 <Badge
                     variant={
-                        screening.status === 'completed' ? 'default' :
-                        screening.status === 'pending' ? 'secondary' : 'destructive'
+                        screening.status === "completed"
+                            ? "default"
+                            : screening.status === "pending"
+                            ? "secondary"
+                            : "destructive"
                     }
                     className="text-sm px-4 py-1"
                 >
@@ -51,8 +71,12 @@ const ScreeningInfo = ({ screening, detailRouteName,RouteName }) => {
                         <div className="flex items-center gap-3">
                             <Users className="h-5 w-5 text-muted-foreground" />
                             <div>
-                                <p className="text-sm text-muted-foreground">Name</p>
-                                <p className="font-semibold">{screening.name}</p>
+                                <p className="text-sm text-muted-foreground">
+                                    Name
+                                </p>
+                                <p className="font-semibold">
+                                    {screening.name}
+                                </p>
                             </div>
                         </div>
                     </CardContent>
@@ -62,9 +86,13 @@ const ScreeningInfo = ({ screening, detailRouteName,RouteName }) => {
                         <div className="flex items-center gap-3">
                             <Users className="h-5 w-5 text-muted-foreground" />
                             <div>
-                                <p className="text-sm text-muted-foreground">Antrian</p>
+                                <p className="text-sm text-muted-foreground">
+                                    Antrian
+                                </p>
 
-                                <p className="font-semibold">{screening.answers[0]?.queue}</p>
+                                <p className="font-semibold">
+                                    {screening.answers[0]?.queue}
+                                </p>
                             </div>
                         </div>
                     </CardContent>
@@ -74,8 +102,12 @@ const ScreeningInfo = ({ screening, detailRouteName,RouteName }) => {
                         <div className="flex items-center gap-3">
                             <Mail className="h-5 w-5 text-muted-foreground" />
                             <div>
-                                <p className="text-sm text-muted-foreground">Email</p>
-                                <p className="font-semibold">{screening.email}</p>
+                                <p className="text-sm text-muted-foreground">
+                                    Email
+                                </p>
+                                <p className="font-semibold">
+                                    {screening.email}
+                                </p>
                             </div>
                         </div>
                     </CardContent>
@@ -85,8 +117,14 @@ const ScreeningInfo = ({ screening, detailRouteName,RouteName }) => {
                         <div className="flex items-center gap-3">
                             <Calendar className="h-5 w-5 text-muted-foreground" />
                             <div>
-                                <p className="text-sm text-muted-foreground">Screening Date</p>
-                                <p className="font-semibold">{new Date(screening.created_at).toLocaleDateString('id-ID')}</p>
+                                <p className="text-sm text-muted-foreground">
+                                    Screening Date
+                                </p>
+                                <p className="font-semibold">
+                                    {new Date(
+                                        screening.created_at
+                                    ).toLocaleDateString("id-ID")}
+                                </p>
                             </div>
                         </div>
                     </CardContent>
@@ -94,19 +132,18 @@ const ScreeningInfo = ({ screening, detailRouteName,RouteName }) => {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-end">
-                
-            <Button
-                variant="outline"
-                onClick={handleDownload}
-                className="flex items-center"
-                disabled={
-                    screening.screening_status === 'pending' || 
-                    screening.payment_status === 'pending' // Tambahkan kondisi payment_status
-                }>
-                <FileDown className="h-4 w-4 mr-2" />
-                Download PDF
-            </Button>
-
+                <Button
+                    variant="outline"
+                    onClick={handleDownload}
+                    className="flex items-center"
+                    disabled={
+                        screening.screening_status === "Pending" ||
+                        screening.payment_status === "Pending"
+                    }
+                >
+                    <FileDown className="h-4 w-4 mr-2" />
+                    Download PDF
+                </Button>
 
                 <Button asChild>
                     <Link href={detailRouteName}>

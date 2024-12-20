@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { router,usePage,Head } from "@inertiajs/react";
+import { router, usePage, Head } from "@inertiajs/react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
 import { Input } from "@/Components/ui/input";
 import { Label } from "@/Components/ui/label";
@@ -8,6 +8,8 @@ import { Checkbox } from "@/Components/ui/checkbox";
 import { Textarea } from "@/Components/ui/textarea";
 import { Button } from "@/Components/ui/button";
 import PatientSidebar from "@/Layouts/Dashboard/PatientsSidebarLayout";
+import {toast, Toaster} from "sonner"
+
 
 export default function Index({ questions, errors,patient }) {
     const user = usePage().props.auth.user;
@@ -18,8 +20,9 @@ export default function Index({ questions, errors,patient }) {
         age: patient?.age || '',
         email: patient?.email || user.email,
         contact: patient?.contact || '',
-        gender: patient?.gender || 'male',
+        gender: patient?.gender || '',
     });
+    const [formErrors, setFormErrors] = useState({});
 
     const isReadOnly = Boolean(patient);
 
@@ -28,6 +31,10 @@ export default function Index({ questions, errors,patient }) {
         setAnswers((prevAnswers) => ({
             ...prevAnswers,
             [questionId]: answer,
+        }));
+        setFormErrors((prevErrors) => ({ // Clear error for the question when answered
+            ...prevErrors,
+            [questionId]: undefined,
         }));
     };
 
@@ -39,161 +46,204 @@ export default function Index({ questions, errors,patient }) {
         }));
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
+   
+const handleSubmit = (e) => {
+    e.preventDefault();
 
-        // Preparing formatted answers
-        const formattedAnswers = Object.keys(answers).map((questionId) => ({
-            questioner_id: questionId,
-            answer: answers[questionId],
-        }));
+    // Check for unanswered questions
+    const unansweredQuestions = questions.filter(question => !answers[question.id]);
+    if (unansweredQuestions.length > 0) {
+        const newErrors = {};
+        unansweredQuestions.forEach(question => {
+            newErrors[question.id] = 'This question is required';
+        });
+        setFormErrors(newErrors);
+        toast.error('Please answer all questions before submitting.');
+        return;
+    }
 
-        // Submit the answers and patient data to the backend
-        router.post(route('screening-online.store'), {
+    // Preparing formatted answers
+    const formattedAnswers = Object.keys(answers).map((questionId) => ({
+        questioner_id: questionId,
+        answer: answers[questionId],
+    }));
+
+    // Submit the answers and patient data to the backend
+    router.post(
+        route('screening-online.store'),
+        {
             ...patientData,
             answers: formattedAnswers,
-        });
-    };
+        },
+        {
+            onSuccess: () => {
+                toast.success('Screening berhasil disimpan!');
+            },
+            onError: (errors) => {
+                if (typeof errors === 'string') {
+                    toast.error(errors);
+                } else if (typeof errors === 'object') {
+                    const errorMessages = Object.values(errors).flat();
+                    errorMessages.forEach(error => toast.error(error));
+                } else {
+                    toast.error('An error occurred during submission.');
+                }
+            },
+        }
+    );
+};
 
-    return (
-        <PatientSidebar header={'Screening Now'}>
+
+return (
+    <PatientSidebar header={'Screening Now'}>
         <div className="space-y-8">
-            <Head title="screening"/>
-            <h1 className="text-2xl font-bold">Screening Online</h1>
-
-            <form onSubmit={handleSubmit}>
-                {/* Patient Information Inputs */}
-                <Card className="mb-4">
-                    <CardHeader>
-                        <CardTitle>Patient Information</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        {/* NIK */}
-                        <div>
-                            <Label htmlFor="nik">NIK</Label>
-                            <Input
-                                id="nik"
-                                name="nik"
-                                type="text"
-                                value={patientData.nik}
-                                onChange={handlePatientDataChange}
-                                placeholder="Enter NIK"
-                                readOnly={isReadOnly}
-                            />
-                            {errors.nik && <p className="text-sm text-red-500">{errors.nik}</p>}
-                        </div>
-
-                        {/* Name */}
-                        <div>
-                            <Label htmlFor="name">Name</Label>
-                            <Input
-                                id="name"
-                                name="name"
-                                type="text"
-                                value={patientData.name}
-                                onChange={handlePatientDataChange}
-                                placeholder="Enter name"
-                                readOnly={isReadOnly}
-                            />
-                            {errors.name && <p className="text-sm text-red-500">{errors.name}</p>}
-                        </div>
-
-                        {/* Age */}
-                        <div>
-                            <Label htmlFor="age">Age</Label>
-                            <Input
-                                id="age"
-                                name="age"
-                                type="number"
-                                value={patientData.age}
-                                onChange={handlePatientDataChange}
-                                placeholder="Enter age"
-                                readOnly={isReadOnly}
-                            />
-                            {errors.age && <p className="text-sm text-red-500">{errors.age}</p>}
-                        </div>
-
-                        {/* Contact */}
-                        <div>
-                            <Label htmlFor="contact">Contact</Label>
-                            <Input
-                                id="contact"
-                                name="contact"
-                                type="text"
-                                value={patientData.contact}
-                                onChange={handlePatientDataChange}
-                                placeholder="Enter contact number"
-                                readOnly={isReadOnly}
-                            />
-                            {errors.contact && <p className="text-sm text-red-500">{errors.contact}</p>}
-                        </div>
-
-                        {/* Email */}
-                        <div>
-                            <Label htmlFor="email">Email</Label>
-                            <Input
-                                id="email"
-                                name="email"
-                                type="text"
-                                value={patientData.email}
-                                onChange={handlePatientDataChange}
-                                placeholder={user.email}
-                                readOnly={isReadOnly}
-                            />
-                            {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
-                        </div>
-
-                        {/* Gender */}
-                        <div>
-                            <Label htmlFor="gender">Gender</Label>
-                            <Select
-                                id="gender"
-                                name="gender"
-                                value={patientData.gender}
-                                
-                                onValueChange={(value) => setPatientData((prevData) => ({ ...prevData, gender: value }))}
-                            >
-                                 
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select gender" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="male">Male</SelectItem>
-                                    <SelectItem value="female">Female</SelectItem>
-                                    <SelectItem value="other">Other</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            {errors.gender && <p className="text-sm text-red-500">{errors.gender}</p>}
-                        </div>
-                    </CardContent>
-                </Card>
-
-                {/* Questionnaire Section */}
-                {questions.map((question) => (
-                    <Card key={question.id} className="mb-4">
+            <Toaster position="top-center" />
+            <Head title="Screening" />
+            
+            {questions.length === 1 ? (
+            <h1 className="text-2xl font-bold">Kuisioner Kesehatan Dan Kesiapan Pendakian Gunung Semeru</h1>
+            ): (
+                <></>
+            )}
+            {questions.length === 0 ? (
+                <div className="text-center">
+                <h1 className="text-2xl font-bold">Ups</h1>
+                    <p className="text-lg font-semibold text-gray-500">
+                        Belum bisa melakukan screening. Tidak ada pertanyaan yang tersedia saat ini.
+                    </p>
+                </div>
+            ) : (
+                
+                <form onSubmit={handleSubmit}>
+                    {/* Patient Information Inputs */}
+                    <Card className="mb-4">
                         <CardHeader>
-                            <CardTitle>{question.question_text}</CardTitle>
+                            <CardTitle>Informasi Pendaki</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            {/* Text Input */}
-                            {question.answer_type === 'text' && (
-                                <div>
-                                    <Input
-                                        type="text"
-                                        value={answers[question.id] || ''}
-                                        onChange={(e) => handleAnswerChange(question.id, e.target.value)}
-                                        placeholder="Enter your answer"
-                                    />
-                                    {errors.answers && errors.answers[question.id] && (
-                                        <p className="text-sm text-red-500">{errors.answers[question.id]}</p>
-                                    )}
-                                </div>
-                            )}
+                            {/* NIK */}
+                            <div>
+                                <Label htmlFor="nik">NIK</Label>
+                                <Input
+                                    id="nik"
+                                    name="nik"
+                                    type="text"
+                                    value={patientData.nik}
+                                    onChange={handlePatientDataChange}
+                                    placeholder="Enter NIK"
+                                    readOnly={isReadOnly}
+                                />
+                                {formErrors.nik && <p className="text-sm text-red-500">{formErrors.nik}</p>}
+                            </div>
 
-                            {/* Checkbox Input */}
+                            {/* Name */}
+                            <div>
+                                <Label htmlFor="name">Name</Label>
+                                <Input
+                                    id="name"
+                                    name="name"
+                                    type="text"
+                                    value={patientData.name}
+                                    onChange={handlePatientDataChange}
+                                    placeholder="Enter name"
+                                    readOnly={isReadOnly}
+                                />
+                                {formErrors.name && <p className="text-sm text-red-500">{formErrors.name}</p>}
+                            </div>
+
+                            {/* Age */}
+                            <div>
+                                <Label htmlFor="age">Age</Label>
+                                <Input
+                                    id="age"
+                                    name="age"
+                                    type="number"
+                                    value={patientData.age}
+                                    onChange={handlePatientDataChange}
+                                    placeholder="Enter age"
+                                    readOnly={isReadOnly}
+                                />
+                                {formErrors.age && <p className="text-sm text-red-500">{formErrors.age}</p>}
+                            </div>
+
+                            {/* Contact */}
+                            <div>
+                                <Label htmlFor="contact">Contact</Label>
+                                <Input
+                                    id="contact"
+                                    name="contact"
+                                    type="text"
+                                    value={patientData.contact}
+                                    onChange={handlePatientDataChange}
+                                    placeholder="Enter contact number"
+                                    readOnly={isReadOnly}
+                                />
+                                {formErrors.contact && <p className="text-sm text-red-500">{formErrors.contact}</p>}
+                            </div>
+
+                            {/* Email */}
+                            <div>
+                                <Label htmlFor="email">Email</Label>
+                                <Input
+                                    id="email"
+                                    name="email"
+                                    type="text"
+                                    value={patientData.email}
+                                    onChange={handlePatientDataChange}
+                                    placeholder={user.email}
+                                    readOnly={isReadOnly}
+                                />
+                                {formErrors.email && <p className="text-sm text-red-500">{formErrors.email}</p>}
+                            </div>
+
+                            {/* Gender */}
+                            <div>
+                                <Label htmlFor="gender">Gender</Label>
+                                <Select
+                                    id="gender"
+                                    name="gender"
+                                    value={patientData.gender}
+                                    onValueChange={(value) =>
+                                        setPatientData((prevData) => ({ ...prevData, gender: value }))
+                                    }
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select gender" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="male">Male</SelectItem>
+                                        <SelectItem value="female">Female</SelectItem>
+                                        <SelectItem value="other">Other</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                {formErrors.gender && <p className="text-sm text-red-500">{formErrors.gender}</p>}
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {questions.map((question) => (
+                        <Card key={question.id} className="mb-4">
+                            <CardHeader>
+                                <CardTitle>{question.question_text}</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                {/* Render input berdasarkan tipe pertanyaan */}
+                                {question.answer_type === 'text' && (
+                                    <div>
+                                        <Label>Answer</Label>
+                                        <Input
+                                            type="text"
+                                            value={answers[question.id] || ''}
+                                            onChange={(e) => handleAnswerChange(question.id, e.target.value)}
+                                            placeholder="Enter your answer"
+                                        />
+                                        {formErrors[question.id] && <p className="text-sm text-red-500">{formErrors[question.id]}</p>}
+                                    </div>
+                                )}
+                                {/* Checkbox Input */}
                             {question.answer_type === 'checkbox' && (
                                 <div>
-
+                                    
                                     {Array.isArray(question.options) && question.options.map((option, index) => (
                                         <div key={index}>
                                             <Checkbox
@@ -203,14 +253,14 @@ export default function Index({ questions, errors,patient }) {
                                                         ? [...(answers[question.id] || []), option]
                                                         : (answers[question.id] || []).filter((answer) => answer !== option);
                                                     handleAnswerChange(question.id, updatedAnswers);
+                                                     // Debugging
+
                                                 }}
                                             />
                                             {option}
                                         </div>
                                     ))}
-                                    {errors.answers && errors.answers[question.id] && (
-                                        <p className="text-sm text-red-500">{errors.answers[question.id]}</p>
-                                    )}
+                                    {formErrors[question.id] && <p className="text-sm text-red-500">{formErrors[question.id]}</p>}
                                 </div>
                             )}
 
@@ -247,9 +297,7 @@ export default function Index({ questions, errors,patient }) {
                                         }}
                                         placeholder="Jelaskan"
                                     />
-                                    {errors.answers && errors.answers[question.id] && (
-                                        <p className="text-sm text-red-500">{errors.answers[question.id]}</p>
-                                    )}
+                                    {formErrors[question.id] && <p className="text-sm text-red-500">{formErrors[question.id]}</p>}
                                 </div>
                             )}
 
@@ -272,9 +320,7 @@ export default function Index({ questions, errors,patient }) {
                                             ))}
                                         </SelectContent>
                                     </Select>
-                                    {errors.answers && errors.answers[question.id] && (
-                                        <p className="text-sm text-red-500">{errors.answers[question.id]}</p>
-                                    )}
+                                    {formErrors[question.id] && <p className="text-sm text-red-500">{formErrors[question.id]}</p>}
                                 </div>
                             )}
 
@@ -287,9 +333,7 @@ export default function Index({ questions, errors,patient }) {
                                         onChange={(e) => handleAnswerChange(question.id, e.target.value)}
                                         placeholder="Enter your answer"
                                     />
-                                    {errors.answers && errors.answers[question.id] && (
-                                        <p className="text-sm text-red-500">{errors.answers[question.id]}</p>
-                                    )}
+                                    {formErrors[question.id] && <p className="text-sm text-red-500">{formErrors[question.id]}</p>}
                                 </div>
                             )}
                             {question.answer_type === 'number' && (
@@ -301,9 +345,7 @@ export default function Index({ questions, errors,patient }) {
                                         onChange={(e) => handleAnswerChange(question.id, e.target.value)}
                                         placeholder="Enter your answer"
                                     />
-                                    {errors.answers && errors.answers[question.id] && (
-                                        <p className="text-sm text-red-500">{errors.answers[question.id]}</p>
-                                    )}
+                                    {formErrors[question.id] && <p className="text-sm text-red-500">{formErrors[question.id]}</p>}
                                 </div>
                             )}
                             {question.answer_type === 'date' && (
@@ -315,18 +357,21 @@ export default function Index({ questions, errors,patient }) {
                                         onChange={(e) => handleAnswerChange(question.id, e.target.value)}
                                         placeholder="Enter your answer"
                                     />
-                                    {errors.answers && errors.answers[question.id] && (
-                                        <p className="text-sm text-red-500">{errors.answers[question.id]}</p>
-                                    )}
+                                    {formErrors[question.id] && <p className="text-sm text-red-500">{formErrors[question.id]}</p>}
                                 </div>
                             )}
-                        </CardContent>
-                    </Card>
-                ))}
 
-                <Button type="submit">Submit Answers</Button>
-            </form>
+                                {/* Tambahkan jenis input lainnya seperti yang sebelumnya */}
+                            </CardContent>
+                        </Card>
+                    ))}
+
+                    <Button type="submit">Submit Answers</Button>
+                </form>
+            )}
         </div>
-        </PatientSidebar>
-    );
+    </PatientSidebar>
+);
+
 }
+

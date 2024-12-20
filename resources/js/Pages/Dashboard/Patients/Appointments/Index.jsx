@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
 import { Button } from "@/Components/ui/button";
 import Sidebar from "@/Layouts/Dashboard/PatientsSidebarLayout";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/Components/ui/table";
@@ -8,6 +7,7 @@ import CancelAppointmentModal from './Partials/CancelAppointmentModal';
 import { Head, useForm } from '@inertiajs/react';
 import { Toaster, toast } from 'sonner';
 import { CheckCircle2, X } from 'lucide-react';
+import MedicalHeader from './_components/table-header';
 
 export default function Appointments({ appointments: initialAppointments }) {
   const [appointments, setAppointments] = useState(initialAppointments);
@@ -60,12 +60,7 @@ export default function Appointments({ appointments: initialAppointments }) {
     <Sidebar header={'Patient Dashboard'}>
       <Head title="Appointments" />
       <Toaster position="top-center" />
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-2xl font-bold">My Appointments</CardTitle>
-          <Button onClick={() => setIsCreateModalOpen(true)}>New Appointment</Button>
-        </CardHeader>
-        <CardContent>
+      <MedicalHeader setIsCreateModalOpen={setIsCreateModalOpen}  />
           <Table>
             <TableHeader>
               <TableRow>
@@ -100,8 +95,6 @@ export default function Appointments({ appointments: initialAppointments }) {
               ))}
             </TableBody>
           </Table>
-        </CardContent>
-      </Card>
       
       <CreateAppointmentModal 
         isOpen={isCreateModalOpen}

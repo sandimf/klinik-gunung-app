@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { useForm } from '@inertiajs/react'
+import { Head, useForm } from '@inertiajs/react'
 import { Button } from "@/Components/ui/button"
 import { Input } from "@/Components/ui/input"
 import { Label } from "@/Components/ui/label"
@@ -75,9 +75,10 @@ export default function EditProfile() {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-background">
+      <Head title='Create Username' />
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle className="text-2xl font-semibold text-center">Buat Akun</CardTitle>
+          <CardTitle className="text-2xl font-semibold text-center">Create Username</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={createUsername} className="space-y-4">

@@ -15,16 +15,27 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id')->nullable();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->string('nik')->unique();
-            $table->string('name');
+            $table->string('nik', 16)->unique();
+            $table->string('name')->nullable();
+            $table->string('place_of_birth');
+            $table->string('date_of_birth');
+            $table->string('rt_rw')->nullable();
+            $table->string('address');
+            $table->string('village'); // Kelurahan/Desa
+            $table->string('district'); // Kecamatan
+            $table->string('religion'); // Agama
+            $table->string('marital_status'); // Status Perkawinan
+            $table->string('occupation'); // Pekerjaan
+            $table->string('nationality')->default('WNI'); // Kewarganegaraan
+            $table->enum('gender', ['male', 'female', 'other'])->nullable();
             $table->string('email')->unique();
             $table->integer('age')->nullable();
-            $table->enum('gender', ['male', 'female', 'other'])->nullable();
-            $table->string('contact')->nullable();
-            $table->enum('screening_status', ['completed','checking', 'pending', 'cancelled'])->nullable();
+            $table->string('contact')->unique();
+            $table->string('ktp_images')->nullable();
+            $table->enum('screening_status', ['completed', 'pending', 'cancelled'])->nullable();
             $table->enum('health_status', ['pending', 'healthy', 'sick', 'under treatment'])->nullable();
             $table->enum('health_check_status', ['pending', 'completed'])->nullable();
-            $table->enum('payment_status', ['completed', 'pending', 'cancelled','checking'])->nullable();
+            $table->enum('payment_status', ['completed', 'pending', 'cancelled'])->nullable();
             $table->timestamps();
         });
     }
