@@ -4,6 +4,7 @@ namespace App\Models\Users;
 
 use App\Models\User;
 use App\Models\Payments;
+use App\Models\EMR\MedicalRecord;
 use App\Models\Medicines\Medicine;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Clinic\PhysicalExamination;
@@ -46,13 +47,13 @@ class Patients extends Model
     public function attributesToArray()
     {
         $attributes = parent::attributesToArray();
-    
+
         // Mengubah semua atribut string menjadi Title Case
         return array_map(function ($value) {
             return is_string($value) ? ucwords(strtolower($value)) : $value;
         }, $attributes);
     }
-    
+
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
@@ -83,5 +84,4 @@ class Patients extends Model
     {
         return $this->hasMany(Payments::class, 'patient_id');
     }
-
 }

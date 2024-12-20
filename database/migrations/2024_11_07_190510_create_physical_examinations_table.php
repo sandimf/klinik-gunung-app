@@ -13,11 +13,10 @@ return new class extends Migration
     {
         Schema::create('physical_examinations', function (Blueprint $table) {
             $table->id();
-
             // Relasi ke tabel patients
             $table->foreignId('patient_id')->constrained('patients');
-            $table->unsignedBigInteger('paramedis_id')->nullable();
-            $table->unsignedBigInteger('doctor_id')->nullable();
+            $table->unsignedBigInteger('paramedis_id')->nullable();//kolom untuk pasien ini dicek oleh siapa
+            $table->unsignedBigInteger('doctor_id')->nullable();//kolom untuk pasien ini dicek oleh siapa
             // Kolom-kolom untuk data pemeriksaan fisik
             $table->string('blood_pressure')->nullable();
             $table->integer('heart_rate')->nullable();

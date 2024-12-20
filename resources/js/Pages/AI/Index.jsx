@@ -1,5 +1,3 @@
-'use client'
-
 import React, { useState, useRef } from "react"
 import { useForm } from "@inertiajs/react"
 import { GoogleGenerativeAI } from "@google/generative-ai"
@@ -121,7 +119,7 @@ export default function PatientDataEntry({ patient }) {
       ])
 
       const extractedText = result.response.text()
-      
+
       const jsonStart = extractedText.indexOf("{")
       const jsonEnd = extractedText.lastIndexOf("}") + 1
       const jsonString = extractedText.slice(jsonStart, jsonEnd)
@@ -428,4 +426,3 @@ export default function PatientDataEntry({ patient }) {
     </Card>
   )
 }
-
