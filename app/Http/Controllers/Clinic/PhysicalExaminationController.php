@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\Clinic;
 
-use App\Http\Controllers\Controller;
-use App\Models\Clinic\PhysicalExamination;
-use App\Models\Users\Patients;
 use Illuminate\Http\Request;
+use App\Models\Users\Patients;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use App\Jobs\SendScreeningNotification;
+use App\Models\Clinic\PhysicalExamination;
 
 class PhysicalExaminationController extends Controller
 {
@@ -64,6 +65,8 @@ class PhysicalExaminationController extends Controller
         $patient->health_check_status = 'completed';
         $patient->save();
 
+        SendScreeningNotification::dispatch($patient);
+        
         // Return a successful response with the examination details
         return response()->json([
             'message' => 'Examination saved successfully!',

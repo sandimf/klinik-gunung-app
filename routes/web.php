@@ -3,7 +3,7 @@
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
-use App\Http\Controllers\AI\AiController;
+// use App\Http\Controllers\AI\AiController;
 use App\Http\Controllers\Data\QrcodeController;
 use App\Http\Controllers\Users\AdminController;
 use App\Http\Controllers\Users\DoctorController;
@@ -42,13 +42,14 @@ Route::get('/', function () {
     ]);
 });
 
-Route::resource('ai', AiController::class)
-->only(['index']);
-Route::post('analyze-ktp', [KtpAnalysisController::class, 'analyze'])->name('ktp.analysis');
+
 
 // Guest Screening Offline
 Route::resource('screening-now', GuestController::class)
     ->only(['index', 'store']);
+
+
+Route::get('test', [GuestController::class,'tes'])->name('test.sc');
 
 
 // Dashboard Patients

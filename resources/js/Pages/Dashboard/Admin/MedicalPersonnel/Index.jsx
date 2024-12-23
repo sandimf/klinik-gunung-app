@@ -1,17 +1,14 @@
-import { Card,CardHeader,CardTitle,CardContent } from "@/Components/ui/card";
 import AdminSidebar from "@/Layouts/Dashboard/AdminSidebarLayout";
-import { Head, Link } from "@inertiajs/react";
-import { Button } from "@/Components/ui/button";
-import { PlusIcon } from "lucide-react";
+import { Head } from "@inertiajs/react";
 import MedicalHeader from './_components/table-header';
-
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/Components/ui/table";
+
 export default function Index({ users }) {
     return (
         <AdminSidebar header={'Daftar Tenaga Medis'}>
             <Head title="Daftar Tenaga Medis" />
-            <MedicalHeader
-                routeName={route('users.create')}
+            <MedicalHeader 
+            routeName={route('users.create')} 
             />
                     <Table>
                         <TableCaption>

@@ -14,11 +14,11 @@ return new class extends Migration
         Schema::create('community', function (Blueprint $table) {
             $table->id();
             $table->string('bio')->nullable();
-            $table->string('username')->unique()->nullable();
+            $table->string('username')->unique();
             $table->string('slug')->unique()->nullable();
             $table->text('content')->nullable();
             $table->string('image')->nullable();
-            $table->string('status')->enum('pending', 'approve', 'reject')->default('pending');
+            $table->enum('status', ['pending', 'approve', 'reject'])->default('pending'); // Perbaikan di sin
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });

@@ -102,9 +102,7 @@ class MedicalPersonnelController extends Controller
     // Memebuat tenaga medis baru
     public function store(MedicalPersonnelRequest $request)
     {
-
         DB::beginTransaction();
-
         try {
             $user = User::create([
                 'name' => $request->name,
@@ -142,7 +140,7 @@ class MedicalPersonnelController extends Controller
             // Commit transaksi
             DB::commit();
 
-            return redirect()->back()->with('success', 'User  added successfully.');
+            return redirect()->back()->with('message', 'User  added successfully.');
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -152,5 +150,4 @@ class MedicalPersonnelController extends Controller
     }
 
     // Manajemen Staff
-    public function show() {}
 }

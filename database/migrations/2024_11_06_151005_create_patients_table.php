@@ -17,9 +17,9 @@ return new class extends Migration
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->string('nik', 16)->unique();
             $table->string('name')->nullable();
-            $table->string('place_of_birth');
+            $table->string('place_of_birth')->nullable(false);
             $table->string('date_of_birth');
-            $table->string('rt_rw')->nullable();
+            $table->string('rt_rw')->nullable(false);
             $table->string('address');
             $table->string('village'); // Kelurahan/Desa
             $table->string('district'); // Kecamatan
@@ -27,7 +27,7 @@ return new class extends Migration
             $table->string('marital_status'); // Status Perkawinan
             $table->string('occupation'); // Pekerjaan
             $table->string('nationality')->default('WNI'); // Kewarganegaraan
-            $table->enum('gender', ['male', 'female', 'other'])->nullable();
+            $table->enum('gender', ['male', 'female', 'other'])->default('other');
             $table->string('email')->unique();
             $table->integer('age')->nullable();
             $table->string('contact')->unique();

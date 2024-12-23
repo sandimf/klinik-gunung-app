@@ -27,7 +27,7 @@ return new class extends Migration
             $table->string('marital_status'); // Status Perkawinan
             $table->string('occupation'); // Pekerjaan
             $table->string('nationality')->default('WNI'); // Kewarganegaraan
-            $table->enum('gender', ['male', 'female', 'other'])->nullable();
+            $table->enum('gender', ['male', 'female', 'other']);
             $table->string('email')->unique();
             $table->integer('age')->nullable();
             $table->string('contact')->unique();

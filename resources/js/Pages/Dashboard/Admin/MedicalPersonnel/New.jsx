@@ -53,23 +53,27 @@ export default function CreatePersonal({ auth }) {
   // Form dari @inertiajs/react
   const { data, setData, post, processing, errors } = useForm(initialData);
 
-  // Submit handler untuk form
   const handleSubmit = (e) => {
     e.preventDefault();
     post(route("users.store"), {
       onSuccess: () => {
-        toast.success(`User ${data.name} berhasil ditambahkan!`, {
+        toast.success(`Tenaga Medis ${data.name} berhasil ditambahkan!`, {
           icon: <CheckCircle2 className="h-5 w-5 text-green-500" />,
         });
         setData(initialData);
       },
       onError: (errors) => {
-        toast.error(errors, {
+        // Jika errors adalah objek atau array, kamu bisa tampilkan pesan pertama atau semua pesan
+        const errorMessage = Array.isArray(errors) 
+          ? errors.join(', ') 
+          : errors?.message || 'Terjadi kesalahan, coba lagi!';
+        toast.error(errorMessage, {
           icon: <X className="h-5 w-5 text-red-500" />,
         });
       },
     });
   };
+  
 
   return (
     <AdminSidebar header="Tenaga Medis">
