@@ -8,6 +8,7 @@ use App\Models\Users\Patients;
 use App\Models\Community\Community;
 use App\Models\Users\PatientsOnline;
 use Illuminate\Notifications\Notifiable;
+use App\Models\Clinic\PhysicalExamination;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
@@ -24,6 +25,7 @@ class User extends Authenticatable
     protected $fillable = [
         'role',
         'name',
+        'avatar',
         'email_verified_at',
         'email',
         'password',
@@ -72,6 +74,17 @@ class User extends Authenticatable
     public function cashier()
     {
         return $this->hasOne(Cashier::class, 'user_id', 'id');
+    }
+
+    public function physicalExaminationsAsParamedis()
+    {
+        return $this->hasMany(PhysicalExamination::class, 'paramedis_id');
+    }
+
+    // Relasi ke pemeriksaan fisik sebagai dokter
+    public function physicalExaminationsAsDoctor()
+    {
+        return $this->hasMany(PhysicalExamination::class, 'doctor_id');
     }
 
 }

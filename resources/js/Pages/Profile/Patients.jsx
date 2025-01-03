@@ -1,33 +1,40 @@
-import PatientsSidebar from '@/Layouts/Dashboard/PatientsSidebarLayout';
 import { Head } from '@inertiajs/react';
-import DeleteUserForm from './Partials/DeleteUserForm';
-import UpdatePasswordForm from './Partials/UpdatePasswordForm';
+import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card"
 import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm';
-
+import UpdatePasswordForm from './Partials/UpdatePasswordForm';
+import {toast,Toaster} from "sonner"
+import PatientsSidebar from '@/Layouts/Dashboard/PatientsSidebarLayout';
 export default function Edit({ mustVerifyEmail, status }) {
-    return (
-        <PatientsSidebar header={'Profile Edit'}>
-            <Head title="Profile" />
 
-            <div className="py-12">
-                <div className="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8">
-                    <div className="bg-white p-4 shadow sm:rounded-lg sm:p-8">
+    return (
+        <PatientsSidebar header={'Profile'}>
+        <div className="container mx-auto py-8">
+            <Toaster position='top-center'/>
+            <Head title="Profile" />
+            <div className="space-y-6">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Profile Information</CardTitle>
+                    </CardHeader>
+                    <CardContent>
                         <UpdateProfileInformationForm
                             mustVerifyEmail={mustVerifyEmail}
                             status={status}
-                            className="max-w-xl"
                         />
-                    </div>
+                    </CardContent>
+                </Card>
 
-                    <div className="bg-white p-4 shadow sm:rounded-lg sm:p-8">
-                        <UpdatePasswordForm className="max-w-xl" />
-                    </div>
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Update Password</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <UpdatePasswordForm />
+                    </CardContent>
+                </Card>
 
-                    <div className="bg-white p-4 shadow sm:rounded-lg sm:p-8">
-                        <DeleteUserForm className="max-w-xl" />
-                    </div>
-                </div>
             </div>
+        </div>
         </PatientsSidebar>
     );
 }

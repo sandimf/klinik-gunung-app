@@ -28,7 +28,6 @@ import {
 } from "@/Components/ui/select"
 import { Input } from "@/Components/ui/input";
 import { PatientDetails } from './Partials/PatientDetails';
-// import { RescheduleAppointment } from './Partials/RescheduleAppointment';
 import { StartAppointment } from './Partials/StartAppointment';
 
 export default function AppointmentsList({appointments}) {
@@ -47,7 +46,6 @@ export default function AppointmentsList({appointments}) {
   );
 
   const handleExportPDF = () => {
-    // Placeholder for PDF export functionality
     console.log('Exporting to PDF...');
   };
 
@@ -79,7 +77,7 @@ export default function AppointmentsList({appointments}) {
   return (
     <DoctorSidebar header={'Appointments'}>
       <Head title='Appointments' />
-      <div className="container mx-auto py-10">
+      <div className="">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold">Janji Mendatang</h2>
           <div className="flex items-center space-x-4">

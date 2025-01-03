@@ -27,8 +27,9 @@ class ProfileController extends Controller
     /**
      * Update the user's profile information.
      */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    public function update(ProfileUpdateRequest $request)
     {
+        dd($request->all());
         $request->user()->fill($request->validated());
 
         if ($request->user()->isDirty('email')) {
@@ -36,8 +37,8 @@ class ProfileController extends Controller
         }
 
         $request->user()->save();
-
-        return Redirect::route('profile.edit');
+        return redirect()->back()->with('success', 'Profil berhasil diperbarui.');
+        
     }
 
     /**

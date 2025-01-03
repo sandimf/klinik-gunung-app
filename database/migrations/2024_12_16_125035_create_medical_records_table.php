@@ -16,10 +16,7 @@ return new class extends Migration
             $table->foreignId('patient_id')->constrained('patients')->onDelete('cascade');
             $table->foreignId('physical_examination_id')->constrained('physical_examinations')->onDelete('cascade');
             $table->string('medical_record_number')->unique();
-            $table->text('special_notes')->nullable(); // Catatan medis tambahan
-            $table->string('prescription')->nullable(); // Resep obat
-            $table->dateTime('follow_up_schedule')->nullable(); // Tanggal tindak lanjut
-            $table->timestamps(); // Kolom created_at dan updated_at
+            $table->timestamps();
         });
     }
 

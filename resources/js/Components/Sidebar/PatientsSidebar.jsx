@@ -73,11 +73,6 @@ export function AppSidebar({ ...sidebarProps }) {
       },
 
       {
-        title: "Products",
-        url: route("dashboard"),
-        icon: ShoppingBag,
-      },
-      {
         title: "Profile",
         url: route("dashboard"),
         icon: CircleUser,

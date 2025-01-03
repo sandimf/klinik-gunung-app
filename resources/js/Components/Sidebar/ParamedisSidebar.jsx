@@ -3,7 +3,7 @@
 import React, { useState } from "react"
 import {
   Command,
-  MessageCirclePlus,
+  Activity,
   Home,
   Bandage,
   Settings2,
@@ -68,6 +68,11 @@ export function AppSidebar({ ...sidebarProps }) {
         title: "Riwayat Pemeriksaan",
         url: route("paramedis.history"),
         icon: History,
+      },
+      {
+        title: "Laporan",
+        url: route("report.index"),
+        icon: Activity,
       },
       {
         title: "Community",

@@ -7,14 +7,24 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/Components/ui/dropdown-menu";
+import { usePage } from "@inertiajs/react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/Components/ui/avatar";
 
 export function ProfileButton() {
+
+  const user = usePage().props.auth.user;
+
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Avatar>
-          <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+          <AvatarImage src={
+                        user?.avatar
+                          ? (user.avatar.startsWith('http') ? user.avatar : `/storage/${user.avatar}`)
+                          : '/storage/avatar/avatar.jpg'
+                      }
+                      alt={user?.name || 'Klinik gunung'} />
           <AvatarFallback>CN</AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>

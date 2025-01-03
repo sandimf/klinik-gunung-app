@@ -25,7 +25,7 @@ class MedicineController extends Controller
             return Medicine::with(['pricing', 'batches'])->latest()->paginate(10);
         });
 
-        return Inertia::render('Dashboard/Admin/Medicines/Index', [
+        return Inertia::render('Dashboard/Cashier/Apotek/Index', [
             'medicines' => $medicines,
         ]);
     }

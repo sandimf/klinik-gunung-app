@@ -1,5 +1,4 @@
 import { Head, Link } from "@inertiajs/react";
-import { ModeToggle } from "@/Components/mode-toggle";
 
 export default function Welcome() {
     return (

@@ -1,6 +1,7 @@
 import React from "react";
-import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut, Sparkles } from "lucide-react";
+import {  ChevronsUpDown } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/Components/ui/avatar";
+import {Link} from "@inertiajs/react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,7 +22,7 @@ export function NavUser() {
 
   const handleLogout = (e) => {
     e.preventDefault();
-    post(route('logout')); // Logout request
+    post(route('logout'));
   };
 
   return (
@@ -38,9 +39,9 @@ export function NavUser() {
                       src={
                         user?.avatar
                           ? (user.avatar.startsWith('http') ? user.avatar : `/storage/${user.avatar}`)
-                          : '/storage/avatar/avatar.jpg' // Gunakan avatar default jika tidak ada
+                          : '/storage/avatar/avatar.jpg'
                       }
-                      alt={user?.name || 'Default Avatar'}
+                      alt={user?.name || 'Klinik gunung'}
                     />
                     <AvatarFallback className="rounded-lg">
                       {user?.name ? user.name.charAt(0).toUpperCase() : 'CN'}
@@ -80,12 +81,6 @@ export function NavUser() {
                 </div>
               </div>
             </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                Account
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout}>
               Log out

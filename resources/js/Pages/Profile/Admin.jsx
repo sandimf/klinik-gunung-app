@@ -1,28 +1,40 @@
-import AdminSidebar from '@/Layouts/Dashboard/AdminSidebarLayout';
 import { Head } from '@inertiajs/react';
-import DeleteUserForm from './Partials/DeleteUserForm';
-import UpdatePasswordForm from './Partials/UpdatePasswordForm';
+import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card"
 import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm';
-
+import UpdatePasswordForm from './Partials/UpdatePasswordForm';
+import {toast,Toaster} from "sonner"
+import AdminSidebar from '@/Layouts/Dashboard/AdminSidebarLayout';
 export default function Edit({ mustVerifyEmail, status }) {
+
     return (
-        <AdminSidebar header={'Profile Edit'}>
+        <AdminSidebar header={'Profile'}>
+        <div className="container mx-auto py-8">
+            <Toaster position='top-center'/>
             <Head title="Profile" />
-            <div className="bg-white p-4 shadow sm:rounded-lg sm:p-8">
-                <UpdateProfileInformationForm
-                    mustVerifyEmail={mustVerifyEmail}
-                    status={status}
-                    className="max-w-xl"
-                />
-            </div>
+            <div className="space-y-6">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Profile Information</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <UpdateProfileInformationForm
+                            mustVerifyEmail={mustVerifyEmail}
+                            status={status}
+                        />
+                    </CardContent>
+                </Card>
 
-            <div className="bg-white p-4 shadow sm:rounded-lg sm:p-8">
-                <UpdatePasswordForm className="max-w-xl" />
-            </div>
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Update Password</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <UpdatePasswordForm />
+                    </CardContent>
+                </Card>
 
-            <div className="bg-white p-4 shadow sm:rounded-lg sm:p-8">
-                <DeleteUserForm className="max-w-xl" />
             </div>
+        </div>
         </AdminSidebar>
     );
 }

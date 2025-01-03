@@ -57,14 +57,19 @@ export function AppSidebar({ ...sidebarProps }) {
         icon: Home,
       },
       {
-        title: "Pembayaran Screening Offline",
-        url: route("cashier.screening"),
+        title: "Pembayaran",
+        url: route("dashboard"),
         icon: CreditCard,
-      },
-      {
-        title: "Pembayaran Screening Online",
-        url: route("cashier.screening-online"),
-        icon: CreditCard,
+        items: [
+          {
+            title: "Screening",
+            url: route('cashier.screening'),
+          },
+          {
+            title: "Screening Online",
+            url: route('cashier.screening-online'),
+          },
+        ],
       },
       {
         title: "Riwayat Pembayaran",
@@ -75,11 +80,6 @@ export function AppSidebar({ ...sidebarProps }) {
         title: "Office",
         url: route("office.index"),
         icon: ChartPie,
-      },
-      {
-        title: "Products",
-        url: route("dashboard"),
-        icon: ShoppingBag,
       },
       {
         title: "Apotek",

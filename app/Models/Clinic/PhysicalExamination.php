@@ -4,10 +4,11 @@ namespace App\Models\Clinic;
 
 use App\Models\User;
 use App\Models\Users\Doctor;
-use App\Models\Users\Paramedis;
 use App\Models\Users\Patients;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Users\Paramedis;
+use App\Models\EMR\MedicalRecord;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class PhysicalExamination extends Model
 {
@@ -37,17 +38,28 @@ class PhysicalExamination extends Model
     // Relasi ke paramedis
     public function paramedis()
     {
-        return $this->belongsTo(Paramedis::class);
+        return $this->belongsTo(Paramedis::class, 'paramedis_id');
     }
 
-    // Relasi ke dokter
+    // Relasi ke tabel doctor (user yang bertindak sebagai dokter)
     public function doctor()
     {
-        return $this->belongsTo(Doctor::class);
+        return $this->belongsTo(Doctor::class, 'doctor_id');
     }
+
+    // Relasi ke tabel patients
 
     public function examiner()
     {
         return $this->belongsTo(User::class, 'examiner_id');
+    }
+
+    protected function generateMedicalRecordNumber()
+    {
+        $lastRecord = MedicalRecord::latest()->first(); // Ambil rekam medis terakhir
+        $lastNumber = $lastRecord ? intval(substr($lastRecord->medical_record_number, 2)) : 0; // Ambil angka terakhir
+        $newNumber = $lastNumber + 1; // Tambah 1 untuk nomor baru
+    
+        return 'MR' . str_pad($newNumber, 4, '0', STR_PAD_LEFT); // Format nomor: MR0001, MR0002, dst.
     }
 }

@@ -56,12 +56,12 @@ export function AppSidebar({ ...sidebarProps }) {
         icon: Home,
       },
       {
-        title: "Scan QrCode",
-        url: route("dashboard"),
+        title: "Aktivitas Screening",
+        url: route("manager.screening"),
         icon: Scan,
       },
       {
-        title: "Tenaga Medis",
+        title: "Report",
         url: route('dashboard'),
         icon: UserPlus,
         items: [
@@ -74,43 +74,7 @@ export function AppSidebar({ ...sidebarProps }) {
                 url: route('users.create'),
             },
         ]
-      },
-      {
-        title: "Products",
-        url: route("dashboard"),
-        icon: ShoppingBag,
-      },
-      {
-        title: "Apotek",
-        url: "#",
-        icon: Pill,
-        items: [
-          {
-            title: "Obat",
-            url: route('medicine.index'),
-          },
-        ],
-      },
-      {
-        title: "Community",
-        url: route("dashboard"),
-        icon: Users,
-        items: [
-          {
-            title: "Community",
-            url: route('dashboard'),
-          },
-          {
-            title: "Persetujuan Postingan",
-            url: route('dashboard'),
-          },
-        ],
-      },
-      {
-        title: "Settings",
-        url: route("dashboard"),
-        icon: Settings2,
-      },
+      }
     ],
   }
 

@@ -15,7 +15,6 @@ class MedicalRecord extends Model
 
     protected $fillable = [
         'patient_id', 'physical_examination_id', 'medical_record_number',
-        'special_notes', 'prescription', 'follow_up_schedule'
     ];
 
     // Relasi ke model Patient
@@ -31,15 +30,24 @@ class MedicalRecord extends Model
     }
 
     // Event untuk generate nomor MR otomatis
-    protected static function booted()
-    {
-        static::creating(function ($medicalRecord) {
-            // Generate nomor MR berdasarkan ID terakhir
-            $lastRecord = MedicalRecord::latest('id')->first();
-            $lastNumber = $lastRecord ? (int) substr($lastRecord->medical_record_number, 2) : 0;
+    // protected static function booted()
+    // {
+    //     static::creating(function ($medicalRecord) {
+    //         // Generate nomor MR berdasarkan ID terakhir
+    //         $lastRecord = MedicalRecord::latest('id')->first();
+    //         $lastNumber = $lastRecord ? (int) substr($lastRecord->medical_record_number, 2) : 0;
 
-            // Set nomor MR (misalnya MR00001)
-            $medicalRecord->medical_record_number = 'MR' . str_pad($lastNumber + 1, 5, '0', STR_PAD_LEFT);
-        });
-    }
+    //         // Set nomor MR (misalnya MR00001)
+    //         $medicalRecord->medical_record_number = 'MR' . str_pad($lastNumber + 1, 5, '0', STR_PAD_LEFT);
+    //     });
+    // }
+
+//     protected function generateMedicalRecordNumber()
+// {
+//     $lastRecord = MedicalRecord::latest()->first(); // Ambil rekam medis terakhir
+//     $lastNumber = $lastRecord ? intval(substr($lastRecord->medical_record_number, 2)) : 0; // Ambil angka terakhir
+//     $newNumber = $lastNumber + 1; // Tambah 1 untuk nomor baru
+
+//     return 'MR' . str_pad($newNumber, 4, '0', STR_PAD_LEFT); // Format nomor: MR0001, MR0002, dst.
+// }
 }

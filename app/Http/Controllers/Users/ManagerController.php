@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Users;
 
-use App\Http\Controllers\Controller;
-use App\Models\Users\Manager;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Http\Request;
+use App\Models\Users\Manager;
+use App\Models\Users\Patients;
+use App\Http\Controllers\Controller;
+use App\Models\Users\PatientsOnline;
 
 class ManagerController extends Controller
 {
@@ -14,7 +16,7 @@ class ManagerController extends Controller
      */
     public function index()
     {
-        return Inertia::render('Dashboard/Doctor/Index');
+        return Inertia::render('Dashboard/Manager/Index');
     }
 
     public function profile()
@@ -25,10 +27,31 @@ class ManagerController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function screening()
     {
-        //
+        // Query screenings from Patients model (Offline)
+        $offlineScreenings = Patients::with(['answers.question', 'physicalExaminations.paramedis', 'physicalExaminations.doctor'])
+            ->whereHas('answers', function ($query) {
+                $query->whereNotNull('answer_text');
+            })
+            ->get();
+    
+        // Query screenings from PatientsOnline model (Online)
+        $onlineScreenings = PatientsOnline::with(['answers.question', 'physicalExaminations.paramedis', 'physicalExaminations.doctor'])
+            ->whereHas('answers', function ($query) {
+                $query->whereNotNull('answer_text');
+            })
+            ->where('screening_status', 'completed')
+            ->get();
+    
+        // Gabungkan data screening offline dan online ke dalam satu koleksi
+        $screenings = collect([])->merge($offlineScreenings)->merge($onlineScreenings);
+        // Kembalikan ke tampilan Inertia dengan data screenings
+        return Inertia::render('Dashboard/Manager/Screenings/Index', [
+            'screenings' => $screenings->all(),
+        ]);
     }
+    
 
     /**
      * Store a newly created resource in storage.

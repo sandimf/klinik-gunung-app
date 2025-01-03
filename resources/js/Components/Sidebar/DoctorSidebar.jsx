@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { Command, CalendarPlus, Scan, Home, Settings2, SquareActivity, Users, ChevronRight, Pill } from 'lucide-react'
+import { Command, CalendarPlus, Scan, Home, User, SquareActivity, Users, ChevronRight, Pill } from 'lucide-react'
 import { NavUser } from "@/Components/Nav/NavUser"
 import { TeamSwitcher } from "@/Components/Nav/TeamSwitcher"
 import {
@@ -25,7 +25,6 @@ export function AppSidebar({ ...sidebarProps }) {
   const auth = props.auth
 
   const isRouteActive = (routeUrl) => {
-    console.log(routeUrl);
     return url.startsWith(routeUrl)
   }
 
@@ -56,12 +55,12 @@ export function AppSidebar({ ...sidebarProps }) {
       },
       {
         title: "Medical Record",
-        url: route("emr.doctor"),
+        url: route("medical-record.index"),
         icon: SquareActivity,
       },
       {
         title: "Screening",
-        url: route("dashboard"),
+        url: route("doctor.screening"),
         icon: Scan,
       },
       {
@@ -78,16 +77,12 @@ export function AppSidebar({ ...sidebarProps }) {
             title: "Community",
             url: route('community.index'),
           },
-          {
-            title: "Persetujuan Postingan",
-            url: route('dashboard'),
-          },
         ],
       },
       {
-        title: "Settings",
-        url: route("dashboard"),
-        icon: Settings2,
+        title: "Profile",
+        url: route("doctor.profile"),
+        icon: User,
       },
     ],
   }

@@ -3,7 +3,7 @@
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
-// use App\Http\Controllers\AI\AiController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Data\QrcodeController;
 use App\Http\Controllers\Users\AdminController;
 use App\Http\Controllers\Users\DoctorController;
@@ -21,6 +21,7 @@ use App\Http\Controllers\Medicines\MedicineController;
 use App\Http\Controllers\Community\CommunityController;
 use App\Http\Controllers\Questioner\QuestionerController;
 use App\Http\Controllers\Clinic\ManagementStaffController;
+use App\Http\Controllers\Report\ParamedisReportController;
 use App\Http\Controllers\Clinic\MedicalPersonnelController;
 use App\Http\Controllers\Community\CreateAccountController;
 use App\Http\Controllers\Payments\PaymentsOnlineController;
@@ -31,6 +32,7 @@ use App\Http\Controllers\Screenings\ScreeningOnlineController;
 use App\Http\Controllers\Questioner\QuestionerOnlineController;
 use App\Http\Controllers\Screenings\ScreeningOfflineController;
 use App\Http\Controllers\Appointments\AppointmentDoctorController;
+use App\Http\Controllers\Clinic\MedicalRecordController;
 use App\Http\Controllers\Clinic\PhysicalExaminationOnlineController;
 
 Route::get('/', function () {
@@ -47,9 +49,6 @@ Route::get('/', function () {
 // Guest Screening Offline
 Route::resource('screening-now', GuestController::class)
     ->only(['index', 'store']);
-
-
-Route::get('test', [GuestController::class,'tes'])->name('test.sc');
 
 
 // Dashboard Patients
@@ -95,7 +94,10 @@ Route::prefix('dashboard/doctor')->middleware(['auth', 'role:doctor'])->group(fu
 
     Route::get('appointments/history', [AppointmentDoctorController::class, 'history'])->name('doctor.history.appointments');
     
-    Route::get('emr', [DoctorController::class, 'emr'])->name('emr.doctor');
+    Route::resource('medical-record', MedicalRecordController::class)
+    ->only(['index','show']);
+
+    Route::get('screening', [DoctorController::class, 'screening'])->name('doctor.screening');
 
 });
 
@@ -112,16 +114,15 @@ Route::prefix('dashboard/paramedis')->middleware(['auth', 'role:paramedis'])->gr
     // History Screening Offline
     Route::get('history', [ParamedisController::class, 'showHistoryScreening'])->name('paramedis.history');
 
-    Route::resource('physicalexamination', PhysicalExaminationController::class)
-        ->only(['store'])
-        ->middleware(['auth']);
+
 
     Route::get('screening-online', [ParamedisController::class, 'showScreeningOnline'])->name('screening-online.paramedis');
     
     Route::resource('physicalexamination-online', PhysicalExaminationOnlineController::class)
         ->only(['store']);
 
-
+    Route::resource('report', ParamedisReportController::class)
+        ->only(['index']);
 
 });
 
@@ -138,6 +139,9 @@ Route::prefix('dashboard/cashier')->middleware(['auth', 'role:cashier'])->group(
     Route::resource('payments', PaymentsController::class)
         ->only(['store'])
         ->middleware(['auth']);
+
+        Route::resource('medicine', MedicineController::class)
+        ->only(['index', 'store', 'update']);
 
     // Office
     Route::resource('office', OfficeController::class)
@@ -161,9 +165,7 @@ Route::prefix('dashboard/admin')->middleware(['auth', 'role:admin'])->group(func
     /**
      * Rute untuk obat (list obat, edit obat,hapus, menambahkan obat)
      */
-    Route::resource('medicine', MedicineController::class)
-        ->only(['index', 'store', 'update'])
-        ->middleware(['auth', 'role:admin']);
+
     /**
      * Rute untuk menambahkan tenaga medis dan list tenaga medis
      */
@@ -190,6 +192,7 @@ Route::prefix('dashboard/admin')->middleware(['auth', 'role:admin'])->group(func
 
     Route::get('scan', [AdminController::class, 'scanner'])->name('admin.scan');
 
+
     // Profile Edit
     Route::get('profile', [AdminController::class, 'profile'])->name('admin.profile');
 });
@@ -200,6 +203,9 @@ Route::prefix('dashboard/manager')->middleware(['auth', 'role:manager'])->group(
 
     // Profile edit
     Route::get('profile', [ManagerController::class, 'profile'])->name('manager.profile');
+
+    Route::get('screening', [ManagerController::class, 'screening'])->name('manager.screening');
+
 });
 
 Route::prefix('dashboard/warehouse')->middleware(['auth', 'role:warehouse'])->group(function () {
@@ -210,6 +216,8 @@ Route::prefix('dashboard/warehouse')->middleware(['auth', 'role:warehouse'])->gr
 
 Route::middleware(['auth'])->group(function () {
 
+    Route::resource('physicalexamination', PhysicalExaminationController::class)
+    ->only(['store']);
 
     // Rute untuk pembuatan akun komunitas
     Route::resource('community/create-account', CreateAccountController::class)
@@ -228,6 +236,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/community/{slug}', [CreateAccountController::class, 'profile'])
             ->name('profile.show');
     });
+
+
+    Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
+
 });
 
 

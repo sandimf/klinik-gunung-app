@@ -4,10 +4,8 @@ namespace App\Http\Controllers\Users;
 
 use App\Http\Controllers\Controller;
 use App\Models\Medicines\Medicine;
-use App\Models\Users\Cashier;
 use App\Models\Users\Patients;
 use App\Models\Users\PatientsOnline;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class CashierController extends Controller
@@ -46,7 +44,6 @@ class CashierController extends Controller
         ]);
     }
 
-
     public function historyPaymentsOffline()
     {
         // Ambil data pasien dengan pembayaran dan screening yang relevan
@@ -54,21 +51,22 @@ class CashierController extends Controller
             'payments',                // Relasi ke payments
             'answers.question',        // Relasi ke jawaban dan pertanyaan screening
         ])
-        ->whereHas('payments', function ($query) {
-            $query->where('payment_status', true); // Hanya yang sudah selesai pembayarannya
-        })
-        ->get();
-    
+            ->whereHas('payments', function ($query) {
+                $query->where('payment_status', true); // Hanya yang sudah selesai pembayarannya
+            })
+            ->get();
+
         // Muat semua data obat dengan pricing
         $medicines = Medicine::with('pricing')->get();
-    
+
         return Inertia::render('Dashboard/Cashier/Payments/HistoryPaymentsScreeningOffline', [
             'patients' => $patients,
             'medicines' => $medicines,
         ]);
     }
 
-    public function showScreeningOnline(){
+    public function showScreeningOnline()
+    {
         $screenings = PatientsOnline::with(['answers.question'])
             ->where('payment_status', 'checking')
             ->whereHas('answers', function ($query) {

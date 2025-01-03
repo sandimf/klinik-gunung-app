@@ -44,18 +44,31 @@ class ParamedisController extends Controller
      */
     public function showScreeningOffline()
     {
+        // Ambil screening dengan pertanyaan dan jawaban terkait
         $screenings = Patients::with(['answers.question'])
             ->whereHas('answers', function ($query) {
-                $query->whereNotNull('answer_text');
+                $query->whereNotNull('answer_text'); // Pastikan ada jawaban
             })
-            ->where('screening_status', 'pending') // Tambahkan kondisi untuk screening_status
+            ->where('screening_status', 'pending') // Pastikan status screening adalah pending
             ->get();
-    
+
+        // Pisahkan screening ke dalam dua kategori berdasarkan kondisi
+
+
+        $screenings = $screenings->filter(function ($screening) {
+            return !$screening->answers->some(function ($answer) {
+                // Cek apakah ada jawaban yang sesuai dengan condition_value untuk pertanyaan yang memerlukan dokter
+                return $answer->question->requires_doctor &&
+                    $answer->answer_text == $answer->question->condition_value;
+            });
+        });
+
         return Inertia::render('Dashboard/Paramedis/Screenings/Offline/Index', [
             'screenings' => $screenings,
         ]);
     }
-    
+
+
     public function show($id)
     {
         $patient = Patients::with(['answers.question'])
@@ -87,7 +100,7 @@ class ParamedisController extends Controller
             })
             ->where('screening_status', 'completed')
             ->get();
-    
+
         // Query screenings from PatientsOnline model
         $onlineScreenings = PatientsOnline::with(['answers.question'])
             ->whereHas('answers', function ($query) {
@@ -95,10 +108,10 @@ class ParamedisController extends Controller
             })
             ->where('screening_status', 'completed')
             ->get();
-    
+
         // Combine both offline and online screenings into a single collection
         $screenings = collect([])->merge($offlineScreenings)->merge($onlineScreenings);
-    
+
         // Return to the Inertia view with screenings data
         return Inertia::render('Dashboard/Paramedis/Screenings/History/Index', [
             'screenings' => $screenings->all(), // Ensure screenings is returned as an array
@@ -113,11 +126,9 @@ class ParamedisController extends Controller
             })
             ->where('screening_status', 'pending') // Tambahkan kondisi untuk screening_status
             ->get();
-    
+
         return Inertia::render('Dashboard/Paramedis/Screenings/Online/Index', [
             'screenings' => $screenings,
         ]);
     }
-    
-
 }

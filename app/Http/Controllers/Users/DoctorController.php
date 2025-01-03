@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\Users;
 
-use App\Http\Controllers\Controller;
+use Inertia\Inertia;
 use App\Models\Users\Doctor;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
+use App\Models\Users\Patients;
+use App\Http\Controllers\Controller;
 
 class DoctorController extends Controller
 {
@@ -22,63 +23,54 @@ class DoctorController extends Controller
         return Inertia::render('Profile/Doctor');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Doctor $doctor)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Doctor $doctor)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Doctor $doctor)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Doctor $doctor)
-    {
-        //
-    }
-
     public function appointments(){
         return Inertia::render('Dashboard/Doctor/Appointments/Index');
     }
 
-    public function emr(){
-        return Inertia::render('Dashboard/Doctor/MedicalRecord/Index');
+    public function screening()
+    {
+        $screenings = Patients::with(['answers.question'])
+            ->whereHas('answers.question', function ($query) {
+                $query->where('requires_doctor', true) // Filter hanya pertanyaan yang tidak membutuhkan dokter
+                      ->where(function ($subQuery) {
+                          // Cek jika condition_value ada dan jawaban sesuai
+                          $subQuery->whereNull('condition_value')
+                                   ->orWhereHas('answers', function ($subQuery2) {
+                                       $subQuery2->whereIn('answer_text', function ($query) {
+                                           $query->select('condition_value')
+                                                 ->from('screening_offline_questions')
+                                                 ->whereNotNull('condition_value');
+                                       });
+                                   });
+                      });
+            })
+            ->where('screening_status', 'pending') // Filter hanya screening dengan status pending
+            ->get();
+    
+        return Inertia::render('Dashboard/Doctor/Screening/Offline/Index', [
+            'screenings' => $screenings,
+        ]);
     }
+    
+    public function show($id)
+    {
+        $patient = Patients::with(['answers.question'])
+            ->findOrFail($id); // Mengambil pasien dan data relasi jawaban dengan pertanyaan
 
-    public function screening(){
-        return Inertia::render('Dashboard/Doctor/Screenings/Offline');
+        // Menyiapkan data pertanyaan dan jawaban
+        $questionsAndAnswers = $patient->answers->map(function ($answer) {
+            return [
+                'question' => $answer->question->question_text,
+                'answer' => $answer->answer_text,
+                'queue' => $answer->queue, // Menambahkan nomor antrian
+            ];
+        });
+
+        // Mengirim data ke halaman Inertia
+        return Inertia::render('Dashboard/Doctor/Screenings/Offline/Index',        [
+            'patient' => $patient,
+            'questionsAndAnswers' => $questionsAndAnswers,
+            'queue' => $patient->answers->max('queue'),
+        ]);
     }
 }

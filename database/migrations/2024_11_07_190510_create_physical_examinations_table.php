@@ -15,8 +15,13 @@ return new class extends Migration
             $table->id();
             // Relasi ke tabel patients
             $table->foreignId('patient_id')->constrained('patients');
-            $table->unsignedBigInteger('paramedis_id')->nullable();//kolom untuk pasien ini dicek oleh siapa
-            $table->unsignedBigInteger('doctor_id')->nullable();//kolom untuk pasien ini dicek oleh siapa
+            // Relasi ke tabel paramedis (nullable)
+            $table->unsignedBigInteger('paramedis_id')->nullable();
+            $table->foreign('paramedis_id')->references('id')->on('paramedis')->onDelete('set null');
+            // Relasi ke tabel doctor (nullable)
+            $table->unsignedBigInteger('doctor_id')->nullable();
+            $table->foreign('doctor_id')->references('id')->on('doctors')->onDelete('set null');
+            
             // Kolom-kolom untuk data pemeriksaan fisik
             $table->string('blood_pressure')->nullable();
             $table->integer('heart_rate')->nullable();
@@ -29,6 +34,7 @@ return new class extends Migration
             $table->enum('health_status', ['healthy', 'butuh_dokter', 'butuh_pendamping'])->nullable();
             $table->timestamps();
         });
+        
 
     }
 

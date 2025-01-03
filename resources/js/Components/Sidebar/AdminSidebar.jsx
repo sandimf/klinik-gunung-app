@@ -9,6 +9,7 @@ import {
   ShoppingBag,
   Users,
   ChevronRight,
+  Database,
   Pill,
   NotebookPen,
 } from "lucide-react"
@@ -82,22 +83,6 @@ export function AppSidebar({ ...sidebarProps }) {
         ]
       },
       {
-        title: "Products",
-        url: route("dashboard"),
-        icon: ShoppingBag,
-      },
-      {
-        title: "Apotek",
-        url: "#",
-        icon: Pill,
-        items: [
-          {
-            title: "Obat",
-            url: route('medicine.index'),
-          },
-        ],
-      },
-      {
         title: "Community",
         url: route("dashboard"),
         icon: Users,
@@ -113,10 +98,29 @@ export function AppSidebar({ ...sidebarProps }) {
         ],
       },
       {
+        title: "Database",
+        url: route("dashboard"),
+        icon: Database,
+        items: [
+          {
+            title: "Backup",
+            url: route('community.index'),
+          },
+          {
+            title: "Airtable",
+            url: route('dashboard'),
+          },
+        ],
+      },
+      {
         title: "Settings",
         url: route("admin.profile"),
         icon: Settings2,
         items: [
+            {
+              title: "Profile",
+              url: route('admin.profile'),
+            },
             {
               title: "Aplication Name",
               url: route('manajement-staff.index'),

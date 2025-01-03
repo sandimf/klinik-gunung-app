@@ -20,10 +20,7 @@ export default function MedicalRecordForm() {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    // Handle form submission logic here
-    console.log({ specialNotes, prescription, followUpDate, imagePath })
   }
-
   return (
     <DoctorSidebar header={'Medical Record'}>
       <Head title='Medical Record' />
