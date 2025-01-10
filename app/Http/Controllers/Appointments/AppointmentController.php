@@ -92,7 +92,4 @@ class AppointmentController extends Controller
             ->with('success', 'Appointment cancelled successfully!');
     }
 
-    // public function patientDetail(){
-    //     return
-    // }
 }

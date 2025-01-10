@@ -37,7 +37,7 @@ const CreateMedicineDialog = ({ isOpen, setIsOpen, onSuccess }) => {
       <DialogTrigger asChild>
         <Button className="hidden">Tambah Obat</Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[800px] h-[90vh] flex flex-col">
+      <DialogContent className="sm:max-w-[800px] h-[70vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>Tambah Obat Baru</DialogTitle>
         </DialogHeader>

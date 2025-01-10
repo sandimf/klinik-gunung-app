@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { Command, CalendarPlus, Scan, Home, User, SquareActivity, Users, ChevronRight, Pill } from 'lucide-react'
+import { Command, CalendarPlus, Scan, Home, User, SquareActivity, Users, ChevronRight, Pill, Bandage } from 'lucide-react'
 import { NavUser } from "@/Components/Nav/NavUser"
 import { TeamSwitcher } from "@/Components/Nav/TeamSwitcher"
 import {
@@ -44,6 +44,21 @@ export function AppSidebar({ ...sidebarProps }) {
         icon: Home,
       },
       {
+        title: "Screening",
+        url: route("doctor.screening"),
+        icon: Bandage,
+      },
+      {
+        title: "Daftar Pasien",
+        url: route("patients.doctor"),
+        icon: Users,
+      },
+      {
+        title: "Consultasi",
+        url: route("consultasi.index"),
+        icon: Users,
+      },
+      {
         title: "Appointments",
         url: route("appointments.doctor"),
         icon: CalendarPlus,
@@ -58,11 +73,7 @@ export function AppSidebar({ ...sidebarProps }) {
         url: route("medical-record.index"),
         icon: SquareActivity,
       },
-      {
-        title: "Screening",
-        url: route("doctor.screening"),
-        icon: Scan,
-      },
+
       {
         title: "Manajemen Resep",
         url: route("dashboard"),

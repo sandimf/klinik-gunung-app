@@ -107,7 +107,7 @@ return (
                 <div className="text-center">
                 <h1 className="text-2xl font-bold">Ups Maaf</h1>
                     <p className="text-lg font-semibold text-gray-500">
-                        Belum bisa melakukan screening. Tidak ada pertanyaan yang tersedia saat ini.
+                        Belum bisa melakukan screening. Tidak ada kuesioner yang tersedia saat ini.
                     </p>
                 </div>
             ) : (

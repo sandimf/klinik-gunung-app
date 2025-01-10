@@ -9,6 +9,7 @@ use App\Models\Users\Admin;
 use App\Models\Users\Cashier;
 use App\Models\Users\Doctor;
 use App\Models\Users\Paramedis;
+use App\Models\Users\Warehouse;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -19,7 +20,6 @@ class MedicalPersonnelController extends Controller
     // Halaman daftar tenaga medis
     public function index()
     {
-        // Fetch doctors, cashiers, paramedis, and admins with user data, selecting all relevant fields
         $doctors = collect(Doctor::with('user')->get()->map(function ($doctor) {
             return [
                 'id' => $doctor->id,
@@ -83,9 +83,24 @@ class MedicalPersonnelController extends Controller
                 'updated_at' => $admin->updated_at,
             ];
         }));
+        $warehouse = collect(Warehouse::with('user')->get()->map(function ($warehouse) {
+            return [
+                'id' => $warehouse->id,
+                'nik' => $warehouse->nik,
+                'role' => $warehouse->role,
+                'user_id' => $warehouse->user_id,
+                'name' => $warehouse->name,
+                'email' => $warehouse->user->email,
+                'address' => $warehouse->address,
+                'date_of_birth' => $warehouse->date_of_birth,
+                'phone' => $warehouse->phone,
+                'created_at' => $warehouse->created_at,
+                'updated_at' => $warehouse->updated_at,
+            ];
+        }));
 
         // Merge the collections of doctors, cashiers, paramedis, and admins
-        $users = $doctors->merge($cashiers)->merge($paramedis)->merge($admins);
+        $users = $doctors->merge($cashiers)->merge($paramedis)->merge($admins)->merge($warehouse);
 
         // Pass the merged users data to the Inertia view
         return Inertia::render('Dashboard/Admin/MedicalPersonnel/Index', [
@@ -131,6 +146,7 @@ class MedicalPersonnelController extends Controller
                 'paramedis' => Paramedis::class,
                 'cashier' => Cashier::class,
                 'admin' => Admin::class,
+                'warehouse' => Warehouse::class,
             ];
 
             if (array_key_exists($request->role, $classMap)) {
@@ -149,5 +165,4 @@ class MedicalPersonnelController extends Controller
         }
     }
 
-    // Manajemen Staff
 }

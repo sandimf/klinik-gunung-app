@@ -12,8 +12,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class PhysicalExamination extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
         'patient_id',
         'paramedis_id',

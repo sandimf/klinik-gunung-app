@@ -12,6 +12,7 @@ import {
   Database,
   Pill,
   NotebookPen,
+  Scan,
 } from "lucide-react"
 import { NavUser } from "@/Components/Nav/NavUser"
 import { TeamSwitcher } from "@/Components/Nav/TeamSwitcher"
@@ -81,6 +82,11 @@ export function AppSidebar({ ...sidebarProps }) {
                 url: route('users.index'),
             },
         ]
+      },
+      {
+        title: "Scan",
+        url: route('admin.scan'),
+        icon: Scan,
       },
       {
         title: "Community",

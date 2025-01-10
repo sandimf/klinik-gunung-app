@@ -26,6 +26,7 @@ export default function Index({ users }) {
                         <TableHead>Telepon</TableHead>
                         <TableHead>Peran</TableHead>
                         <TableHead>Tanggal Dibuat</TableHead>
+                        <TableHead>Reset Password</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>

@@ -27,7 +27,7 @@ import {
 } from "@/Components/ui/pagination";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
 import { Button } from "@/Components/ui/button";
-import { Eye } from 'lucide-react';
+import { Edit, Eye } from 'lucide-react';
 import ScreeningDialog from "../Offline/Partials/PhysicalExamination";
 import { Badge } from "@/Components/ui/badge";
 
@@ -71,7 +71,7 @@ const ScreeningOfflineIndex = ({ screenings = [] }) => {
             <Head title="Riwayat Pemeriksaan" />
             <Card>
                 <CardHeader>
-                    <CardTitle>Riawayat Pemeriksaan</CardTitle>
+                    <CardTitle>Riwayat Pemeriksaan</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="flex flex-col md:flex-row gap-4 mb-4">
@@ -101,9 +101,9 @@ const ScreeningOfflineIndex = ({ screenings = [] }) => {
                             <TableRow>
                                 <TableHead>Nomor Antrian</TableHead>
                                 <TableHead>Nama Pasien</TableHead>
-                                <TableHead>Screening type</TableHead>
+                                <TableHead>Screening</TableHead>
                                 <TableHead>Status</TableHead>
-                                <TableHead>Detail</TableHead>
+                                <TableHead>Aksi</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -114,14 +114,14 @@ const ScreeningOfflineIndex = ({ screenings = [] }) => {
                                     </TableCell>
                                     <TableCell className="font-bold">{capitalizeWords(screening.name)}</TableCell>
                                     <TableCell>
-                                        {screening.answers[0]?.isOnline === true ? 'Online' : 'Offline'}
+                                        {screening.answers[0]?.isOnline === 1 ? 'Online' : 'Offline'}
                                     </TableCell>
                                     <TableCell>
                                         <Badge>{screening.screening_status}</Badge>
                                     </TableCell>
                                     <TableCell>
                                         <Link
-                                            href={route("paramedis.detail", {
+                                            href={route("edit.screening", {
                                                 id: screening.id,
                                             })}
                                         >
@@ -129,8 +129,8 @@ const ScreeningOfflineIndex = ({ screenings = [] }) => {
                                                 variant="outline"
                                                 className="mb-4"
                                             >
-                                                <Eye className="mr-2 h-4 w-4" />{" "}
-                                                Kuesioner
+                                                <Edit className="mr-2 h-4 w-4" />{" "}
+                                                Edit
                                             </Button>
                                         </Link>
                                     </TableCell>

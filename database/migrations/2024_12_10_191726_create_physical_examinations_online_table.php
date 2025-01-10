@@ -26,7 +26,6 @@ return new class extends Migration
             $table->text('physical_assessment')->nullable();
             $table->text('reason')->nullable();
             $table->text('medical_advice')->nullable();
-            $table->text('qrcode')->nullable();
             $table->enum('health_status', ['healthy', 'butuh_dokter', 'butuh_pendamping'])->nullable();
             $table->timestamps();
         });

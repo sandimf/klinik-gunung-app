@@ -19,6 +19,7 @@ import { Button } from "@/Components/ui/button";
 import { Checkbox } from "@/Components/ui/checkbox";
 import { Input } from "@/Components/ui/input";
 import { useForm } from "@inertiajs/react";
+import {CheckCircle2} from "lucide-react"
 
 export default function PaymentDialog({
     isOpen,
@@ -67,7 +68,14 @@ export default function PaymentDialog({
             preserveState: true,
             preserveScroll: true,
             onSuccess: () => {
-                toast.success("Pembayaran berhasil diproses.");
+                toast.success(
+                    `Pembayaran Berhasil di Proses`,
+                    {
+                        icon: (
+                            <CheckCircle2 className="h-5 w-5 text-green-500" />
+                        ),
+                    }
+                );
                 onClose();
             },
             onError: (errors) => {

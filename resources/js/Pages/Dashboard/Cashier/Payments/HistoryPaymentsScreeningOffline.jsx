@@ -30,8 +30,8 @@ const ScreeningOfflineIndex = ({ patients = [], medicines }) => {
     };
     
     return (
-        <CashierSidebar header={'Riawayat Pembayaran'}>
-            <Head title="Riawayat Pembayaran" />
+        <CashierSidebar header={'Riwayat Pembayaran Screening'}>
+            <Head title="Riwayat Pembayaran Screening" />
             <Toaster />
             <Card>
                 <CardHeader>
@@ -45,9 +45,7 @@ const ScreeningOfflineIndex = ({ patients = [], medicines }) => {
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className="max-w-sm"
                         />
-
                     </div>
-
                     <Table>
                         <TableHeader>
                             <TableRow>

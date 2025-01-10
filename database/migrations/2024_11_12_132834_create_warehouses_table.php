@@ -20,8 +20,8 @@ return new class extends Migration
             $table->string('address', 100);
             $table->date('date_of_birth');
             $table->string('phone', 15);
-            $table->enum('role', ['cashier'])
-                ->default('cashier');
+            $table->enum('role', ['warehouse'])
+                ->default('warehouse');
             $table->timestamps();
         });
     }

@@ -53,7 +53,7 @@ const ScreeningDialog = ({ isOpen, setIsOpen, onSuccess, examiningScreening }) =
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle>Pemeriksaan Fisik Online</DialogTitle>
           <DialogDescription>

@@ -29,16 +29,25 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request)
     {
-        dd($request->all());
-        $request->user()->fill($request->validated());
+        $validatedData = $request->validated();
 
+        // Jika ada file avatar dalam request
+        if ($request->hasFile('avatar')) {
+            $path = $request->file('avatar')->store('avatars', 'public');
+            $validatedData['avatar'] = $path;
+        }
+
+        // Update data user
+        $request->user()->fill($validatedData);
+
+        // Reset verifikasi email jika email berubah
         if ($request->user()->isDirty('email')) {
             $request->user()->email_verified_at = null;
         }
 
         $request->user()->save();
-        return redirect()->back()->with('success', 'Profil berhasil diperbarui.');
-        
+
+        return back()->with('success', 'Profile Berhasil Di Perbaharui');
     }
 
     /**

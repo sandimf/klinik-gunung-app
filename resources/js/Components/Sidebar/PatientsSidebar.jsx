@@ -74,18 +74,13 @@ export function AppSidebar({ ...sidebarProps }) {
 
       {
         title: "Profile",
-        url: route("dashboard"),
+        url: route("patients.profile"),
         icon: CircleUser,
       },
       {
         title: "Community",
         url: route("community.index"),
         icon: Users,
-      },
-      {
-        title: "Settings",
-        url: route("patients.profile"),
-        icon: Settings2,
       },
     ],
   }

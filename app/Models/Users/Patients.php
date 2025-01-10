@@ -3,8 +3,8 @@
 namespace App\Models\Users;
 
 use App\Models\User;
+use App\Models\QrCode;
 use App\Models\Payments;
-use App\Models\EMR\MedicalRecord;
 use App\Models\Medicines\Medicine;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Clinic\PhysicalExamination;
@@ -35,6 +35,7 @@ class Patients extends Model
         'gender',
         'email',
         'age',
+        'blood_type',
         'contact',
         'ktp_images',
         'screening_status',
@@ -83,5 +84,10 @@ class Patients extends Model
     public function payments()
     {
         return $this->hasMany(Payments::class, 'patient_id');
+    }
+
+    public function qrCode()
+    {
+        return $this->hasOne(QrCode::class);
     }
 }

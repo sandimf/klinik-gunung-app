@@ -30,12 +30,14 @@ return new class extends Migration
             $table->enum('gender', ['male', 'female', 'other']);
             $table->string('email')->unique();
             $table->integer('age')->nullable();
+            $table->string('blood_type')->nullable();
             $table->string('contact')->unique();
             $table->string('ktp_images')->nullable();
+            $table->enum('scan_status', ['pending', 'completed'])->nullable();
             $table->enum('screening_status', ['completed', 'pending', 'cancelled'])->nullable();
-            $table->enum('health_status', ['pending', 'healthy', 'sick', 'under treatment'])->nullable();
+            $table->enum('health_status', ['pending', 'healthy', 'sick', 'under treatment','butuh_dokter','butuh_pendamping'])->nullable();
             $table->enum('health_check_status', ['pending', 'completed'])->nullable();
-            $table->enum('payment_status', ['completed', 'pending', 'cancelled'])->nullable();
+            $table->enum('payment_status', ['completed', 'pending', 'cancelled','checking'])->nullable();
             $table->timestamps();
         });
     }

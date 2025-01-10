@@ -45,7 +45,7 @@ const ScreeningOfflineIndex = ({ screenings = [] }) => {
             screening.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
             (selectedType === "completed" || screening.type === selectedType)
     );
-    
+
     const totalPages = Math.ceil(filteredScreenings.length / itemsPerPage);
     const paginatedScreenings = filteredScreenings.slice(
         (currentPage - 1) * itemsPerPage,
@@ -99,7 +99,6 @@ const ScreeningOfflineIndex = ({ screenings = [] }) => {
                         </TableHeader>
                         <TableBody>
                             {paginatedScreenings.map((screening) => (
-                                
                                 <TableRow key={screening.id}>
                                     <TableCell>
                                         {screening.answers[0].queue}
@@ -107,9 +106,12 @@ const ScreeningOfflineIndex = ({ screenings = [] }) => {
                                     <TableCell>{screening.name}</TableCell>
                                     <TableCell>
                                         <Link
-                                            href={route("paramedis.detail", {
-                                                id: screening.id,
-                                            })}
+                                            href={route(
+                                                "paramedis.detail.online",
+                                                {
+                                                    id: screening.id,
+                                                }
+                                            )}
                                         >
                                             <Button
                                                 variant="outline"

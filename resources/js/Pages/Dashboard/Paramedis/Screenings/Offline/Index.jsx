@@ -1,35 +1,57 @@
-import React, { useState } from 'react'
-import { Head, usePage, Link } from '@inertiajs/react'
-import ParamedisSidebar from "@/Layouts/Dashboard/ParamedisSidebarLayout"
-import { Input } from "@/Components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/Components/ui/select"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/Components/ui/table"
-import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/Components/ui/pagination"
-import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card"
-import { Button } from '@/Components/ui/button'
-import { Stethoscope,ArrowRight } from 'lucide-react'
-import ScreeningDialog from './Partials/PhysicalExamination'
-import { Badge } from '@/Components/ui/badge'
+import React, { useState,useEffect } from "react";
+import { Head, usePage, Link } from "@inertiajs/react";
+import ParamedisSidebar from "@/Layouts/Dashboard/ParamedisSidebarLayout";
+import { Input } from "@/Components/ui/input";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/Components/ui/select";
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/Components/ui/table";
+import {
+    Pagination,
+    PaginationContent,
+    PaginationItem,
+    PaginationLink,
+    PaginationNext,
+    PaginationPrevious,
+} from "@/Components/ui/pagination";
+import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
+import { Button } from "@/Components/ui/button";
+import { Stethoscope, ArrowRight,Info } from "lucide-react";
+import ScreeningDialog from "./Partials/PhysicalExamination";
+import { Badge } from "@/Components/ui/badge";
+import {toast, Toaster} from "sonner"
 
 const ScreeningOfflineIndex = ({ screenings = [] }) => {
-    const { errors } = usePage().props
-    const [searchTerm, setSearchTerm] = useState('')
-    const [selectedType, setSelectedType] = useState('all')
-    const [currentPage, setCurrentPage] = useState(1)
-    const [isDialogOpen, setIsDialogOpen] = useState(false)
-    const [examiningScreening, setExaminingScreening] = useState(null)
-    const itemsPerPage = 10
+    const { errors } = usePage().props;
+    const [searchTerm, setSearchTerm] = useState("");
+    const [selectedType, setSelectedType] = useState("all");
+    const [currentPage, setCurrentPage] = useState(1);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [examiningScreening, setExaminingScreening] = useState(null);
+    const itemsPerPage = 10;
 
-    const filteredScreenings = screenings.filter(screening =>
-        screening.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-        (selectedType === 'all' || screening.type === selectedType)
-    )
+    const filteredScreenings = screenings.filter(
+        (screening) =>
+            screening.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+            (selectedType === "all" || screening.type === selectedType)
+    );
 
-    const totalPages = Math.ceil(filteredScreenings.length / itemsPerPage)
+    const totalPages = Math.ceil(filteredScreenings.length / itemsPerPage);
     const paginatedScreenings = filteredScreenings.slice(
         (currentPage - 1) * itemsPerPage,
         currentPage * itemsPerPage
-    )
+    );
 
     const handleExamine = (screening) => {
         setExaminingScreening(screening);
@@ -37,13 +59,24 @@ const ScreeningOfflineIndex = ({ screenings = [] }) => {
     };
 
     const handleDialogSuccess = () => {
-        setIsDialogOpen(false)
-        setExaminingScreening(null)
-    }
+        setIsDialogOpen(false);
+        setExaminingScreening(null);
+    };
+
+    const { flash } = usePage().props;
+    useEffect(() => {
+        if (flash.message) {
+            toast(flash.message, {
+                icon: <Info className="h-5 w-5 text-green-500"/>
+            });
+        }
+    }, [flash.message]);
 
     return (
-        <ParamedisSidebar header={'Daftar Screening Offline'}>
+        <ParamedisSidebar header={"Daftar Screening Offline"}>
             <Head title="Screening Offline" />
+            <Toaster position='top-center' />
+
             <Card>
                 <CardHeader>
                     <CardTitle>Daftar Screening</CardTitle>
@@ -56,7 +89,10 @@ const ScreeningOfflineIndex = ({ screenings = [] }) => {
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className="max-w-sm"
                         />
-                        <Select value={selectedType} onValueChange={setSelectedType}>
+                        <Select
+                            value={selectedType}
+                            onValueChange={setSelectedType}
+                        >
                             <SelectTrigger className="max-w-[180px]">
                                 <SelectValue placeholder="Pilih tipe screening" />
                             </SelectTrigger>
@@ -78,24 +114,37 @@ const ScreeningOfflineIndex = ({ screenings = [] }) => {
                         <TableBody>
                             {paginatedScreenings.map((screening) => (
                                 <TableRow key={screening.id}>
-                                    <TableCell>{screening.answers[0].queue}</TableCell>
+                                    <TableCell>
+                                        {screening.answers[0].queue}
+                                    </TableCell>
                                     <TableCell>{screening.name}</TableCell>
                                     <TableCell>
-                                    <Link href={route('paramedis.detail', { id: screening.id })}>
-                <Button
-                    variant="outline"
-                    className="mb-4"
-                >
-                    <ArrowRight className="mr-2 h-4 w-4" /> Kuesioner
-                </Button>
-            </Link>
-                                    
+                                        <Link
+                                            href={route("paramedis.detail", {
+                                                id: screening.id,
+                                            })}
+                                        >
+                                            <Button
+                                                variant="outline"
+                                                className="mb-4"
+                                            >
+                                                <ArrowRight className="mr-2 h-4 w-4" />{" "}
+                                                Kuesioner
+                                            </Button>
+                                        </Link>
                                     </TableCell>
                                     <TableCell>
-                                        {screening.screening_status === 'completed' ? (
-                                            <Badge>{screening.screening_status}</Badge>
+                                        {screening.screening_status ===
+                                        "completed" ? (
+                                            <Badge>
+                                                {screening.screening_status}
+                                            </Badge>
                                         ) : (
-                                            <Button onClick={() => handleExamine(screening)}>
+                                            <Button
+                                                onClick={() =>
+                                                    handleExamine(screening)
+                                                }
+                                            >
                                                 <Stethoscope className="h-4 w-4 mr-2" />
                                                 Health Check
                                             </Button>
@@ -110,7 +159,11 @@ const ScreeningOfflineIndex = ({ screenings = [] }) => {
                         <PaginationContent>
                             <PaginationItem>
                                 <PaginationPrevious
-                                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                                    onClick={() =>
+                                        setCurrentPage((prev) =>
+                                            Math.max(prev - 1, 1)
+                                        )
+                                    }
                                     disabled={currentPage === 1}
                                 />
                             </PaginationItem>
@@ -126,7 +179,11 @@ const ScreeningOfflineIndex = ({ screenings = [] }) => {
                             ))}
                             <PaginationItem>
                                 <PaginationNext
-                                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                                    onClick={() =>
+                                        setCurrentPage((prev) =>
+                                            Math.min(prev + 1, totalPages)
+                                        )
+                                    }
                                     disabled={currentPage === totalPages}
                                 />
                             </PaginationItem>
@@ -143,7 +200,7 @@ const ScreeningOfflineIndex = ({ screenings = [] }) => {
                 </CardContent>
             </Card>
         </ParamedisSidebar>
-    )
-}
+    );
+};
 
-export default ScreeningOfflineIndex
+export default ScreeningOfflineIndex;

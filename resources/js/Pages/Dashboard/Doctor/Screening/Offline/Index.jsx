@@ -66,7 +66,7 @@ const ScreeningOfflineIndex = ({ screenings = [] }) => {
             <Head title="Screening" />
             <Card>
                 <CardHeader>
-                    <CardTitle>Screening List</CardTitle>
+                    <CardTitle>Screening</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="flex flex-col md:flex-row gap-4 mb-4">

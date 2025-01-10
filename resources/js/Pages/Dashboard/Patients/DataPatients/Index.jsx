@@ -21,7 +21,7 @@ import {
 import WebcamComponent from "./_components/webcam"
 import Sidebar from "@/Layouts/Dashboard/PatientsSidebarLayout";
 
-const genAI = new GoogleGenerativeAI("AIzaSyALKU_1CT5xmPPMnjV1KOp65Z1N6v-MRUs")
+const genAI = new GoogleGenerativeAI("AIzaSyBfiwWwXE3Q8v0JuTPDb4xvNjh9SuvpWDE")
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" })
 
 export default function PatientDataEntry({ patient }) {

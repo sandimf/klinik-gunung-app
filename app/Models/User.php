@@ -87,4 +87,9 @@ class User extends Authenticatable
         return $this->hasMany(PhysicalExamination::class, 'doctor_id');
     }
 
+    public function physicalExaminations()
+    {
+        return $this->hasMany(PhysicalExamination::class, 'paramedis_id');
+    }
+
 }

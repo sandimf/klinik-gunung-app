@@ -77,6 +77,11 @@ export function AppSidebar({ ...sidebarProps }) {
         icon: FileClock,
       },
       {
+        title: "Riwayat Pembayaran Online",
+        url: route("history-online.cashier"),
+        icon: FileClock,
+      },
+      {
         title: "Office",
         url: route("office.index"),
         icon: ChartPie,

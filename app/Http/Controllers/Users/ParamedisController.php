@@ -91,6 +91,7 @@ class ParamedisController extends Controller
         ]);
     }
 
+    // Menampilkan history pemeriksaan screening Offline Dan Onlin
     public function showHistoryScreening()
     {
         // Query screenings from Patients model
@@ -118,6 +119,7 @@ class ParamedisController extends Controller
         ]);
     }
 
+    // Menampilkan Screening Onlin
     public function showScreeningOnline()
     {
         $screenings = PatientsOnline::with(['answers.question'])
@@ -125,10 +127,33 @@ class ParamedisController extends Controller
                 $query->whereNotNull('answer_text');
             })
             ->where('screening_status', 'pending') // Tambahkan kondisi untuk screening_status
+            ->where('payment_status', 'completed') // Tambahkan kondisi untuk payment_status
+            ->where('scan_status', 'completed') // Tambahkan kondisi untuk hanya menampilkan scan_status 'completed'
             ->get();
-
+    
         return Inertia::render('Dashboard/Paramedis/Screenings/Online/Index', [
             'screenings' => $screenings,
+        ]);
+    }
+    
+    
+    public function showScreeningOnlineDetail($id)
+    {
+        $patient = PatientsOnline::with(['answers.question'])
+            ->findOrFail($id); 
+
+        $questionsAndAnswers = $patient->answers->map(function ($answer) {
+            return [
+                'question' => $answer->question->question_text,
+                'answer' => $answer->answer_text,
+                'queue' => $answer->queue, // Menambahkan nomor antrian
+            ];
+        });
+
+        return Inertia::render('Dashboard/Paramedis/Screenings/Online/Details/Index', [
+            'patient' => $patient,
+            'questionsAndAnswers' => $questionsAndAnswers,
+            'queue' => $patient->answers->max('queue'),
         ]);
     }
 }

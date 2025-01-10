@@ -7,6 +7,7 @@ import { RadioGroup, RadioGroupItem } from "@/Components/ui/radio-group";
 import { Button } from "@/Components/ui/button";
 import { useForm, usePage } from '@inertiajs/react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/Components/ui/select";
+
 const ScreeningDialog = ({ isOpen, setIsOpen, onSuccess, examiningScreening }) => {
     const { auth } = usePage().props;
     const user = auth.user;
@@ -47,7 +48,7 @@ const ScreeningDialog = ({ isOpen, setIsOpen, onSuccess, examiningScreening }) =
 
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:max-w-[600px]">
                 <DialogHeader>
                     <DialogTitle>Pemeriksaan Fisik</DialogTitle>
                     <DialogDescription>

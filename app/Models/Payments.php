@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
+use App\Models\Users\Patients;
 use App\Models\Medicines\MedicineBatch;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Payments extends Model
 {
@@ -31,6 +32,10 @@ class Payments extends Model
         return $this->belongsTo(MedicineBatch::class, 'medicine_batch_id');
     }
 
+    public function patient()
+    {
+        return $this->belongsTo(Patients::class);
+    }
     // Metode untuk melakukan pengurangan stok obat
     public function processPurchase()
     {

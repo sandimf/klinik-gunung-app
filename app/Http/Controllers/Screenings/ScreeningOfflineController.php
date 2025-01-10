@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Screenings\ScreeningAnswers;
 use App\Models\Screenings\ScreeningQuestions;
 use App\Http\Requests\Screenings\ScreeningOfflineRequest;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ScreeningOfflineController extends Controller
 {
@@ -101,14 +102,34 @@ class ScreeningOfflineController extends Controller
     public function show($id)
     {
         $userId = Auth::id();
-        // Mengambil data pasien dan jawaban screening terkait pengguna yang sedang login
-        $screening = Patients::with('answers.question') // Eager load answers dan pertanyaan yang terkait
+        $screening = Patients::with(['answers.question', 'physicalExaminations']) // Eager load answers, questions, and physicalExaminations
             ->where('user_id', $userId) // Filter hanya pasien milik pengguna yang sedang login
             ->findOrFail($id);
-
-        // Kirim data pasien beserta jawaban screening ke tampilan Inertia
+    
+        // Kirim data pasien beserta jawaban screening dan pemeriksaan fisik ke tampilan Inertia
         return Inertia::render('Dashboard/Patients/Screenings/Details/ScreeningOfflineDetail', [
             'screening' => $screening,
         ]);
     }
+    
+
+    public function generatePDF($id)
+{
+    $userId = Auth::id();
+    $screening = Patients::with(['answers.question', 'physicalExaminations'])
+        ->where('user_id', $userId)
+        ->findOrFail($id);
+
+    // Ambil nama pasien
+    $patientName = str_replace(' ', '_', $screening->name); // Ganti spasi dengan underscore untuk nama file yang valid
+    
+    // Mengonversi data menjadi PDF
+    $pdf = PDF::loadView('pdf.screenings.offline', [
+        'screening' => $screening,
+    ]);
+
+    // Download PDF dengan nama sesuai nama pasien
+    return $pdf->download('screening_detail_' . $patientName . '.pdf');
+}
+
 }

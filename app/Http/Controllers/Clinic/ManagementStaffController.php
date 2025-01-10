@@ -14,7 +14,6 @@ class ManagementStaffController extends Controller
     // Index Staff Management
     public function index()
     {
-        // Fetch doctors, cashiers, paramedis, and admins with user data, selecting all relevant fields
         $doctors = collect(Doctor::with('user')->get()->map(function ($doctor) {
             return [
                 'id' => $doctor->id,

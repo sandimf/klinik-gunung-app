@@ -45,6 +45,7 @@ export default function PatientDataEntry({questions}) {
         nationality: "",
         valid_until: "",
         blood_type: "",
+        ktp_images: null,
     });
 
     const handleAnswerChange = (questionId, answer) => {
@@ -65,8 +66,6 @@ export default function PatientDataEntry({questions}) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-    
-        console.log("Jawaban yang dikirim:", answers);  // Debugging
         const unansweredQuestions = questions.filter(question => !answers[question.id]);
         if (unansweredQuestions.length > 0) {
             const newErrors = {};
@@ -110,10 +109,12 @@ export default function PatientDataEntry({questions}) {
     const handleFileChange = async (event) => {
         const file = event.target.files?.[0];
         if (file) {
-            setImageFile(file);
-            await analyzeImageWrapper(file);
+            setImageFile(file); // Simpan file ke state untuk preview
+            setData("ktp_images", file); // Simpan file ke state form untuk pengiriman
+            await analyzeImageWrapper(file); // Analisis gambar menggunakan AI (opsional)
         }
     };
+    
 
     const handleCameraCapture = async (imageSrc) => {
         fetch(imageSrc)
@@ -177,7 +178,7 @@ export default function PatientDataEntry({questions}) {
                 <CardContent>
                     <Tabs value={entryMethod} onValueChange={setEntryMethod} className="mb-4">
                         <TabsList className="grid w-full grid-cols-3">
-                            <TabsTrigger value="manual">Manual Entry</TabsTrigger>
+                            <TabsTrigger value="manual">Input Manual</TabsTrigger>
                             <TabsTrigger value="upload">Upload KTP</TabsTrigger>
                             <TabsTrigger value="camera">Scan KTP</TabsTrigger>
                         </TabsList>
@@ -257,7 +258,6 @@ export default function PatientDataEntry({questions}) {
                                 {/* Render input berdasarkan tipe pertanyaan */}
                                 {question.answer_type === 'text' && (
                                     <div>
-                                        <Label>Answer</Label>
                                         <Input
                                             type="text"
                                             value={answers[question.id] || ''}

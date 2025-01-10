@@ -56,7 +56,7 @@ export default function Dashboard({ screening, visitCount }) {
                                             </p>
                                         </>
                                     ) : (
-                                        <p className="text-center text-muted-foreground">You haven't had a screening.</p>
+                                        <p className="text-xs text-muted-foreground">You haven't had a screening.</p>
                                     )}
                                 </CardContent>
                             </Card>
@@ -104,7 +104,6 @@ export default function Dashboard({ screening, visitCount }) {
                             </Card>
                         </div>
                     </TabsContent>
-                    {/* We'll add other TabsContent components later */}
                 </Tabs>
             </div>
         </Sidebar>

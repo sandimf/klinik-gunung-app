@@ -69,10 +69,6 @@ export default function AppointmentsList({appointments}) {
     console.log(`Rescheduling appointment ${appointmentId} to ${newDate} at ${newTime}`);
   };
 
-  const onStartAppointment = (appointmentId) => {
-    // Placeholder for starting appointment logic
-    console.log(`Starting appointment ${appointmentId}`);
-  };
 
   return (
     <DoctorSidebar header={'Appointments'}>
@@ -102,9 +98,9 @@ export default function AppointmentsList({appointments}) {
                 <SelectItem value="cancelled">Cancelled</SelectItem>
               </SelectContent>
             </Select>
-            <Button onClick={handleExportPDF}>
+            <Button>
               <FileDown className="mr-2 h-4 w-4" />
-              Export to PDF
+              Buat Baru
             </Button>
           </div>
         </div>

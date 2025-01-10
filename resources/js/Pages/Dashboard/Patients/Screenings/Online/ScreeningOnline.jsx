@@ -107,9 +107,9 @@ return (
             )}
             {questions.length === 0 ? (
                 <div className="text-center">
-                <h1 className="text-2xl font-bold">Ups</h1>
+                <h1 className="text-2xl font-bold">Ups Maaf</h1>
                     <p className="text-lg font-semibold text-gray-500">
-                        Belum bisa melakukan screening. Tidak ada pertanyaan yang tersedia saat ini.
+                        Belum bisa melakukan screening. Tidak ada kuesioner yang tersedia saat ini.
                     </p>
                 </div>
             ) : (
@@ -230,7 +230,6 @@ return (
                                 {/* Render input berdasarkan tipe pertanyaan */}
                                 {question.answer_type === 'text' && (
                                     <div>
-                                        <Label>Answer</Label>
                                         <Input
                                             type="text"
                                             value={answers[question.id] || ''}
@@ -267,7 +266,6 @@ return (
                             {/* Checkbox with Textarea Input */}
                             {question.answer_type === 'checkbox_textarea' && (
                                 <div>
-                                    <Label>Options</Label>
                                     {Array.isArray(question.options) && question.options.map((option, index) => (
                                         <div key={index}>
                                             <Checkbox
@@ -304,7 +302,6 @@ return (
                             {/* Select Input */}
                             {question.answer_type === 'select' && (
                                 <div>
-                                    <Label>Options</Label>
                                     <Select
                                         value={answers[question.id] || ''}
                                         onValueChange={(value) => handleAnswerChange(question.id, value)}
@@ -327,7 +324,6 @@ return (
                             {/* Textarea Input */}
                             {question.answer_type === 'textarea' && (
                                 <div>
-                                    <Label>Answer</Label>
                                     <Textarea
                                         value={answers[question.id] || ''}
                                         onChange={(e) => handleAnswerChange(question.id, e.target.value)}
@@ -338,7 +334,6 @@ return (
                             )}
                             {question.answer_type === 'number' && (
                                 <div>
-                                    <Label>Answer</Label>
                                     <Input
                                         type="number"
                                         value={answers[question.id] || ''}
@@ -350,7 +345,6 @@ return (
                             )}
                             {question.answer_type === 'date' && (
                                 <div>
-                                    <Label>Answer</Label>
                                     <Input
                                         type="date"
                                         value={answers[question.id] || ''}

@@ -29,6 +29,7 @@ return new class extends Migration
             $table->string('nationality')->default('WNI'); // Kewarganegaraan
             $table->enum('gender', ['male', 'female', 'other'])->default('other');
             $table->string('email')->unique();
+            $table->string('blood_type')->nullable();
             $table->integer('age')->nullable();
             $table->string('contact')->unique();
             $table->string('ktp_images')->nullable();

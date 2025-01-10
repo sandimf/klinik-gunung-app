@@ -3,14 +3,13 @@
 import React, { useState } from "react"
 import {
   Command,
-  Scan,
   Home,
-  UserPlus,
-  Settings2,
-  ShoppingBag,
-  Users,
   ChevronRight,
+  Users2,
+  Bandage,
+  Activity,
   Pill,
+  ChartPie,
 } from "lucide-react"
 import { NavUser } from "@/Components/Nav/NavUser"
 import { TeamSwitcher } from "@/Components/Nav/TeamSwitcher"
@@ -58,22 +57,27 @@ export function AppSidebar({ ...sidebarProps }) {
       {
         title: "Aktivitas Screening",
         url: route("manager.screening"),
-        icon: Scan,
+        icon: Bandage,
       },
       {
-        title: "Report",
-        url: route('dashboard'),
-        icon: UserPlus,
-        items: [
-            {
-                title: "Daftar Tenaga Medis",
-                url: route('users.index'),
-            },
-            {
-                title: "Tambah Tenaga Medis",
-                url: route('users.create'),
-            },
-        ]
+        title: "Staff",
+        url: route("manager.staff"),
+        icon: Users2  ,
+      },
+      {
+        title: "Apotek",
+        url: route("manager.apotek"),
+        icon: Pill,
+      },
+      {
+        title: "Office",
+        url: route("manager.office"),
+        icon: ChartPie,
+      },
+      {
+        title: "Report & Analisis",
+        url: route('manager.report'),
+        icon: Activity,
       }
     ],
   }

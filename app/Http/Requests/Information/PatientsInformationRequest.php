@@ -32,6 +32,7 @@ class PatientsInformationRequest extends FormRequest
             'gender' => 'required|in:male,female,other',
             'email' => 'required|email|unique:patients,email|max:255',
             'age' => 'required|integer|min:0',
+            'blood_type' => 'required|string|max:10',
             'contact' => 'required|string|unique:patients,contact|max:15',
             'ktp_images' => 'nullable|string|max:255',
             'screening_status' => 'nullable|in:completed,pending,cancelled',

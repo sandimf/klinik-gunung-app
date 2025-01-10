@@ -22,7 +22,14 @@ import {
 } from "@/Components/ui/select";
 import { Toaster, toast } from "sonner";
 import AdminSidebar from "@/Layouts/Dashboard/AdminSidebarLayout";
-import { CheckCircle2, X, CalendarIcon } from "lucide-react";
+import {
+    CheckCircle2,
+    X,
+    CalendarIcon,
+    RefreshCw,
+    Eye,
+    EyeOff,
+} from "lucide-react";
 import { Calendar } from "@/Components/ui/calendar";
 import {
     Popover,
@@ -31,6 +38,9 @@ import {
 } from "@/Components/ui/popover";
 
 export default function CreatePersonal({ auth }) {
+    const [showPassword, setShowPassword] = React.useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
+    const [confirmPassword, setConfirmPassword] = React.useState("");
     const initialData = {
         name: "",
         email: "",
@@ -40,6 +50,20 @@ export default function CreatePersonal({ auth }) {
         address: "",
         nik: "",
         date_of_birth: "", // tanggal lahir disimpan dalam bentuk string 'YYYY-MM-DD'
+    };
+
+    const generatePassword = () => {
+        const length = 12;
+        const charset =
+            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+";
+        let newPassword = "";
+        for (let i = 0; i < length; i++) {
+            newPassword += charset.charAt(
+                Math.floor(Math.random() * charset.length)
+            );
+        }
+        setData("password", newPassword);
+        setConfirmPassword(newPassword);
     };
 
     // State untuk menyimpan tanggal yang dipilih
@@ -112,7 +136,7 @@ export default function CreatePersonal({ auth }) {
                                         setData("name", e.target.value)
                                     }
                                     placeholder="Masukkan nama lengkap"
-                                    required
+                                    
                                 />
                                 {errors.name && (
                                     <p
@@ -159,7 +183,7 @@ export default function CreatePersonal({ auth }) {
                                         setData("email", e.target.value)
                                     }
                                     placeholder="contoh@email.com"
-                                    required
+                                    
                                 />
                                 {errors.email && (
                                     <p
@@ -231,7 +255,7 @@ export default function CreatePersonal({ auth }) {
                                         setData("address", e.target.value)
                                     }
                                     placeholder="Masukkan alamat"
-                                    required
+                                    
                                 />
                                 {errors.address && (
                                     <p
@@ -268,17 +292,34 @@ export default function CreatePersonal({ auth }) {
 
                             <div className="space-y-2">
                                 <Label htmlFor="password">Password</Label>
-                                <Input
-                                    id="password"
-                                    type="password"
-                                    name="password"
-                                    value={data.password}
-                                    onChange={(e) =>
-                                        setData("password", e.target.value)
-                                    }
-                                    placeholder="Masukkan password"
-                                    required
-                                />
+                                <div className="relative">
+                                    <Input
+                                        id="password"
+                                        type={
+                                            showPassword ? "text" : "password"
+                                        }
+                                        name="password"
+                                        value={data.password}
+                                        onChange={(e) =>
+                                            setData("password", e.target.value)
+                                        }
+                                        placeholder="Masukkan password"
+                                        
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            setShowPassword(!showPassword)
+                                        }
+                                        className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                                    >
+                                        {showPassword ? (
+                                            <EyeOff className="h-5 w-5 text-gray-400" />
+                                        ) : (
+                                            <Eye className="h-5 w-5 text-gray-400" />
+                                        )}
+                                    </button>
+                                </div>
                                 {errors.password && (
                                     <p
                                         className="text-sm text-red-500"
@@ -288,6 +329,60 @@ export default function CreatePersonal({ auth }) {
                                     </p>
                                 )}
                             </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="confirmPassword">
+                                    Confirm Password
+                                </Label>
+                                <div className="relative">
+                                    <Input
+                                        id="confirmPassword"
+                                        type={
+                                            showConfirmPassword
+                                                ? "text"
+                                                : "password"
+                                        }
+                                        name="confirmPassword"
+                                        value={confirmPassword}
+                                        onChange={(e) =>
+                                            setConfirmPassword(e.target.value)
+                                        }
+                                        placeholder="Konfirmasi password"
+                                        
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            setShowConfirmPassword(
+                                                !showConfirmPassword
+                                            )
+                                        }
+                                        className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                                    >
+                                        {showConfirmPassword ? (
+                                            <EyeOff className="h-5 w-5 text-gray-400" />
+                                        ) : (
+                                            <Eye className="h-5 w-5 text-gray-400" />
+                                        )}
+                                    </button>
+                                </div>
+                                {data.password !== confirmPassword && (
+                                    <p
+                                        className="text-sm text-red-500"
+                                        role="alert"
+                                    >
+                                        Passwords do not match
+                                    </p>
+                                )}
+                            </div>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={generatePassword}
+                                className="w-full mt-2"
+                            >
+                                <RefreshCw className="mr-2 h-4 w-4" /> Generate
+                                Password
+                            </Button>
 
                             {/* Role */}
                             <div className="space-y-2">
@@ -305,14 +400,17 @@ export default function CreatePersonal({ auth }) {
                                         <SelectItem value="admin">
                                             Admin
                                         </SelectItem>
+                                        <SelectItem value="doctor">
+                                            Dokter
+                                        </SelectItem>
                                         <SelectItem value="paramedis">
                                             Paramedis
                                         </SelectItem>
                                         <SelectItem value="cashier">
                                             Kasir
                                         </SelectItem>
-                                        <SelectItem value="doctor">
-                                            Dokter
+                                        <SelectItem value="warehouse">
+                                            Warehouse
                                         </SelectItem>
                                     </SelectContent>
                                 </Select>

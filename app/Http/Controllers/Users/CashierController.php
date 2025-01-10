@@ -56,12 +56,30 @@ class CashierController extends Controller
             })
             ->get();
 
+            
+
         // Muat semua data obat dengan pricing
         $medicines = Medicine::with('pricing')->get();
 
         return Inertia::render('Dashboard/Cashier/Payments/HistoryPaymentsScreeningOffline', [
             'patients' => $patients,
             'medicines' => $medicines,
+        ]);
+    }
+    public function historyPaymentsOnline()
+    {
+        // Ambil data pasien dengan pembayaran dan screening yang relevan
+        $patients = PatientsOnline::with([
+            'payments',                // Relasi ke payments
+            'answers.question',        // Relasi ke jawaban dan pertanyaan screening
+        ])
+            ->whereHas('payments', function ($query) {
+                $query->where('payment_status', true); 
+            })
+            ->get();
+
+        return Inertia::render('Dashboard/Cashier/Payments/HistoryPaymentsScreeningOnline', [
+            'patients' => $patients,
         ]);
     }
 
@@ -73,11 +91,12 @@ class CashierController extends Controller
                 $query->whereNotNull('answer_text');
             })
             ->get();
-
+    
         return Inertia::render('Dashboard/Cashier/Screenings/ScreeningOnline', [
             'screenings' => $screenings,
         ]);
     }
+    
 
     public function showPayment($id)
     {

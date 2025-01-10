@@ -29,10 +29,6 @@ export default function Appointments({ appointments }) {
               />
             </div>
            
-            <Button >
-              <FileDown className="mr-2 h-4 w-4" />
-              Export to PDF
-            </Button>
           </div>
           </div>
           <Table>

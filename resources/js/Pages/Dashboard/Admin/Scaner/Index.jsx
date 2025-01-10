@@ -17,8 +17,17 @@ export default function QrScanner() {
                 const response = await axios.post(route('decrypt.scan'), {
                     encryptedData: decodedText,
                 });
-                setDecryptedData(response.data.data); // Simpan hasil dekripsi
-                setError(""); // Reset error
+    
+                if (response.data.success) {
+                    setDecryptedData(response.data.data); // Simpan hasil dekripsi
+                    setError(""); // Reset error
+    
+                    // Menampilkan pesan bahwa screening telah selesai
+                    alert('Screening status telah diperbarui menjadi completed.');
+                } else {
+                    setError("Gagal mendekripsi QR code.");
+                    setDecryptedData(null); // Reset hasil dekripsi jika gagal
+                }
             } catch (err) {
                 console.error(err);
                 setError("Gagal mendekripsi QR code.");

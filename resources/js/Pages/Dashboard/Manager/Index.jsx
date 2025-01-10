@@ -7,6 +7,7 @@ export default function Index() {
 
     return (
         <ManagerSidebar header={'Dashboard'}>
+            <Head title='Dashboard Manager' />
         <div>
             <h1>Welcome to my app {user.name}</h1>
         </div>

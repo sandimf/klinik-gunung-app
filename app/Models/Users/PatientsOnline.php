@@ -32,6 +32,7 @@ class PatientsOnline extends Model
         'gender',
         'email',
         'age',
+        'blood_type',
         'contact',
         'ktp_images',
         'screening_status',
@@ -54,6 +55,10 @@ class PatientsOnline extends Model
     {
         return $this->hasOne(PaymentOnline::class, 'patient_id', 'id');
     }
+    public function payments()
+    {
+        return $this->hasOne(PaymentOnline::class, 'patient_id', 'id');
+    }
 
     public function patient()
     {
@@ -61,6 +66,10 @@ class PatientsOnline extends Model
     }
 
     public function result()
+    {
+        return $this->hasMany(PhysicalExaminationOnline::class, 'patient_id');
+    }
+    public function physicalExaminations()
     {
         return $this->hasMany(PhysicalExaminationOnline::class, 'patient_id');
     }

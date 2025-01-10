@@ -12,7 +12,6 @@ import { Toaster } from 'sonner';
 
 const ScreeningOfflineIndex = ({ screenings = [], medicines }) => {
     console.log(medicines);
-    const { errors } = usePage().props;
     const [searchTerm, setSearchTerm] = useState('');
 
     const [currentPage, setCurrentPage] = useState(1);
@@ -43,7 +42,7 @@ const ScreeningOfflineIndex = ({ screenings = [], medicines }) => {
     return (
         <CashierSidebar header={'Daftar Screening Offline'}>
             <Head title="Screening Offline" />
-            <Toaster />
+            <Toaster position='top-center' />
             <Card>
                 <CardHeader>
                     <CardTitle>Daftar Pembayaran Screening Offline</CardTitle>

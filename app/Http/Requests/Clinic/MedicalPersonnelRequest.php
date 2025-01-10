@@ -25,7 +25,7 @@ class MedicalPersonnelRequest extends FormRequest
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
-            'role' => 'required|string|in:admin,cashier,paramedis,doctor,manager',
+            'role' => 'required|string|in:admin,cashier,paramedis,doctor,manager,warehouse',
             'nik' => 'required|string|unique:doctors,nik|unique:paramedis,nik|unique:cashiers,nik',
             'date_of_birth' => 'required_if:role,doctor,paramedis,cashier|date|nullable',
             'address' => 'required|string|max:255',
