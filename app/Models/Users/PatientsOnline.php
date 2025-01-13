@@ -3,6 +3,7 @@
 namespace App\Models\Users;
 
 use App\Models\User;
+use Illuminate\Support\Str;
 use App\Models\Payments\PaymentOnline;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Clinic\PhysicalExaminationOnline;
@@ -16,6 +17,7 @@ class PatientsOnline extends Model
 
     protected $table = 'patients_online';
     protected $fillable = [
+        'uuid',
         'user_id',
         'nik',
         'name',
@@ -77,5 +79,17 @@ class PatientsOnline extends Model
     public function question()
     {
         return $this->hasMany(ScreeningOnlineQuestions::class, 'patient_id');
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Secara otomatis menghasilkan UUID saat data dibuat
+        static::creating(function ($model) {
+            if (empty($model->uuid)) {
+                $model->uuid = (string) Str::uuid();
+            }
+        });
     }
 }

@@ -60,6 +60,11 @@ class User extends Authenticatable
         return $this->hasOne(Patients::class, 'user_id');
     }
 
+    public function patients()
+    {
+        return $this->hasMany(Patients::class); // Relasi ke model Patient
+    }
+
     public function patient_online()
     {
         return $this->hasOne(PatientsOnline::class, 'user_id');

@@ -43,7 +43,7 @@ export default function HistoryOffline({ screening }) {
                             RouteName={'Detail'}
                             detailRouteName={route(
                                 "screening.show",
-                                screening.id
+                                screening.uuid
                             )}
                         />
                     ) : isCompleted ? (

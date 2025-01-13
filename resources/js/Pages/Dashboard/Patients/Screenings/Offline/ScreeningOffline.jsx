@@ -228,12 +228,11 @@ return (
                                 {/* Render input berdasarkan tipe pertanyaan */}
                                 {question.answer_type === 'text' && (
                                     <div>
-                                        <Label>Answer</Label>
                                         <Input
                                             type="text"
                                             value={answers[question.id] || ''}
                                             onChange={(e) => handleAnswerChange(question.id, e.target.value)}
-                                            placeholder="Enter your answer"
+                                            placeholder="Jawaban"
                                         />
                                         {formErrors[question.id] && <p className="text-sm text-red-500">{formErrors[question.id]}</p>}
                                     </div>
@@ -265,7 +264,6 @@ return (
                             {/* Checkbox with Textarea Input */}
                             {question.answer_type === 'checkbox_textarea' && (
                                 <div>
-                                    <Label>Options</Label>
                                     {Array.isArray(question.options) && question.options.map((option, index) => (
                                         <div key={index}>
                                             <Checkbox
@@ -302,7 +300,6 @@ return (
                             {/* Select Input */}
                             {question.answer_type === 'select' && (
                                 <div>
-                                    <Label>Options</Label>
                                     <Select
                                         value={answers[question.id] || ''}
                                         onValueChange={(value) => handleAnswerChange(question.id, value)}
@@ -325,7 +322,6 @@ return (
                             {/* Textarea Input */}
                             {question.answer_type === 'textarea' && (
                                 <div>
-                                    <Label>Answer</Label>
                                     <Textarea
                                         value={answers[question.id] || ''}
                                         onChange={(e) => handleAnswerChange(question.id, e.target.value)}
@@ -336,7 +332,6 @@ return (
                             )}
                             {question.answer_type === 'number' && (
                                 <div>
-                                    <Label>Answer</Label>
                                     <Input
                                         type="number"
                                         value={answers[question.id] || ''}
@@ -348,7 +343,6 @@ return (
                             )}
                             {question.answer_type === 'date' && (
                                 <div>
-                                    <Label>Answer</Label>
                                     <Input
                                         type="date"
                                         value={answers[question.id] || ''}
@@ -359,12 +353,11 @@ return (
                                 </div>
                             )}
 
-                                {/* Tambahkan jenis input lainnya seperti yang sebelumnya */}
                             </CardContent>
                         </Card>
                     ))}
 
-                    <Button type="submit">Submit Answers</Button>
+                    <Button type="submit">Kirim Kuesioner</Button>
                 </form>
             )}
         </div>

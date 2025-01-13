@@ -1,9 +1,10 @@
 import { Button } from "@/Components/ui/button";
 import { Link } from '@inertiajs/react';
+import { Plus } from "lucide-react";
 
 const QuestionerHeader = ({
     title = 'Questioner List',
-    buttonText = 'Create Question',
+    buttonText = 'Buat Kuesioner',
     routeName,
     children
 }) => {
@@ -14,6 +15,7 @@ const QuestionerHeader = ({
                 {/* Tombol dengan event custom */}
                     <Link href={routeName}>
                         <Button className='space-x-1'>
+                            <Plus/>
                             <span>{buttonText}</span>
                         </Button>
                     </Link>

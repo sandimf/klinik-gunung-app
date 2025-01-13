@@ -1,14 +1,14 @@
-import React, { useState, useRef,useEffect } from "react"
-import { Head, useForm,usePage } from "@inertiajs/react"
-import { GoogleGenerativeAI } from "@google/generative-ai"
-import { Input } from "@/Components/ui/input"
-import { Label } from "@/Components/ui/label"
-import { Button } from "@/Components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card"
-import { Alert, AlertDescription, AlertTitle } from "@/Components/ui/alert"
-import { Terminal, Upload,CheckCircle2,Info } from 'lucide-react'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/Components/ui/tabs"
-import {toast,Toaster} from "sonner"
+import React, { useState, useRef, useEffect } from "react";
+import { Head, useForm, usePage } from "@inertiajs/react";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import { Input } from "@/Components/ui/input";
+import { Label } from "@/Components/ui/label";
+import { Button } from "@/Components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
+import { Alert, AlertDescription, AlertTitle } from "@/Components/ui/alert";
+import {  Upload, CheckCircle2, Info, InfoIcon } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/Components/ui/tabs";
+import { toast, Toaster } from "sonner";
 import {
     Select,
     SelectContent,
@@ -17,20 +17,20 @@ import {
     SelectLabel,
     SelectTrigger,
     SelectValue,
-} from "@/Components/ui/select"
-import WebcamComponent from "./_components/webcam"
+} from "@/Components/ui/select";
+import WebcamComponent from "./_components/webcam";
 import Sidebar from "@/Layouts/Dashboard/PatientsSidebarLayout";
 
-const genAI = new GoogleGenerativeAI("AIzaSyBfiwWwXE3Q8v0JuTPDb4xvNjh9SuvpWDE")
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" })
+const genAI = new GoogleGenerativeAI("AIzaSyBfiwWwXE3Q8v0JuTPDb4xvNjh9SuvpWDE");
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 export default function PatientDataEntry({ patient }) {
-    const [entryMethod, setEntryMethod] = useState("manual")
-    const [imageFile, setImageFile] = useState(null)
-    const [isAnalyzing, setIsAnalyzing] = useState(false)
-    const [analysisError, setAnalysisError] = useState(null)
-    const [isCameraActive, setIsCameraActive] = useState(false)
-    const fileInputRef = useRef(null)
+    const [entryMethod, setEntryMethod] = useState("manual");
+    const [imageFile, setImageFile] = useState(null);
+    const [isAnalyzing, setIsAnalyzing] = useState(false);
+    const [analysisError, setAnalysisError] = useState(null);
+    const [isCameraActive, setIsCameraActive] = useState(false);
+    const fileInputRef = useRef(null);
 
     const { data, setData, post, processing, errors } = useForm({
         nik: patient?.nik || "",
@@ -52,16 +52,16 @@ export default function PatientDataEntry({ patient }) {
         valid_until: patient?.valid_until || "",
         blood_type: patient?.blood_type || "",
         age: patient?.age || "",
-    })
+    });
 
-    const isReadOnly = Boolean(patient)
+    const isReadOnly = Boolean(patient);
 
     const handleSubmit = (e) => {
         e.preventDefault();
         post(route("information.store"), {
             onSuccess: () => {
                 toast.success(`Berhasil`, {
-                  icon: <CheckCircle2 className="h-5 w-5 text-green-500" />,
+                    icon: <CheckCircle2 className="h-5 w-5 text-green-500" />,
                 }); // Tampilkan pesan sukses
             },
             onError: (errors) => {
@@ -73,37 +73,39 @@ export default function PatientDataEntry({ patient }) {
     };
 
     const handleFileChange = (event) => {
-        const file = event.target.files?.[0]
+        const file = event.target.files?.[0];
         if (file) {
-            setImageFile(file)
-            analyzeImage(file)
+            setImageFile(file);
+            analyzeImage(file);
         }
-    }
+    };
 
     const handleCameraCapture = (imageSrc) => {
         fetch(imageSrc)
-            .then(res => res.blob())
-            .then(blob => {
-                const file = new File([blob], "camera_capture.jpg", { type: "image/jpeg" })
-                setImageFile(file)
-                analyzeImage(file)
-            })
-    }
+            .then((res) => res.blob())
+            .then((blob) => {
+                const file = new File([blob], "camera_capture.jpg", {
+                    type: "image/jpeg",
+                });
+                setImageFile(file);
+                analyzeImage(file);
+            });
+    };
 
     const fileToBase64 = (file) => {
         return new Promise((resolve, reject) => {
-            const reader = new FileReader()
-            reader.onloadend = () => resolve(reader.result)
-            reader.onerror = reject
-            reader.readAsDataURL(file)
-        })
-    }
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    };
     const analyzeImage = async (file) => {
-        setIsAnalyzing(true)
-        setAnalysisError(null)
+        setIsAnalyzing(true);
+        setAnalysisError(null);
 
         try {
-            const base64Image = await fileToBase64(file)
+            const base64Image = await fileToBase64(file);
 
             const prompt = `
         Analyze this KTP (Indonesian ID card) image and extract the following information:
@@ -124,76 +126,94 @@ export default function PatientDataEntry({ patient }) {
         - Golongan Darah (Blood Type)
 
         Present the extracted information in a JSON format with these fields as keys.
-      `
+      `;
             const result = await model.generateContent([
                 prompt,
-                { inlineData: { data: base64Image.split(",")[1], mimeType: file.type } }
-            ])
+                {
+                    inlineData: {
+                        data: base64Image.split(",")[1],
+                        mimeType: file.type,
+                    },
+                },
+            ]);
 
-            const extractedText = result.response.text()
+            const extractedText = result.response.text();
 
-            const jsonStart = extractedText.indexOf("{")
-            const jsonEnd = extractedText.lastIndexOf("}") + 1
-            const jsonString = extractedText.slice(jsonStart, jsonEnd)
+            const jsonStart = extractedText.indexOf("{");
+            const jsonEnd = extractedText.lastIndexOf("}") + 1;
+            const jsonString = extractedText.slice(jsonStart, jsonEnd);
 
-            const parsedData = JSON.parse(jsonString)
+            const parsedData = JSON.parse(jsonString);
 
+            const capitalizeWords = (str) => {
+                if (!str) return "";
+                return str
+                  .toLowerCase()
+                  .replace(/\b\w/g, (match) => match.toUpperCase());
+              };
             setData({
                 ...data,
                 nik: parsedData.NIK || "",
-                name: parsedData.Nama || "",
-                place_of_birth: parsedData["Tempat Lahir"] || "",
-                date_of_birth: parsedData["Tanggal Lahir"] || "",
-                gender: parsedData["Jenis Kelamin"]?.toLowerCase() || "",
-                address: parsedData.Alamat || "",
-                rt_rw: parsedData["RT/RW"] || "",
-                village: parsedData["Kelurahan/Desa"] || "",
-                district: parsedData.Kecamatan || "",
-                religion: parsedData.Agama || "",
-                marital_status: parsedData["Status Perkawinan"] || "",
-                occupation: parsedData.Pekerjaan || "",
-                nationality: parsedData.Kewarganegaraan || "",
-                valid_until: parsedData["Berlaku Hingga"] || "",
-                blood_type: parsedData["Golongan Darah"] || "",
-            })
+                 name: capitalizeWords(parsedData.Nama || ""),
+                place_of_birth: capitalizeWords(parsedData["Tempat Lahir"] || ""),
+                date_of_birth: capitalizeWords(parsedData["Tanggal Lahir"] || ""),
+                gender: capitalizeWords(parsedData["Jenis Kelamin"] || ""),
+                address: capitalizeWords(parsedData.Alamat || ""),
+                rt_rw: capitalizeWords(parsedData["RT/RW"] || ""),
+                village: capitalizeWords(parsedData["Kelurahan/Desa"] || ""),
+                district: capitalizeWords(parsedData.Kecamatan || ""),
+                religion: capitalizeWords(parsedData.Agama || ""),
+                marital_status: capitalizeWords(parsedData["Status Perkawinan"] || ""),
+                occupation: capitalizeWords(parsedData.Pekerjaan || ""),
+                nationality: capitalizeWords(parsedData.Kewarganegaraan || ""),
+                valid_until: capitalizeWords(parsedData["Berlaku Hingga"] || ""),
+                blood_type: capitalizeWords(parsedData["Golongan Darah"] || ""),
+            });
         } catch (err) {
-            setAnalysisError("Error during image analysis. Please try again.")
-            console.error(err)
+            setAnalysisError("Error during image analysis. Please try again.");
+            console.error(err);
         } finally {
-            setIsAnalyzing(false)
+            setIsAnalyzing(false);
         }
-    }
+    };
 
     const { flash } = usePage().props;
     useEffect(() => {
         if (flash.message) {
             toast(flash.message, {
-                icon: <Info className="h-5 w-5 text-green-500"/>
+                icon: <Info className="h-5 w-5 text-green-500" />,
             });
         }
     }, [flash.message]);
 
     return (
-        <Sidebar header={'Patient Information'}>
-
+        <Sidebar header={"Patient Information"}>
             <Toaster position="top-center" />
-            <Card >
+            <Card>
                 <Head title="Patient Information" />
                 <CardHeader>
-                    <CardTitle className="text-2xl font-bold">Patient Information</CardTitle>
+                    <CardTitle className="text-2xl font-bold">
+                        Formulir Data Pribadi
+                    </CardTitle>
                 </CardHeader>
                 <CardContent>
                     <Alert className="mb-4">
-                        <Terminal className="h-4 w-4" />
-                        <AlertTitle>Important</AlertTitle>
+                        <InfoIcon className="h-4 w-4" />
+                        <AlertTitle>Informasi</AlertTitle>
                         <AlertDescription>
-                            Please enter your data before accessing other menus. Thank you.
+                            Kamu hanya bisa mengakses fitur hanya jika sudah mengisi formulir ini.
                         </AlertDescription>
                     </Alert>
 
-                    <Tabs value={entryMethod} onValueChange={setEntryMethod} className="mb-4">
+                    <Tabs
+                        value={entryMethod}
+                        onValueChange={setEntryMethod}
+                        className="mb-4"
+                    >
                         <TabsList className="grid w-full grid-cols-3">
-                            <TabsTrigger value="manual">Manual Entry</TabsTrigger>
+                            <TabsTrigger value="manual">
+                                Input Manual
+                            </TabsTrigger>
                             <TabsTrigger value="upload">Upload KTP</TabsTrigger>
                             <TabsTrigger value="camera">Scan KTP</TabsTrigger>
                         </TabsList>
@@ -207,9 +227,14 @@ export default function PatientDataEntry({ patient }) {
                                         <div className="flex flex-col items-center justify-center pt-5 pb-6">
                                             <Upload className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" />
                                             <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                                                <span className="font-semibold">Click to upload</span> or drag and drop
+                                                <span className="font-semibold">
+                                                    Click to upload
+                                                </span>{" "}
+                                                or drag and drop
                                             </p>
-                                            <p className="text-xs text-gray-500 dark:text-gray-400">SVG, PNG, JPG or GIF (MAX. 800x400px)</p>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                SVG, PNG, JPG or GIF 
+                                            </p>
                                         </div>
                                         <Input
                                             id="dropzone-file"
@@ -223,19 +248,27 @@ export default function PatientDataEntry({ patient }) {
                                 </div>
                                 {imageFile && (
                                     <div className="mt-4">
-                                        <p className="text-sm text-gray-500">Selected file: {imageFile.name}</p>
+                                        <p className="text-sm text-gray-500">
+                                            Selected file: {imageFile.name}
+                                        </p>
                                     </div>
                                 )}
                                 <Button
-                                    onClick={() => fileInputRef.current?.click()}
+                                    onClick={() =>
+                                        fileInputRef.current?.click()
+                                    }
                                     disabled={isAnalyzing}
                                     className="w-full"
                                 >
-                                    {isAnalyzing ? "Analyzing..." : "Select KTP Image"}
+                                    {isAnalyzing
+                                        ? "Ai Menganalisa..."
+                                        : "Pilih Foto KTP"}
                                 </Button>
                                 {analysisError && (
                                     <Alert variant="destructive">
-                                        <AlertDescription>{analysisError}</AlertDescription>
+                                        <AlertDescription>
+                                            {analysisError}
+                                        </AlertDescription>
                                     </Alert>
                                 )}
                             </div>
@@ -248,14 +281,20 @@ export default function PatientDataEntry({ patient }) {
                                     setIsActive={setIsCameraActive}
                                 />
                                 <Button
-                                    onClick={() => setIsCameraActive(!isCameraActive)}
+                                    onClick={() =>
+                                        setIsCameraActive(!isCameraActive)
+                                    }
                                     className="w-full"
                                 >
-                                    {isCameraActive ? "Stop Camera" : "Start Camera"}
+                                    {isCameraActive
+                                        ? "Stop Camera"
+                                        : "Start Camera"}
                                 </Button>
                                 {analysisError && (
                                     <Alert variant="destructive">
-                                        <AlertDescription>{analysisError}</AlertDescription>
+                                        <AlertDescription>
+                                            {analysisError}
+                                        </AlertDescription>
                                     </Alert>
                                 )}
                             </div>
@@ -269,84 +308,108 @@ export default function PatientDataEntry({ patient }) {
                                 <Input
                                     id="nik"
                                     value={data.nik}
-                                    placeholder="NIK"
-                                    onChange={(e) => setData("nik", e.target.value)}
+                                    placeholder="Nik"
+                                    onChange={(e) =>
+                                        setData("nik", e.target.value)
+                                    }
                                     readOnly={isReadOnly}
                                 />
-                                {errors.nik && <p className="text-red-600">{errors.nik}</p>}
+                                {errors.nik && (
+                                    <p className="text-red-600">{errors.nik}</p>
+                                )}
                             </div>
                             <div>
-                                <Label htmlFor="name">Name</Label>
+                                <Label htmlFor="name">Nama Lengkap</Label>
                                 <Input
                                     id="name"
                                     value={data.name}
-                                    onChange={(e) => setData("name", e.target.value)}
+                                    placeholder="Nama Lengkap"
+                                    onChange={(e) =>
+                                        setData("name", e.target.value)
+                                    }
                                     readOnly={isReadOnly}
                                 />
-                                {errors.name && <p className="text-red-600">{errors.name}</p>}
+                                {errors.name && (
+                                    <p className="text-red-600">
+                                        {errors.name}
+                                    </p>
+                                )}
                             </div>
+                            
                             <div>
-                                <Label htmlFor="email">Email</Label>
-                                <Input
-                                    id="email"
-                                    type="email"
-                                    value={data.email}
-                                    onChange={(e) => setData("email", e.target.value)}
-                                    readOnly={isReadOnly}
-                                />
-                                {errors.email && <p className="text-red-600">{errors.email}</p>}
-                            </div>
-                            <div>
-                                <Label htmlFor="contact">Contact</Label>
-                                <Input
-                                    id="contact"
-                                    value={data.contact}
-                                    onChange={(e) => setData("contact", e.target.value)}
-                                    readOnly={isReadOnly}
-                                />
-                                {errors.contact && <p className="text-red-600">{errors.contact}</p>}
-                            </div>
-                            <div>
-                                <Label htmlFor="place_of_birth">Place of Birth</Label>
+                                <Label htmlFor="place_of_birth">
+                                    Tempat Lahir
+                                </Label>
                                 <Input
                                     id="place_of_birth"
+                                    placeholder="Tempat Lahir"
                                     value={data.place_of_birth}
-                                    onChange={(e) => setData("place_of_birth", e.target.value)}
+                                    onChange={(e) =>
+                                        setData(
+                                            "place_of_birth",
+                                            e.target.value
+                                        )
+                                    }
                                     readOnly={isReadOnly}
                                 />
                             </div>
                             <div>
-                                <Label htmlFor="date_of_birth">Date of Birth</Label>
+                                <Label htmlFor="date_of_birth">
+                                    Tanggal Lahir
+                                </Label>
                                 <Input
                                     id="date_of_birth"
+                                    placeholder="23 maret 2000"
                                     value={data.date_of_birth}
-                                    onChange={(e) => setData("date_of_birth", e.target.value)}
+                                    onChange={(e) =>
+                                        setData("date_of_birth", e.target.value)
+                                    }
                                     readOnly={isReadOnly}
                                 />
                             </div>
                             <div>
-                            <Label htmlFor="gender">Gender</Label>
-                            <Select value={data.gender} onValueChange={(value) => setData("gender", value)}>
-                                <SelectTrigger className="w-full border rounded p-2">
-                                    <SelectValue placeholder="Select a Gender" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectGroup>
-                                        <SelectLabel>Select Gender</SelectLabel>
-                                        <SelectItem value="male">Male</SelectItem>
-                                        <SelectItem value="female">Female</SelectItem>
-                                        <SelectItem value="other">Other</SelectItem>
-                                    </SelectGroup>
-                                </SelectContent>
-                            </Select>
-                                {errors.gender && <p className="text-red-600">{errors.gender}</p>}
+                                <Label htmlFor="gender">Jenis Kelamin</Label>
+                                <Select
+                                    value={data.gender}
+                                    onValueChange={(value) =>
+                                        setData("gender", value)
+                                    }
+                                >
+                                    <SelectTrigger className="w-full border rounded p-2">
+                                        <SelectValue placeholder="Pilih Jenis Kelamin" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectGroup>
+                                            <SelectLabel>
+                                                Jenis Kelamin
+                                            </SelectLabel>
+                                            <SelectItem value="male">
+                                                Male
+                                            </SelectItem>
+                                            <SelectItem value="female">
+                                                Female
+                                            </SelectItem>
+                                            <SelectItem value="other">
+                                                Other
+                                            </SelectItem>
+                                        </SelectGroup>
+                                    </SelectContent>
+                                </Select>
+                                {errors.gender && (
+                                    <p className="text-red-600">
+                                        {errors.gender}
+                                    </p>
+                                )}
                             </div>
                             <div>
-                                <Label htmlFor="address">Address</Label>
+                                <Label htmlFor="address">Alamat</Label>
                                 <Input
                                     id="address"
                                     value={data.address}
-                                    onChange={(e) => setData("address", e.target.value)}
+                                    placeholder="Alamat"
+                                    onChange={(e) =>
+                                        setData("address", e.target.value)
+                                    }
                                     readOnly={isReadOnly}
                                 />
                             </div>
@@ -355,94 +418,183 @@ export default function PatientDataEntry({ patient }) {
                                 <Input
                                     id="rt_rw"
                                     value={data.rt_rw}
-                                    onChange={(e) => setData("rt_rw", e.target.value)}
+                                    placeholder="002/014"
+                                    onChange={(e) =>
+                                        setData("rt_rw", e.target.value)
+                                    }
                                     readOnly={isReadOnly}
                                 />
                             </div>
                             <div>
-                                <Label htmlFor="village">Village</Label>
+                                <Label htmlFor="village">Desa</Label>
                                 <Input
                                     id="village"
                                     value={data.village}
-                                    onChange={(e) => setData("village", e.target.value)}
+                                    placeholder="Desa"
+                                    onChange={(e) =>
+                                        setData("village", e.target.value)
+                                    }
                                     readOnly={isReadOnly}
                                 />
                             </div>
                             <div>
-                                <Label htmlFor="district">District</Label>
+                                <Label htmlFor="district">Kecamatan</Label>
                                 <Input
                                     id="district"
                                     value={data.district}
-                                    onChange={(e) => setData("district", e.target.value)}
+                                    placeholder="Kecamatan"
+                                    onChange={(e) =>
+                                        setData("district", e.target.value)
+                                    }
                                     readOnly={isReadOnly}
                                 />
                             </div>
                             <div>
-                                <Label htmlFor="religion">Religion</Label>
+                                <Label htmlFor="religion">Agama</Label>
                                 <Input
                                     id="religion"
                                     value={data.religion}
-                                    onChange={(e) => setData("religion", e.target.value)}
+                                    placeholder="Agama"
+                                    onChange={(e) =>
+                                        setData("religion", e.target.value)
+                                    }
                                     readOnly={isReadOnly}
                                 />
                             </div>
                             <div>
-                                <Label htmlFor="marital_status">Marital Status</Label>
-                                <Input
-                                    id="marital_status"
+                                <Label htmlFor="marital_status">Status Perkawinan</Label>
+                                <Select
                                     value={data.marital_status}
-                                    onChange={(e) => setData("marital_status", e.target.value)}
-                                    readOnly={isReadOnly}
-                                />
-                            </div>
+                                    onValueChange={(value) =>
+                                        setData("marital_status", value)
+                                    }
+                                >
+                                    <SelectTrigger className="w-full border rounded p-2">
+                                        <SelectValue placeholder="Status Perkawinan" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectGroup>
+                                            <SelectLabel>
+                                                Status
+                                            </SelectLabel>
+                                            <SelectItem value="Belum Kawin">
+                                                Belum Kawin
+                                            </SelectItem>
+                                            <SelectItem value="Kawin">
+                                                Kawin
+                                            </SelectItem>
+                                        </SelectGroup>
+                                    </SelectContent>
+                                </Select>
+                                {errors.marital_status && (
+                                    <p className="text-red-600">
+                                        {errors.marital_status}
+                                    </p>
+                                )}
+                                </div>
+
                             <div>
-                                <Label htmlFor="occupation">Occupation</Label>
+                                <Label htmlFor="occupation">Pekerjaan</Label>
                                 <Input
                                     id="occupation"
                                     value={data.occupation}
-                                    onChange={(e) => setData("occupation", e.target.value)}
+                                    placeholder="pekerjaan"
+                                    onChange={(e) =>
+                                        setData("occupation", e.target.value)
+                                    }
                                     readOnly={isReadOnly}
                                 />
                             </div>
                             <div>
-                                <Label htmlFor="nationality">Nationality</Label>
+                                <Label htmlFor="nationality">Kewarganegaraan</Label>
                                 <Input
                                     id="nationality"
                                     value={data.nationality}
-                                    onChange={(e) => setData("nationality", e.target.value)}
+                                    placeholder="Kewarganegaraan"
+                                    onChange={(e) =>
+                                        setData("nationality", e.target.value)
+                                    }
                                     readOnly={isReadOnly}
                                 />
                             </div>
                             <div>
-                                <Label htmlFor="valid_until">Valid Until</Label>
+                                <Label htmlFor="valid_until">Berlaku Hingga</Label>
                                 <Input
                                     id="valid_until"
                                     value={data.valid_until}
-                                    onChange={(e) => setData("valid_until", e.target.value)}
+                                    placeholder="Berlaku Hingga"
+                                    onChange={(e) =>
+                                        setData("valid_until", e.target.value)
+                                    }
                                     readOnly={isReadOnly}
                                 />
                             </div>
                             <div>
-                                <Label htmlFor="blood_type">Blood Type</Label>
+                                <Label htmlFor="blood_type">Golongan Dara</Label>
                                 <Input
                                     id="blood_type"
                                     value={data.blood_type}
-                                    onChange={(e) => setData("blood_type", e.target.value)}
+                                    placeholder="Golonga darah, - jika tidak ada"
+                                    onChange={(e) =>
+                                        setData("blood_type", e.target.value)
+                                    }
                                     readOnly={isReadOnly}
                                 />
                             </div>
                             <div>
-                                <Label htmlFor="age">Age</Label>
+                                <Label htmlFor="age">Umur</Label>
                                 <Input
                                     id="age"
                                     value={data.age}
-                                    onChange={(e) => setData("age", e.target.value)}
+                                    placeholder="Umur"
+                                    onChange={(e) =>
+                                        setData("age", e.target.value)
+                                    }
                                     readOnly={isReadOnly}
                                 />
                             </div>
+                            <div>
+                                <Label htmlFor="email">Email</Label>
+                                <Input
+                                    id="email"
+                                    type="email"
+                                    value={data.email}
+                                    placeholder="johndoe@example.com"
+                                    onChange={(e) =>
+                                        setData("email", e.target.value)
+                                    }
+                                    readOnly={isReadOnly}
+                                />
+                                {errors.email && (
+                                    <p className="text-red-600">
+                                        {errors.email}
+                                    </p>
+                                )}
+                            </div>
+                            <div>
+                                <Label htmlFor="contact">Nomor Telepon</Label>
+                                <Input
+                                    id="contact"
+                                    value={data.contact}
+                                    placeholder="Nomor Telepon"
+                                    onChange={(e) =>
+                                        setData("contact", e.target.value)
+                                    }
+                                    readOnly={isReadOnly}
+                                />
+                                {errors.contact && (
+                                    <p className="text-red-600">
+                                        {errors.contact}
+                                    </p>
+                                )}
+                            </div>
                         </div>
                         {!isReadOnly && (
-                            <Button type="submit" disabled={processing} className="w-full">
+                            <Button
+                                type="submit"
+                                disabled={processing}
+                                className="w-full"
+                            >
                                 Save
                             </Button>
                         )}
@@ -455,6 +607,5 @@ export default function PatientDataEntry({ patient }) {
                 </CardContent>
             </Card>
         </Sidebar>
-    )
+    );
 }
-

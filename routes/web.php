@@ -10,7 +10,6 @@ use App\Http\Controllers\Users\DoctorController;
 use App\Http\Controllers\Clinic\OfficeController;
 use App\Http\Controllers\Users\CashierController;
 use App\Http\Controllers\Users\ManagerController;
-use App\Http\Controllers\Users\PatientsController;
 use App\Http\Controllers\Users\ParamedisController;
 use App\Http\Controllers\Users\WarehouseController;
 use App\Http\Controllers\Screenings\GuestController;
@@ -35,7 +34,8 @@ use App\Http\Controllers\Appointments\AppointmentDoctorController;
 use App\Http\Controllers\Clinic\PhysicalExaminationOnlineController;
 use App\Http\Controllers\Consultation\BodyController;
 use App\Http\Controllers\Consultation\ConsultationController;
-use App\Models\Clinic\PhysicalExamination;
+use App\Http\Controllers\Dashboard\PatientsPanelController;
+use App\Http\Controllers\Emergency\EmergencyContactController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -46,19 +46,16 @@ Route::get('/', function () {
     ]);
 });
 
-
-
 // Guest Screening Offline
 Route::resource('screening-now', GuestController::class)
     ->only(['index', 'store']);
 
-
 // Dashboard Patients
 Route::prefix('dashboard')->middleware(['auth', 'role:patients'])->group(function () {
     // Dashboard Page
-    Route::get('/', [PatientsController::class, 'index'])->name('dashboard');
+    Route::get('/', [PatientsPanelController::class, 'index'])->name('dashboard');
     // Profile Edit Page
-    Route::get('profile', [PatientsController::class, 'profile'])->name('patients.profile');
+    Route::get('profile', [PatientsPanelController::class, 'profile'])->name('patients.profile');
 
     Route::resource('screening', ScreeningOfflineController::class)
         ->only(['index', 'store', 'update', 'create', 'show'])
@@ -73,11 +70,13 @@ Route::prefix('dashboard')->middleware(['auth', 'role:patients'])->group(functio
     Route::resource('screening-online', ScreeningOnlineController::class)
         ->only(['index', 'create', 'store']);
 
+    // Screening Pembayaran Online
     Route::get('/payment/{screeningId}', [PaymentsOnlineController::class, 'create'])->name('payment.create');
     Route::post('payment/check', [PaymentsOnlineController::class, 'store'])->name('payments.online.store');
 
     Route::get('result-screening/{id}', [QrcodeController::class, 'show'])->name('result-screening.show');
 
+    // Generate/Download Screening Result
     Route::get('generate-pdf/{id}/download', [ScreeningOfflineController::class, 'generatePDF'])->name('generate.screening.pdf');
     Route::get('generate-pdf/{id}/download/screening-online', [ScreeningOnlineController::class, 'generatePDF'])->name('screening-online.pdf');
 });
@@ -89,6 +88,7 @@ Route::prefix('dashboard/doctor')->middleware(['auth', 'role:doctor'])->group(fu
     // Profile Edit Page
     Route::get('profile', [DoctorController::class, 'profile'])->name('doctor.profile');
 
+    // Daftar Appointments
     Route::get('appointments', [AppointmentDoctorController::class, 'index'])->name('appointments.doctor');
     Route::get('appointments/emr/{appointment_id}', [AppointmentDoctorController::class, 'show'])->name('appointments.emr');
     Route::post('appointments/start', [AppointmentDoctorController::class, 'store'])->name('appointments.start');
@@ -171,6 +171,10 @@ Route::prefix('dashboard/admin')->middleware(['auth', 'role:admin'])->group(func
     Route::resource('users', MedicalPersonnelController::class)
         ->only(['index', 'store', 'update', 'create'])
         ->middleware(['auth']);
+
+    
+    Route::resource('settings/emergency', EmergencyContactController::class)
+    ->only(['index','update','store']);
 
     /**
      * Rute untuk membuat custom questioner untuk screening

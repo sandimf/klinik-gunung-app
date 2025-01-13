@@ -10,6 +10,7 @@ import {
     CheckCircle,
     Clock,
     AlertCircle,
+    Info,
 } from "lucide-react";
 import { Link } from "@inertiajs/react";
 
@@ -124,6 +125,21 @@ const ScreeningInfo = ({ screening, detailRouteName, RouteName }) => {
                                     {new Date(
                                         screening.created_at
                                     ).toLocaleDateString("id-ID")}
+                                </p>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardContent className="pt-6">
+                        <div className="flex items-center gap-3">
+                            <Info className="h-5 w-5 text-muted-foreground" />
+                            <div>
+                                <p className="text-sm text-muted-foreground">
+                                    Status Screening
+                                </p>
+                                <p className="font-semibold">
+                                    {screening.screening_status}
                                 </p>
                             </div>
                         </div>

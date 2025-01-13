@@ -6,6 +6,15 @@ import { Input } from "@/Components/ui/input";
 import { Label } from "@/Components/ui/label";
 import { toast, Toaster } from "sonner";
 import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/Components/ui/dialog";
+import {
     Select,
     SelectContent,
     SelectItem,
@@ -18,6 +27,10 @@ import { Alert, AlertDescription } from "@/Components/ui/alert";
 import AdminSidebar from "@/Layouts/Dashboard/AdminSidebarLayout";
 
 export default function CreateQuestionnaire() {
+    const [isLoading, setIsLoading] = useState(false);
+    const [title, setTitle] = useState("");
+    const [description, setDescription] = useState("");
+
     const { data, setData, post, errors } = useForm({
         question_text: "",
         answer_type: "text",
@@ -27,7 +40,6 @@ export default function CreateQuestionnaire() {
 
     const [optionInput, setOptionInput] = useState("");
 
-    // Add option: only the label is stored
     const handleAddOption = () => {
         if (optionInput.trim() !== "") {
             setData("options", [...data.options, optionInput.trim()]); // Store only label
@@ -45,12 +57,17 @@ export default function CreateQuestionnaire() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        setIsLoading(true);
 
         post(route("questioner.store"), {
+            title,
+            description,
             onSuccess: () => {
+                setIsLoading(false);
                 toast.success("Pertanyaan berhasil ditambahkan!");
             },
             onError: (errors) => {
+                setIsLoading(false);
                 Object.values(errors).forEach((error) => {
                     toast.error(error);
                 });
@@ -61,23 +78,25 @@ export default function CreateQuestionnaire() {
     return (
         // Admin Sidebar
         <AdminSidebar header={"Buat Kuisioner"}>
-            <Head title="Create Questionner" />
+            <Head title="Buat Kuesioner" />
             <Toaster position="top-center" />
             <Card>
                 <CardHeader>
-                    <CardTitle>Buat Kuesioner Baru</CardTitle>
+                    <CardTitle>Buat Kuesioner</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div className="space-y-2">
-                            <Label htmlFor="question_text">Question Text</Label>
+                            <Label htmlFor="question_text">
+                                Pertanyaan Kuesioner
+                            </Label>
                             <Input
                                 id="question_text"
                                 value={data.question_text}
                                 onChange={(e) =>
                                     setData("question_text", e.target.value)
                                 }
-                                placeholder="Enter the question"
+                                placeholder="Pertanyaan Kuesioner"
                             />
                             {errors.question_text && (
                                 <Alert variant="destructive">
@@ -90,7 +109,7 @@ export default function CreateQuestionnaire() {
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="answer_type">Answer Type</Label>
+                            <Label htmlFor="answer_type">Jenis Jawaban</Label>
                             <Select
                                 value={data.answer_type}
                                 onValueChange={(value) =>
@@ -98,7 +117,7 @@ export default function CreateQuestionnaire() {
                                 }
                             >
                                 <SelectTrigger>
-                                    <SelectValue placeholder="Select answer type" />
+                                    <SelectValue placeholder="Pilih Tipe Jawaban" />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="text">Text</SelectItem>
@@ -231,9 +250,38 @@ export default function CreateQuestionnaire() {
                                 </>
                             )}
                         </div>
-                        <Button type="submit" className="w-full">
-                            Create Question
-                        </Button>
+                        <Dialog>
+                            <DialogTrigger asChild>
+                                <Button
+                                    type="button"
+                                    className="w-full"
+                                    disabled={isLoading}
+                                >
+                                    {isLoading
+                                        ? "Memproses..."
+                                        : "Buat Pertanyaan"}
+                                </Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                                <DialogHeader>
+                                    <DialogTitle>
+                                        Konfirmasi Pembuatan Pertanyaan
+                                    </DialogTitle>
+                                    <DialogDescription>
+                                        Apakah Anda yakin ingin membuat
+                                        pertanyaan ini?
+                                    </DialogDescription>
+                                </DialogHeader>
+                                <DialogFooter>
+                                    <Button
+                                        type="submit"
+                                        onClick={handleSubmit}
+                                    >
+                                        Ya, Buat Pertanyaan
+                                    </Button>
+                                </DialogFooter>
+                            </DialogContent>
+                        </Dialog>
                     </form>
                 </CardContent>
             </Card>

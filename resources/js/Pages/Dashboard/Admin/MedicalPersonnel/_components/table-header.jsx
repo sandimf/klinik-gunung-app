@@ -1,9 +1,10 @@
 import { Button } from "@/Components/ui/button";
 import { Link } from '@inertiajs/react';
+import { Plus } from "lucide-react"
 
 const MedicalHeader = ({
-    title = 'Medical Personal List',
-    buttonText = 'Add Personal',
+    title = 'Daftar Staff Klinik Gunung',
+    buttonText = 'Tambah Staff',
     routeName,
     children
 }) => {
@@ -14,6 +15,7 @@ const MedicalHeader = ({
                 {/* Tombol dengan event custom */}
                     <Link href={routeName}>
                         <Button className='space-x-1'>
+                            <Plus/>
                             <span>{buttonText}</span>
                         </Button>
                     </Link>

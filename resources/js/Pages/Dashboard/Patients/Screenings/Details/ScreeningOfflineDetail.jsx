@@ -11,8 +11,6 @@ export default function ScreeningDetails({ screening }) {
     { label: "Umur", value: screening.age, icon: <User className="h-4 w-4" /> },
     { label: "Jenis Kelamin", value: screening.gender, icon: <User className="h-4 w-4" /> },
     { label: "Nomor Kontak", value: screening.contact, icon: <Phone className="h-4 w-4" /> },
-    // { label: "Tanggal Rencana Pendakian", value: screening.planned_hiking_date, icon: <Calendar className="h-4 w-4" /> },
-    // { label: "Jumlah Pendakian Sebelumnya (di atas 2.000 meter)", value: screening.previous_hikes_count, icon: <Activity className="h-4 w-4" /> },
   ]
 
   return (

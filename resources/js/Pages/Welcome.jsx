@@ -6,7 +6,7 @@ export default function Welcome() {
         <Head title="Home" />
             <h1 className="font-bold">Klinik Gunung</h1>
             <Link href={route("login")}>Login</Link>
-            
+            <Link href={route('screening-now.index')}>Screening Now</Link>
         </>
     );
 }

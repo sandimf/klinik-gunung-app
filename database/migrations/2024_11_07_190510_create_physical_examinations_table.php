@@ -13,10 +13,8 @@ return new class extends Migration
     {
         Schema::create('physical_examinations', function (Blueprint $table) {
             $table->id();
-        
             // Relasi ke tabel patients (dengan foreign key constraint)
             $table->foreignId('patient_id')->constrained('patients')->cascadeOnDelete();
-        
             // Relasi ke tabel paramedis dan doctor (nullable, dengan foreign key constraint ke tabel users)
             $table->foreignId('paramedis_id')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('doctor_id')->nullable()->constrained('users')->nullOnDelete();

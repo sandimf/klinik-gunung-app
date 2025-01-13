@@ -11,14 +11,11 @@ import {
     TableRow,
 } from "@/Components/ui/table";
 import { Button } from "@/Components/ui/button";
-import { PlusIcon } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
 import EditQuestionModal from './Partials/Edit';
+import { Plus } from 'lucide-react';
 
 export default function Index({ questions }) {
     const [questionList, setQuestionList] = useState(questions.data || []);
-    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-    const [currentQuestion, setCurrentQuestion] = useState(null);
 
     const handleEditClick = (question) => {
         setCurrentQuestion(question);
@@ -36,17 +33,18 @@ export default function Index({ questions }) {
         <AdminSidebar header={'Daftar Kuesioner'}>
             <Head title="Daftar Kuesioner" />
             <div className='mb-2 flex items-center justify-between space-y-2 flex-wrap'>
-            <h2 className='text-2xl font-bold tracking-tight'>Questioner Online List</h2>
+            <h2 className='text-2xl font-bold tracking-tight'>Daftar Kuesioner Online</h2>
                 <div className='flex gap-2'>
                     <Link href={route("questioner-online.create")}>
                         <Button className='space-x-1' >
-                            <span>Create Question</span>
+                            <Plus/>
+                            <span>Buat Kuesioner</span>
                         </Button>
                     </Link>
                 </div>
             </div>
             <Table>
-                <TableCaption>Questioner Online List</TableCaption>
+                <TableCaption>Daftar Kuesioner Online</TableCaption>
                 <TableHeader>
                     <TableRow>
                         <TableHead>No</TableHead>

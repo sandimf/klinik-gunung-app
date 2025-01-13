@@ -57,18 +57,18 @@ export default function Appointments({ appointments: initialAppointments }) {
   };
 
   return (
-    <Sidebar header={'Patient Dashboard'}>
+    <Sidebar header={'Appointments'}>
       <Head title="Appointments" />
       <Toaster position="top-center" />
       <MedicalHeader setIsCreateModalOpen={setIsCreateModalOpen}  />
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Time</TableHead>
+                <TableHead>Nama</TableHead>
+                <TableHead>Tanggal Pengunjungan</TableHead>
+                <TableHead>Waktu Pengunjungan</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>Action</TableHead>
+                <TableHead>Aksi</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -79,7 +79,7 @@ export default function Appointments({ appointments: initialAppointments }) {
                   <TableCell>{appointment.appointment_time}</TableCell>
                   <TableCell>{appointment.status}</TableCell>
                   <TableCell>
-                  {appointment.status !== 'cancelled' && appointment.status !== 'completed' && (
+                  {appointment.status !== 'Cancelled' && appointment.status !== 'Completed' && (
                     <Button 
                       variant="destructive" 
                       size="sm"

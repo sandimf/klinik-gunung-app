@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('paramedis', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->string('nik')->unique();
             $table->string('email')->unique();

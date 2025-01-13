@@ -44,20 +44,20 @@ class ScreeningOnlineController extends Controller
     {
         // Mendapatkan data pertanyaan screening
         $questions = ScreeningOnlineQuestions::all();
-    
+
         // Mendapatkan data pengguna yang sedang login
         $user = Auth::user();
-    
+
         // Mendapatkan data pasien terkait
         $patient = $user->patient_online;
-    
+
         // Cek apakah status screening pasien adalah 'pending'
         if ($patient->screening_status === 'pending') {
             // Jika status 'pending', redirect ke halaman lain (misalnya halaman error)
             return redirect()->route('screening-online.index')
                 ->with('error', 'Screening status Anda masih pending. Silakan selesaikan screening terlebih dahulu.');
         }
-    
+
         // Jika status tidak 'pending', lanjutkan dan tampilkan halaman screening
         return Inertia::render('Dashboard/Patients/Screenings/Online/ScreeningOnline', [
             'questions' => $questions,
@@ -154,24 +154,29 @@ class ScreeningOnlineController extends Controller
         ]);
     }
 
-        public function generatePDF($id)
+    public function generatePDF($id)
     {
+        // Ambil ID pengguna yang sedang login
         $userId = Auth::id();
-        $screening = PatientsOnline::with(['answers.question', 'physicalExaminations'])
-            ->where('user_id', $userId)
-            ->findOrFail($id);
 
-        // Ambil nama pasien
-        $patientName = str_replace(' ', '_', $screening->name); // Ganti spasi dengan underscore untuk nama file yang valid
-        
+        // Validasi bahwa data hanya bisa diakses oleh pengguna yang memiliki hak akses
+        $screening = PatientsOnline::with(['answers.question', 'physicalExaminations'])
+            ->where('user_id', $userId) // Pastikan data hanya untuk pengguna saat ini
+            ->where('id', $id) // Validasi bahwa ID milik data pengguna saat ini
+            ->firstOrFail(); // Gagal jika data tidak ditemukan
+
+        // Pastikan nama pasien aman untuk digunakan dalam nama file
+        $patientName = preg_replace('/[^a-zA-Z0-9_]/', '', str_replace(' ', '_', $screening->name)); // Hapus karakter yang tidak diizinkan
+
         // Mengonversi data menjadi PDF
         $pdf = PDF::loadView('pdf.screenings.offline', [
             'screening' => $screening,
         ]);
 
-        // Download PDF dengan nama sesuai nama pasien
-        return $pdf->download('screening_detail_' . $patientName . '.pdf');
+        // Pastikan nama file aman
+        $fileName = 'screening_detail_' . $patientName . '.pdf';
+
+        // Kembalikan file PDF untuk diunduh
+        return $pdf->download($fileName);
     }
-
-
 }

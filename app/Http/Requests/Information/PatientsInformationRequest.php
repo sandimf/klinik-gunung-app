@@ -20,7 +20,7 @@ class PatientsInformationRequest extends FormRequest
             'nik' => 'required|string|unique:patients,nik|max:16',
             'name' => 'required|string|max:255',
             'place_of_birth' => 'required|string|max:255',
-            'date_of_birth' => 'required|date',
+            'date_of_birth' => 'required|string|max:25',
             'rt_rw' => 'required|string|max:10',
             'address' => 'required|string|max:255',
             'village' => 'required|string|max:255',

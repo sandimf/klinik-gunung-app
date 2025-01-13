@@ -2,8 +2,11 @@
 
 namespace App\Http\Middleware;
 
-use Illuminate\Http\Request;
+use App\Models\Users\Cashier;
+use App\Models\Users\Paramedis;
 use Inertia\Middleware;
+use App\Models\Users\Patients;
+use Illuminate\Http\Request;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -34,13 +37,20 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
                 'community' => $request->user() && $request->user()->community 
-                ? $request->user()->community->toArray() 
-                : null,
+                    ? $request->user()->community->toArray() 
+                    : null,
+                // Tambahkan relasi patients untuk user yang sedang login
+                'patients' => $request->user() && $request->user()->patients 
+                    ? $request->user()->patients->toArray() 
+                    : null,
+                'paramedis' => $request->user() && $request->user()->paramedis 
+                    ? $request->user()->paramedis->toArray() 
+                    : null,
             ],
-
             'flash' => [
                 'message' => fn () => $request->session()->get('message'),
             ],
         ];
     }
+        
 }

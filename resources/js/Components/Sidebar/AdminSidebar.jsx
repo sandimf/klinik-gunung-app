@@ -58,27 +58,27 @@ export function AppSidebar({ ...sidebarProps }) {
         icon: Home,
       },
       {
-        title: "Questionnaire",
+        title: "Kuesioner",
         url: route("questioner.create"),
         icon: NotebookPen,
         items: [
         {
-            title: "Questionnaire Offline",
+            title: "Kuesioner",
             url: route('questioner.index'),
         },
         {
-            title: "Questionnaire Online",
+            title: "Kuesioner Online",
             url: route('questioner-online.index'),
         },
         ]
       },
       {
-        title: "Tenaga Medis",
+        title: "Staff",
         url: route('dashboard'),
         icon: UserPlus,
         items: [
             {
-                title: "Daftar Tenaga Medis",
+                title: "Daftar Staff",
                 url: route('users.index'),
             },
         ]

@@ -9,7 +9,7 @@ import { AlertCircle, Plus, Trash2 } from "lucide-react";
 import { Alert, AlertDescription } from "@/Components/ui/alert";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/Components/ui/dialog";
 import { toast, Toaster } from "sonner";
-
+import { Edit } from "lucide-react";
 const EditQuestionModal = ({ question, onSave }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -58,7 +58,7 @@ const EditQuestionModal = ({ question, onSave }) => {
       <Toaster position="top-center" />
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
-          <Button variant="outline" size="icon">Edit</Button>
+          <Button variant="outline" size="icon"><Edit/></Button>
         </DialogTrigger>
         <DialogContent>
           <DialogHeader>

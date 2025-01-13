@@ -1,6 +1,6 @@
 import React, { useState,useEffect } from 'react';
 import AdminSidebar from "@/Layouts/Dashboard/AdminSidebarLayout";
-import { Head, Link,usePage } from '@inertiajs/react';
+import { Head, usePage } from '@inertiajs/react';
 import { Info } from 'lucide-react';
 import QuestionerHeader from './_components/table-header';
 import {
@@ -43,16 +43,16 @@ export default function Index({ questions }) {
     }, [flash.message]);
 
     return (
-        <AdminSidebar header={'Questioner List'}>
-            <Head title="Questioner List" />
+        <AdminSidebar header={'Daftar Kuesioner'}>
+            <Head title="Daftar Kuesioner" />
             <Toaster position="top-center" />
             <QuestionerHeader
-                title="Questioner List"
-                buttonText="Create Question"
+                title="Daftar Kuesioner"
+                buttonText="Buat Kuesioner"
                 routeName={route('questioner.create')}
             />
             <Table>
-                <TableCaption>Questioner List</TableCaption>
+                <TableCaption>Daftar Kueosioner</TableCaption>
                 <TableHeader>
                     <TableRow>
                         <TableHead>No</TableHead>

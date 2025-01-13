@@ -99,12 +99,15 @@ class ScreeningOfflineController extends Controller
         return;
     }
 
-    public function show($id)
+    public function show($uuid)
     {
         $userId = Auth::id();
-        $screening = Patients::with(['answers.question', 'physicalExaminations']) // Eager load answers, questions, and physicalExaminations
-            ->where('user_id', $userId) // Filter hanya pasien milik pengguna yang sedang login
-            ->findOrFail($id);
+        
+        // Mencari pasien berdasarkan uuid dan user_id
+        $screening = Patients::with(['answers.question', 'physicalExaminations'])
+            ->where('user_id', $userId)
+            ->where('uuid', $uuid) // Menggunakan UUID di query
+            ->firstOrFail(); // Gunakan firstOrFail agar jika UUID tidak ditemukan, otomatis memunculkan error
     
         // Kirim data pasien beserta jawaban screening dan pemeriksaan fisik ke tampilan Inertia
         return Inertia::render('Dashboard/Patients/Screenings/Details/ScreeningOfflineDetail', [
@@ -113,23 +116,23 @@ class ScreeningOfflineController extends Controller
     }
     
 
+
     public function generatePDF($id)
-{
-    $userId = Auth::id();
-    $screening = Patients::with(['answers.question', 'physicalExaminations'])
-        ->where('user_id', $userId)
-        ->findOrFail($id);
+    {
+        $userId = Auth::id();
+        $screening = Patients::with(['answers.question', 'physicalExaminations'])
+            ->where('user_id', $userId)
+            ->findOrFail($id);
 
-    // Ambil nama pasien
-    $patientName = str_replace(' ', '_', $screening->name); // Ganti spasi dengan underscore untuk nama file yang valid
-    
-    // Mengonversi data menjadi PDF
-    $pdf = PDF::loadView('pdf.screenings.offline', [
-        'screening' => $screening,
-    ]);
+        // Ambil nama pasien
+        $patientName = str_replace(' ', '_', $screening->name); // Ganti spasi dengan underscore untuk nama file yang valid
 
-    // Download PDF dengan nama sesuai nama pasien
-    return $pdf->download('screening_detail_' . $patientName . '.pdf');
-}
+        // Mengonversi data menjadi PDF
+        $pdf = PDF::loadView('pdf.screenings.offline', [
+            'screening' => $screening,
+        ]);
 
+        // Download PDF dengan nama sesuai nama pasien
+        return $pdf->download('screening_detail_' . $patientName . '.pdf');
+    }
 }

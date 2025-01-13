@@ -5,6 +5,7 @@ namespace App\Models\Users;
 use App\Models\User;
 use App\Models\QrCode;
 use App\Models\Payments;
+use Illuminate\Support\Str;
 use App\Models\Medicines\Medicine;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Clinic\PhysicalExamination;
@@ -19,6 +20,7 @@ class Patients extends Model
     protected $table = 'patients';
 
     protected $fillable = [
+        'uuid',
         'user_id',
         'nik',
         'name',
@@ -57,7 +59,7 @@ class Patients extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class); // Relasi ke model User
     }
 
     public function answers()
@@ -89,5 +91,17 @@ class Patients extends Model
     public function qrCode()
     {
         return $this->hasOne(QrCode::class);
+    }
+    
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Secara otomatis menghasilkan UUID saat data dibuat
+        static::creating(function ($model) {
+            if (empty($model->uuid)) {
+                $model->uuid = (string) Str::uuid();
+            }
+        });
     }
 }

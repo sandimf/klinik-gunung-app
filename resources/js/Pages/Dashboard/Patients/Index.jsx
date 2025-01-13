@@ -23,7 +23,7 @@ export default function Dashboard({ screening, visitCount }) {
             <Head title="Dashboard" />
             <Toaster position='top-center' />
             <div className='w-full overflow-x-auto pb-2'>
-                <h1 className='text-2xl font-bold tracking-tight mb-4'>Selamat Datang Di Klinik Gunung, {user.name}</h1>
+                <h1 className='text-2xl font-bold tracking-tight mb-4'>Selamat Datang di Klinik Gunung,{user.name} </h1>
 
                 <Tabs defaultValue="overview" className="space-y-4">
                     <TabsList>
@@ -38,7 +38,7 @@ export default function Dashboard({ screening, visitCount }) {
                             <Card>
                                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                                     <CardTitle className="text-sm font-medium">
-                                        Your Screening
+                                        Screening
                                     </CardTitle>
                                     <CalendarDays className="h-4 w-4 text-muted-foreground" />
                                 </CardHeader>
@@ -56,21 +56,21 @@ export default function Dashboard({ screening, visitCount }) {
                                             </p>
                                         </>
                                     ) : (
-                                        <p className="text-xs text-muted-foreground">You haven't had a screening.</p>
+                                        <p className="text-xs text-muted-foreground">Kamu Belum Memiliki Screening</p>
                                     )}
                                 </CardContent>
                             </Card>
                             <Card>
                                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                                     <CardTitle className="text-sm font-medium">
-                                        Recent Visits
+                                        Kujungan Terkini
                                     </CardTitle>
                                     <Activity className="h-4 w-4 text-muted-foreground" />
                                 </CardHeader>
                                 <CardContent>
                                     <div className="text-2xl font-bold">{visitCount}</div>
                                     <p className="text-xs text-muted-foreground">
-                                        In the last 3 months
+                                    Dalam 3 bulan terakhir
                                     </p>
                                 </CardContent>
                             </Card>

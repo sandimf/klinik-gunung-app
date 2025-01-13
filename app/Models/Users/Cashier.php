@@ -3,6 +3,7 @@
 namespace App\Models\Users;
 
 use App\Models\User;
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -13,6 +14,7 @@ class Cashier extends Model
     protected $table = 'cashiers';
 
     protected $fillable = [
+        'uuid',
         'user_id',
         'nik',
         'email',
@@ -22,6 +24,18 @@ class Cashier extends Model
         'phone',
         'role',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Secara otomatis menghasilkan UUID saat data dibuat
+        static::creating(function ($model) {
+            if (empty($model->uuid)) {
+                $model->uuid = (string) Str::uuid();
+            }
+        });
+    }
 
     public function user()
     {
