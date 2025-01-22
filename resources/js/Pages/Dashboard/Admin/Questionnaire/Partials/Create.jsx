@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Head, useForm, usePage } from "@inertiajs/react";
+import React, { useState } from "react";
+import { Head, useForm } from "@inertiajs/react";
 import { Button } from "@/Components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
 import { Input } from "@/Components/ui/input";
@@ -22,7 +22,7 @@ import {
     SelectValue,
 } from "@/Components/ui/select";
 import { Checkbox } from "@/Components/ui/checkbox";
-import { AlertCircle, Plus, Trash2, Info } from "lucide-react";
+import { AlertCircle, Info, Plus, Trash2, X } from "lucide-react";
 import { Alert, AlertDescription } from "@/Components/ui/alert";
 import AdminSidebar from "@/Layouts/Dashboard/AdminSidebarLayout";
 
@@ -31,6 +31,10 @@ export default function CreateQuestionnaire() {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
 
+    function capitalizeWords(str) {
+        return str.replace(/\b\w/g, char => char.toUpperCase());
+    }
+    
     const { data, setData, post, errors } = useForm({
         question_text: "",
         answer_type: "text",
@@ -42,7 +46,7 @@ export default function CreateQuestionnaire() {
 
     const handleAddOption = () => {
         if (optionInput.trim() !== "") {
-            setData("options", [...data.options, optionInput.trim()]); // Store only label
+            setData("options", [...data.options, optionInput.trim()]);
             setOptionInput("");
         }
     };
@@ -64,19 +68,22 @@ export default function CreateQuestionnaire() {
             description,
             onSuccess: () => {
                 setIsLoading(false);
-                toast.success("Pertanyaan berhasil ditambahkan!");
+                toast.success("Berhasil Membuat Kuesioner",{
+                    icon: <Info/>
+                });
             },
             onError: (errors) => {
                 setIsLoading(false);
                 Object.values(errors).forEach((error) => {
-                    toast.error(error);
+                    toast.error("Gagal Membuat Kuesioner",error, {
+                        icon: <X className="h-5 w-5 text-red-500" />
+                    });
                 });
             },
         });
     };
 
     return (
-        // Admin Sidebar
         <AdminSidebar header={"Buat Kuisioner"}>
             <Head title="Buat Kuesioner" />
             <Toaster position="top-center" />

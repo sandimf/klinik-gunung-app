@@ -13,9 +13,11 @@ return new class extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique();
+            $table->string('no_transaction')->unique();
             $table->foreignId('patient_id')->constrained('patients');
             $table->foreignId('medicine_batch_id')->nullable()->constrained('medicine_batches')->onDelete('cascade');
-            $table->unsignedBigInteger('cashier_id')->constrained('cashiers');
+            $table->foreignId('cashier_id')->nullable()->constrained('cashiers')->nullOnDelete();
             $table->boolean('payment_status')->default(false);
             $table->decimal('amount_paid', 10, 2)->nullable();
             $table->string('payment_method')->nullable();

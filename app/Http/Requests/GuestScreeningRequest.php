@@ -14,11 +14,11 @@ class GuestScreeningRequest extends FormRequest
     public function rules()
     {
         return [
-            'nik' => 'required|numeric|unique:patients,nik', 
+            'nik' => 'required|numeric|unique:patients,nik',
             'name' => 'required|string|max:255',
             'place_of_birth' => 'required|string|max:255',
             'date_of_birth' => 'required|date',
-            'rt_rw' => 'required|string|max:255', 
+            'rt_rw' => 'required|string|max:255',
             'address' => 'required|string|max:255',
             'village' => 'required|string|max:255',
             'district' => 'required|string|max:255',

@@ -14,6 +14,6 @@ class BodyPart extends Model
     protected $fillable = [
         'id',
         'data',
-        'name'
+        'name',
     ];
 }

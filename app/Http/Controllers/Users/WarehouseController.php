@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Users;
 
-use Inertia\Inertia;
-use App\Models\Medicines\Medicine;
 use App\Http\Controllers\Controller;
+use App\Models\Medicines\Medicine;
 use Illuminate\Support\Facades\Cache;
+use Inertia\Inertia;
 
 class WarehouseController extends Controller
 {
@@ -28,12 +28,8 @@ class WarehouseController extends Controller
         ]);
     }
 
-
     public function profile()
     {
         return Inertia::render('Profile/Warehouse');
     }
-
-
-    
 }

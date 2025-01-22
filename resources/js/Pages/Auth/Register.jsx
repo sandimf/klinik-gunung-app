@@ -16,7 +16,7 @@ import { Eye, EyeOff } from "lucide-react";
 import AuthLayout from "@/Layouts/Auth/AuthLayout";
 
 
-export default function Component() {
+export default function Component({social}) {
     const { data, setData, post, processing, errors, reset } = useForm({
         name: "",
         email: "",
@@ -57,7 +57,7 @@ export default function Component() {
                 <CardContent>
                     <form onSubmit={submit} className="space-y-4">
                         <div className="space-y-2">
-                            <Label htmlFor="name">Name</Label>
+                            <Label htmlFor="name">Nama</Label>
                             <Input
                                 id="name"
                                 name="name"
@@ -66,7 +66,6 @@ export default function Component() {
                                 onChange={(e) =>
                                     setData("name", e.target.value)
                                 }
-                                required
                             />
                             {errors.name && (
                                 <p className="text-sm text-red-500">
@@ -85,7 +84,6 @@ export default function Component() {
                                 onChange={(e) =>
                                     setData("email", e.target.value)
                                 }
-                                required
                             />
                             {errors.email && (
                                 <p className="text-sm text-red-500">
@@ -106,7 +104,6 @@ export default function Component() {
                                     onChange={(e) =>
                                         setData("password", e.target.value)
                                     }
-                                    required
                                 />
                                 <Button
                                     type="button"
@@ -154,7 +151,6 @@ export default function Component() {
                                             e.target.value
                                         )
                                     }
-                                    required
                                 />
                                 <Button
                                     type="button"
@@ -191,15 +187,18 @@ export default function Component() {
                             {processing ? "Registering..." : "Register"}
                         </Button>
                     </form>
-                    <Button
-                        variant="outline"
-                        className="w-full mt-4"
-                        onClick={() => {
-                            window.location.href = '/auth/google/redirect';
-                        }}
-                    >
-                        Register with Google
-                    </Button>
+                    {social.google === 1 && (
+                            <Button
+                                variant="outline"
+                                className="w-full mt-4"
+                                onClick={() => {
+                                    window.location.href =
+                                        "/auth/google/redirect";
+                                }}
+                            >
+                                Login with Google
+                            </Button>
+                        )}
                     <div className="mt-4 text-center text-sm">
                         Already have an account?{" "}
                         <Link href={route("login")} className="underline">

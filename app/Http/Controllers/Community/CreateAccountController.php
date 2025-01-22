@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Community;
 
-use Inertia\Inertia;
-use Illuminate\Support\Str;
-use Illuminate\Http\Request;
-use App\Models\Community\Community;
 use App\Http\Controllers\Controller;
+use App\Models\Community\Community;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
+use Inertia\Inertia;
 
 class CreateAccountController extends Controller
 {
@@ -23,11 +23,12 @@ class CreateAccountController extends Controller
         return Inertia::render('Community/Username/Create');
     }
 
-    public function store(Request $request){
-        
+    public function store(Request $request)
+    {
+
         $request->validate([
             'username' => 'required|string|min:3|max:10|regex:/^[a-zA-Z0-9]+$/|unique:community,username',
-        ]);    
+        ]);
 
         // Ambil user yang sedang login
         $user = Auth::user();
@@ -51,10 +52,10 @@ class CreateAccountController extends Controller
     {
         // Cari komunitas berdasarkan slug
         $community = Community::where('slug', $slug)->firstOrFail();
-    
+
         // Tentukan apakah pengguna yang login adalah pemilik komunitas
         $isOwner = Auth::check() && Auth::user()->id === $community->user_id;
-    
+
         // Tampilkan profil komunitas
         return Inertia::render('Community/Profile/Index', [
             'user' => $community,
@@ -62,9 +63,8 @@ class CreateAccountController extends Controller
         ]);
     }
 
-    public function edit(){
+    public function edit()
+    {
         return Inertia::render('Community/Profile/Edit/EditProfile');
     }
-    
-    
 }

@@ -33,10 +33,7 @@ const StatusIcon = ({ status }) => {
 
 const ScreeningInfo = ({ screening, detailRouteName, RouteName }) => {
     const handleDownload = () => {
-        window.location.href = route(
-            "screening-online.pdf",
-            `${screening.id}`
-        );
+        window.location.href = route("screening-online.pdf", `${screening.id}`);
     };
 
     return (
@@ -55,7 +52,7 @@ const ScreeningInfo = ({ screening, detailRouteName, RouteName }) => {
                     </div>
                 </div>
                 {/* Status Pembayaran */}
-                
+
                 <Badge
                     variant={
                         screening.status === "completed"
@@ -66,7 +63,7 @@ const ScreeningInfo = ({ screening, detailRouteName, RouteName }) => {
                     }
                     className="text-sm px-4 py-1"
                 >
-                   {screening.screening_status}
+                    {screening.screening_status}
                 </Badge>
             </div>
 
@@ -77,7 +74,7 @@ const ScreeningInfo = ({ screening, detailRouteName, RouteName }) => {
                             <Users className="h-5 w-5 text-muted-foreground" />
                             <div>
                                 <p className="text-sm text-muted-foreground">
-                                    Name
+                                    Nama Lengkap
                                 </p>
                                 <p className="font-semibold">
                                     {screening.name}
@@ -123,12 +120,10 @@ const ScreeningInfo = ({ screening, detailRouteName, RouteName }) => {
                             <Calendar className="h-5 w-5 text-muted-foreground" />
                             <div>
                                 <p className="text-sm text-muted-foreground">
-                                    Screening Date
+                                    Tanggal Screening
                                 </p>
                                 <p className="font-semibold">
-                                    {new Date(
-                                        screening.created_at
-                                    ).toLocaleDateString("id-ID")}
+                                    {screening.formatted_created_at}
                                 </p>
                             </div>
                         </div>
@@ -143,7 +138,9 @@ const ScreeningInfo = ({ screening, detailRouteName, RouteName }) => {
                                     Status Pembayaran
                                 </p>
                                 <p className="font-semibold">
-                                    {screening.payment_status}
+                                    {screening.payment_status === "checking"
+                                        ? "Sedang Dalam Proses Verifikasi"
+                                        : screening.payment_status}
                                 </p>
                             </div>
                         </div>
@@ -158,7 +155,9 @@ const ScreeningInfo = ({ screening, detailRouteName, RouteName }) => {
                                     Status Pemeriksaan
                                 </p>
                                 <p className="font-semibold">
-                                    {screening.health_check_status}
+                                    {screening.health_check_status === "pending"
+                                        ? "Menunggu Pemeriksaan"
+                                        : screening.health_check_status}
                                 </p>
                             </div>
                         </div>
@@ -171,9 +170,7 @@ const ScreeningInfo = ({ screening, detailRouteName, RouteName }) => {
                     variant="outline"
                     onClick={handleDownload}
                     className="flex items-center"
-                    disabled={
-                        screening.screening_status === "pending"
-                    }
+                    disabled={screening.screening_status === "pending"}
                 >
                     <FileDown className="h-4 w-4 mr-2" />
                     Download PDF

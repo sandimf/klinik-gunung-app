@@ -3,8 +3,6 @@ import { Head } from '@inertiajs/react';
 import CashierSidebar from '@/Layouts/Dashboard/CashierSidebarLayout';
 import CreateMedicineDialog from './Partials/Create';
 import EditMedicineDialog from './Partials/Edit';
-import { Trash2 } from "lucide-react";
-import { Button } from "@/Components/ui/button";
 import {
     Table,
     TableHeader,
@@ -42,31 +40,32 @@ export default function MedicineList({ medicines }) {
     );
 
     return (
-        <CashierSidebar header="Medicine">
+        <CashierSidebar header="Obat">
             <Head title="Obat" />
             
             <MedicineHeader
                 onAddMedicineClick={() => setIsDialogOpen(true)}  // Handler untuk membuka dialog
             />
             <Input
-                placeholder="Search medicines..."
+                placeholder="Cari Obat ..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="max-w-sm"
             />
 
             <Table>
-            <TableCaption>Medicine List</TableCaption>
+            <TableCaption>Data Stock Obat</TableCaption>
                 <TableHeader>
                     <TableRow>
                         <TableHead>Barcode</TableHead>
                         <TableHead>Nama Obat</TableHead>
                         <TableHead>Nama Brand</TableHead>
                         <TableHead>Kategori</TableHead>
+                        <TableHead>Dosis</TableHead>
                         <TableHead>Stok</TableHead>
                         <TableHead>Bach Number</TableHead>
                         <TableHead>Tanggal Kadaluarsa</TableHead>
-                        <TableHead>Aksi</TableHead>
+                        {/* <TableHead>Aksi</TableHead> */}
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -76,7 +75,7 @@ export default function MedicineList({ medicines }) {
                             <TableCell>{medicine.medicine_name}</TableCell>
                             <TableCell>{medicine.brand_name}</TableCell>
                             <TableCell>{medicine.category}</TableCell>
-                            {/* <TableCell>{medicine.dosage}</TableCell> */}
+                            <TableCell>{medicine.dosage}</TableCell>
                             {/* <TableCell>{formatCurrency(parseFloat(medicine.pricing.otc_price))}</TableCell> */}
                             {/* <TableCell>{formatCurrency(parseFloat(medicine.pricing.purchase_price))}</TableCell> */}
                             <TableCell>{medicine.batches.length > 0 ? medicine.batches[0].quantity : '-'}</TableCell>
@@ -85,9 +84,7 @@ export default function MedicineList({ medicines }) {
                             <TableCell>{medicine.supplier}</TableCell>
                             <TableCell>
                                 <EditMedicineDialog medicine={medicine} onSuccess={() => {/* Refresh data if needed */ }} />
-                                <Button variant="outline" size="icon">
-                                    <Trash2 className="h-4 w-4" />
-                                </Button>
+                                
                             </TableCell>
                         </TableRow>
                     ))}

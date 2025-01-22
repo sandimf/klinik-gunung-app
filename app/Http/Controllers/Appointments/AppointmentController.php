@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Appointments;
 
-use Inertia\Inertia;
-use Illuminate\Http\Request;
-use App\Models\Users\Patients;
-use App\Models\Clinic\Appointments;
 use App\Http\Controllers\Controller;
+use App\Models\Clinic\Appointments;
+use App\Models\Users\Patients;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class AppointmentController extends Controller
 {
@@ -18,7 +18,7 @@ class AppointmentController extends Controller
         // Periksa apakah data pasien ada di tabel `patients`
         $patient = Patients::where('user_id', $user->id)->first();
 
-        if (!$patient) {
+        if (! $patient) {
             // Redirect ke halaman untuk melengkapi data pasien
             return redirect()->route('information.index')
                 ->with('message', 'Please complete your patient profile before accessing appointments.');
@@ -45,7 +45,7 @@ class AppointmentController extends Controller
         $patient = Patients::where('user_id', $user->id)->first();
 
         // Jika pasien tidak ditemukan, kembalikan error
-        if (!$patient) {
+        if (! $patient) {
             return response()->json([
                 'message' => 'Patient record not found for the logged-in user.',
             ], 404);
@@ -72,15 +72,13 @@ class AppointmentController extends Controller
             ->with('success', 'Appointment created successfully!');
     }
 
-
-
     public function update(Request $request, $id)
     {
         // Cari appointment berdasarkan ID
         $appointment = Appointments::find($id);
 
         // Periksa apakah appointment ditemukan
-        if (!$appointment) {
+        if (! $appointment) {
             return response()->json(['message' => 'Appointment not found.'], 404);
         }
 
@@ -89,7 +87,6 @@ class AppointmentController extends Controller
         $appointment->save();
 
         return redirect()->route('appointments.index')
-            ->with('success', 'Appointment cancelled successfully!');
+            ->with('message', 'Janji Temu Berhasil di Batalkan');
     }
-
 }

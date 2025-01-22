@@ -54,11 +54,6 @@ export function AppSidebar({ ...sidebarProps }) {
         icon: Users,
       },
       {
-        title: "Consultasi",
-        url: route("consultasi.index"),
-        icon: Users,
-      },
-      {
         title: "Appointments",
         url: route("appointments.doctor"),
         icon: CalendarPlus,
@@ -74,22 +69,6 @@ export function AppSidebar({ ...sidebarProps }) {
         icon: SquareActivity,
       },
 
-      {
-        title: "Manajemen Resep",
-        url: route("dashboard"),
-        icon: Pill,
-      },
-      {
-        title: "Community",
-        url: route("dashboard"),
-        icon: Users,
-        items: [
-          {
-            title: "Community",
-            url: route('community.index'),
-          },
-        ],
-      },
       {
         title: "Profile",
         url: route("doctor.profile"),

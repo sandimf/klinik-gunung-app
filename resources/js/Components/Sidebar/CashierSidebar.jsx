@@ -12,6 +12,9 @@ import {
   Pill,
   CreditCard,
   ChartPie,
+  ChartArea,
+  ShoppingBagIcon,
+  ShoppingBasket,
 } from "lucide-react"
 import { NavUser } from "@/Components/Nav/NavUser"
 import { TeamSwitcher } from "@/Components/Nav/TeamSwitcher"
@@ -72,19 +75,35 @@ export function AppSidebar({ ...sidebarProps }) {
         ],
       },
       {
-        title: "Riwayat Pembayaran",
-        url: route("history.cashier"),
+        title: "Riwayat",
+        url: route("dashboard"),
         icon: FileClock,
+        items: [
+          {
+            title: "Riwayat Pembayaran",
+            url: route('history.cashier'),
+          },
+          {
+            title: "Riwayat Pembayaran Online",
+            url: route('history-online.cashier'),
+          },
+        ],
       },
+
       {
-        title: "Riwayat Pembayaran Online",
-        url: route("history-online.cashier"),
-        icon: FileClock,
-      },
-      {
-        title: "Office",
-        url: route("office.index"),
-        icon: ChartPie,
+        title: "Penjualan",
+        url: route("product.cashier"),
+        icon: ShoppingBasket,
+        items: [
+          {
+            title: "Produk",
+            url: route('cashier.transcation'),
+          },
+          {
+            title: "Riwayat Penjualan",
+            url: route('product.history.checkout'),
+          }
+        ]
       },
       {
         title: "Apotek",
@@ -95,7 +114,29 @@ export function AppSidebar({ ...sidebarProps }) {
             title: "Obat",
             url: route('medicine.index'),
           },
+          {
+            title: "Import Obat",
+            url: route('import.apotek'),
+          },
+          {
+            title: "Obat Kadaluarsa",
+            url: route('medicine.index'),
+          },
+          {
+            title: "Obat Terjual",
+            url: route('medicine.index'),
+          },
         ],
+      },
+      {
+        title: "Produk",
+        url: route("product.cashier"),
+        icon: ShoppingBagIcon,
+      },
+      {
+        title: "Office",
+        url: route("office.index"),
+        icon: ChartPie,
       },
       {
         title: "Community",
@@ -106,15 +147,11 @@ export function AppSidebar({ ...sidebarProps }) {
             title: "Community",
             url: route('dashboard'),
           },
-          {
-            title: "Persetujuan Postingan",
-            url: route('dashboard'),
-          },
         ],
       },
       {
         title: "Settings",
-        url: route("dashboard"),
+        url: route("cashier.profile"),
         icon: Settings2,
       },
     ],

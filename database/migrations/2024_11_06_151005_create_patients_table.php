@@ -35,7 +35,7 @@ return new class extends Migration
             $table->string('contact')->unique();
             $table->string('ktp_images')->nullable();
             $table->enum('screening_status', ['completed', 'pending', 'cancelled'])->nullable();
-            $table->enum('health_status', ['pending', 'healthy', 'sick', 'under treatment','butuh_dokter','butuh_pendamping'])->nullable();
+            $table->enum('health_status', ['pending', 'healthy', 'sick', 'under treatment', 'butuh_dokter', 'butuh_pendamping'])->nullable();
             $table->enum('health_check_status', ['pending', 'completed'])->nullable();
             $table->enum('payment_status', ['completed', 'pending', 'cancelled'])->nullable();
             $table->timestamps();

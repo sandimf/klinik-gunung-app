@@ -27,7 +27,7 @@ import {
 } from "@/Components/ui/pagination";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
 import { Button } from "@/Components/ui/button";
-import { Stethoscope, ArrowRight,Info } from "lucide-react";
+import { Stethoscope, ArrowRight,Info, Book } from "lucide-react";
 import ScreeningDialog from "./Partials/PhysicalExamination";
 import { Badge } from "@/Components/ui/badge";
 import {toast, Toaster} from "sonner"
@@ -128,7 +128,7 @@ const ScreeningOfflineIndex = ({ screenings = [] }) => {
                                                 variant="outline"
                                                 className="mb-4"
                                             >
-                                                <ArrowRight className="mr-2 h-4 w-4" />{" "}
+                                                <Book className="mr-2 h-4 w-4" />{" "}
                                                 Kuesioner
                                             </Button>
                                         </Link>

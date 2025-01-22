@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use App\Models\Users\Patients;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class PatientVisits extends Model
 {
@@ -21,7 +21,7 @@ class PatientVisits extends Model
         'visit_type',
         'patient_status',
         'examination_results',
-        'notes'
+        'notes',
     ];
 
     // Define the relationship to the Patient model (if you have a Patient model)

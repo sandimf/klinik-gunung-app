@@ -45,6 +45,7 @@ export default function UpdatePasswordForm() {
                     onChange={(e) => setData('current_password', e.target.value)}
                     type="password"
                     autoComplete="current-password"
+                    placeholder="*****"
                 />
                 {errors.current_password && <p className="text-sm text-red-600 mt-1">{errors.current_password}</p>}
             </div>
@@ -58,6 +59,8 @@ export default function UpdatePasswordForm() {
                     onChange={(e) => setData('password', e.target.value)}
                     type="password"
                     autoComplete="new-password"
+                    placeholder="*****"
+
                 />
                 {errors.password && <p className="text-sm text-red-600 mt-1">{errors.password}</p>}
             </div>
@@ -70,6 +73,8 @@ export default function UpdatePasswordForm() {
                     onChange={(e) => setData('password_confirmation', e.target.value)}
                     type="password"
                     autoComplete="new-password"
+                    placeholder="*****"
+
                 />
                 {errors.password_confirmation && <p className="text-sm text-red-600 mt-1">{errors.password_confirmation}</p>}
             </div>

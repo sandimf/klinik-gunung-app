@@ -13,11 +13,10 @@ class EnsureCommunityHasUsername
         $user = Auth::user();
 
         // Cek apakah user sudah login dan memiliki komunitas dengan username
-        if (!$user || !$user->community || !$user->community->username) {
+        if (! $user || ! $user->community || ! $user->community->username) {
             return redirect()->route('create-account.index');
         }
 
         return $next($request);
     }
 }
-

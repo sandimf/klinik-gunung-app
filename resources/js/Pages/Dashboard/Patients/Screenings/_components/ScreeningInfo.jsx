@@ -11,6 +11,7 @@ import {
     Clock,
     AlertCircle,
     Info,
+    InfoIcon,
 } from "lucide-react";
 import { Link } from "@inertiajs/react";
 
@@ -55,7 +56,7 @@ const ScreeningInfo = ({ screening, detailRouteName, RouteName }) => {
                 <Badge
                     variant={
                         screening.status === "completed"
-                            ? "default"
+                            ? "success" // Tambahkan varian "success" untuk warna hijau
                             : screening.status === "pending"
                             ? "secondary"
                             : "destructive"
@@ -73,7 +74,7 @@ const ScreeningInfo = ({ screening, detailRouteName, RouteName }) => {
                             <Users className="h-5 w-5 text-muted-foreground" />
                             <div>
                                 <p className="text-sm text-muted-foreground">
-                                    Name
+                                    Nama Lengkap
                                 </p>
                                 <p className="font-semibold">
                                     {screening.name}
@@ -119,12 +120,10 @@ const ScreeningInfo = ({ screening, detailRouteName, RouteName }) => {
                             <Calendar className="h-5 w-5 text-muted-foreground" />
                             <div>
                                 <p className="text-sm text-muted-foreground">
-                                    Screening Date
+                                    Tanggal Screening
                                 </p>
                                 <p className="font-semibold">
-                                    {new Date(
-                                        screening.created_at
-                                    ).toLocaleDateString("id-ID")}
+                                    {screening.formatted_created_at}
                                 </p>
                             </div>
                         </div>
@@ -133,13 +132,15 @@ const ScreeningInfo = ({ screening, detailRouteName, RouteName }) => {
                 <Card>
                     <CardContent className="pt-6">
                         <div className="flex items-center gap-3">
-                            <Info className="h-5 w-5 text-muted-foreground" />
+                            <InfoIcon className="h-5 w-5 text-muted-foreground" />
                             <div>
                                 <p className="text-sm text-muted-foreground">
-                                    Status Screening
+                                    Status Pemeriksaan
                                 </p>
                                 <p className="font-semibold">
-                                    {screening.screening_status}
+                                    {screening.screening_status === "Pending"
+                                        ? "Menunggu Pemeriksaan"
+                                        : screening.screening_status}
                                 </p>
                             </div>
                         </div>

@@ -19,7 +19,7 @@ export default function Dashboard({ screening, visitCount }) {
     }, [flash.message]);
 
     return (
-        <Sidebar header={'Patient Dashboard'}>
+        <Sidebar header={'Welcome'}>
             <Head title="Dashboard" />
             <Toaster position='top-center' />
             <div className='w-full overflow-x-auto pb-2'>

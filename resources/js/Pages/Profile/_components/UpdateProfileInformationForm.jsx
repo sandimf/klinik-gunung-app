@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useForm, usePage } from '@inertiajs/react';
 import { Button } from "@/Components/ui/button"
 import { Input } from "@/Components/ui/input"
@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/Components/ui/avatar"
 import { AlertCircle, Upload, X, CheckCircle2 } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from "@/Components/ui/alert";
 import { toast, Toaster } from "sonner";
+import { ImageCropper } from './ImageCropper';
 
 export default function UpdateProfileInformation({ mustVerifyEmail, status }) {
     const user = usePage().props.auth.user;
@@ -14,7 +15,9 @@ export default function UpdateProfileInformation({ mustVerifyEmail, status }) {
         ? user.avatar.startsWith("http")
             ? user.avatar
             : `/storage/${user.avatar}`
-        : "/storage/avatar/avatar.jpg" || null);
+        : "/storage/avatar/avatar.svg" || null);
+    const [showCropper, setShowCropper] = useState(false);
+    const [cropperImage, setCropperImage] = useState('');
 
     const { data, setData, post, errors, processing } = useForm({
         name: user.name,
@@ -24,46 +27,59 @@ export default function UpdateProfileInformation({ mustVerifyEmail, status }) {
 
     const submit = (e) => {
         e.preventDefault();
-
-        // Gunakan FormData untuk mengirim data dan file
+      
         const formData = new FormData();
         formData.append('name', data.name);
         formData.append('email', data.email);
         if (data.avatar) {
-            formData.append('avatar', data.avatar);
+          formData.append('avatar', data.avatar);  // Lampirkan file avatar
         }
-
+      
         post(route("profile.update"), {
-            data: formData,
-            onSuccess: () => {
-                toast.success("Profile berhasil diperbarui", {
-                    icon: <CheckCircle2 className="h-5 w-5 text-green-500" />,
-                });
-            },
-            onError: (errors) => {
-                const errorMessage = Object.values(errors)[0] || "Terjadi kesalahan.";
-                toast.error(errorMessage, {
-                    icon: <X className="h-5 w-5 text-red-500" />,
-                });
-            },
-            preserveScroll: true,
-            forceFormData: true, // Pastikan Inertia memahami format FormData
+          data: formData,
+          onSuccess: () => {
+            // Toast ini hanya muncul setelah profil berhasil diperbarui
+            toast.success("Profile berhasil diperbarui", {
+              icon: <CheckCircle2 className="h-5 w-5 text-green-500" />,
+            });
+          },
+          onError: (errors) => {
+            const errorMessage = Object.values(errors)[0] || "Terjadi kesalahan.";
+            toast.error(errorMessage, {
+              icon: <X className="h-5 w-5 text-red-500" />,
+            });
+          },
+          preserveScroll: true,
+          forceFormData: true,
         });
     };
+    
+    
 
     const handlePhotoChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            setData('avatar', file);
-            setPhotoPreview(URL.createObjectURL(file)); // Tampilkan pratinjau gambar
+            setCropperImage(URL.createObjectURL(file));
+            setShowCropper(true);
         }
+    };
+
+    const handleCropComplete = (croppedFile) => {
+        setData('avatar', croppedFile);  // Store the File object
+        setPhotoPreview(URL.createObjectURL(croppedFile));  // Preview the cropped image
+        setShowCropper(false);  // Close the cropper
+      };
+      
+
+    const handleCropCancel = () => {
+        setShowCropper(false);
     };
 
     return (
         <form onSubmit={submit} className="space-y-6">
             <Toaster position="top-center" />
             <div className="flex items-center space-x-4">
-                <Avatar className="w-20 h-20">
+                <Avatar className="w-16 h-16">
                     <AvatarImage src={photoPreview} alt={user.name} />
                     <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
                 </Avatar>
@@ -81,6 +97,14 @@ export default function UpdateProfileInformation({ mustVerifyEmail, status }) {
                     </Button>
                 </div>
             </div>
+
+            {showCropper && (
+                <ImageCropper
+                    imageSrc={cropperImage}
+                    onCropComplete={handleCropComplete}
+                    onCancel={handleCropCancel}
+                />
+            )}
 
             <div>
                 <Label htmlFor="name">Name</Label>
@@ -124,3 +148,4 @@ export default function UpdateProfileInformation({ mustVerifyEmail, status }) {
         </form>
     );
 }
+

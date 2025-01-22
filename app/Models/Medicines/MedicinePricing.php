@@ -11,7 +11,7 @@ class MedicinePricing extends Model
 
     protected $table = 'medicine_pricings';
 
-    protected $fillable = ['medicine_id', 'purchase_price', 'otc_price'];
+    protected $fillable = ['medicine_id', 'purchase_price', 'otc_price','unit_type'];
 
     public function medicine()
     {

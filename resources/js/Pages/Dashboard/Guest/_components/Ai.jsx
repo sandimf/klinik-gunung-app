@@ -1,9 +1,9 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const genAI = new GoogleGenerativeAI("AIzaSyBfiwWwXE3Q8v0JuTPDb4xvNjh9SuvpWDE");
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+export const analyzeImage = async (file, apiKey) => {
+    const genAI = new GoogleGenerativeAI(apiKey || "default_api_key");
 
-export const analyzeImage = async (file) => {
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
     const fileToBase64 = (file) => {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -35,10 +35,15 @@ export const analyzeImage = async (file) => {
 
             Present the extracted information in a JSON format with these fields as keys.
         `;
-        
+
         const result = await model.generateContent([
             prompt,
-            { inlineData: { data: base64Image.split(",")[1], mimeType: file.type } }
+            {
+                inlineData: {
+                    data: base64Image.split(",")[1],
+                    mimeType: file.type,
+                },
+            },
         ]);
 
         const extractedText = result.response.text();

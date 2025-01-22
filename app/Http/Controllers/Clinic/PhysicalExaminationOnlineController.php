@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers\Clinic;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\Users\PatientsOnline;
-use Illuminate\Support\Facades\Auth;
 use App\Models\Clinic\PhysicalExaminationOnline;
+use App\Models\Users\PatientsOnline;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PhysicalExaminationOnlineController extends Controller
 {
     public function store(Request $request)
     {
         $user = Auth::user();
-        
+
         // Validasi input dari request
         $request->validate([
             'patient_id' => 'required|exists:patients_online,id',
@@ -27,18 +27,18 @@ class PhysicalExaminationOnlineController extends Controller
             'medical_advice' => 'nullable|string',
             'health_status' => 'required|in:healthy,butuh_dokter,butuh_pendamping',
         ]);
-        
+
         // Tentukan ID pemeriksa berdasarkan peran pengguna
         $examinerId = $user->id;
         $paramedisId = null;
         $doctorId = null;
-        
+
         if ($user->role === 'paramedis') {
             $paramedisId = $examinerId;
         } elseif ($user->role === 'doctor') {
             $doctorId = $examinerId;
         }
-        
+
         // Membuat catatan pemeriksaan fisik hanya untuk health check
         if ($request->health_status === 'healthy') {
             // Hanya store pemeriksaan jika status kesehatan adalah 'healthy'
@@ -58,14 +58,14 @@ class PhysicalExaminationOnlineController extends Controller
                 'medical_advice' => $request->medical_advice,
                 'health_status' => $request->health_status,
             ]);
-            
+
             // Memperbarui status pemeriksaan pasien menjadi 'completed'
             $patient = PatientsOnline::find($request->patient_id);
             $patient->screening_status = 'completed';
             $patient->health_status = $request->health_status;
             $patient->health_check_status = 'completed';
             $patient->save();
-            
+
             // Tidak ada QR code yang perlu di-generate untuk pemeriksaan 'healthy'
         }
     }

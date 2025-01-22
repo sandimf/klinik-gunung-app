@@ -72,7 +72,7 @@ const ScreeningInfo = ({ screening, detailRouteName, RouteName }) => {
                             <Users className="h-5 w-5 text-muted-foreground" />
                             <div>
                                 <p className="text-sm text-muted-foreground">
-                                    Name
+                                    Nama Lengkap
                                 </p>
                                 <p className="font-semibold">
                                     {screening.name}
@@ -118,7 +118,7 @@ const ScreeningInfo = ({ screening, detailRouteName, RouteName }) => {
                             <Calendar className="h-5 w-5 text-muted-foreground" />
                             <div>
                                 <p className="text-sm text-muted-foreground">
-                                    Screening Date
+                                Tanggal Screening
                                 </p>
                                 <p className="font-semibold">
                                     {new Date(

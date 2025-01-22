@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\Users;
 
-use App\Http\Controllers\Controller;
-use App\Models\Users\Patients;
-use App\Models\Users\PatientsOnline;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Http\Request;
+use App\Models\Users\Patients;
+use App\Http\Controllers\Controller;
+use App\Models\Users\PatientsOnline;
+use App\Models\Screenings\ScreeningAnswers;
 
 class ParamedisController extends Controller
 {
@@ -54,9 +55,8 @@ class ParamedisController extends Controller
 
         // Pisahkan screening ke dalam dua kategori berdasarkan kondisi
 
-
         $screenings = $screenings->filter(function ($screening) {
-            return !$screening->answers->some(function ($answer) {
+            return ! $screening->answers->some(function ($answer) {
                 // Cek apakah ada jawaban yang sesuai dengan condition_value untuk pertanyaan yang memerlukan dokter
                 return $answer->question->requires_doctor &&
                     $answer->answer_text == $answer->question->condition_value;
@@ -68,7 +68,6 @@ class ParamedisController extends Controller
         ]);
     }
 
-
     public function show($id)
     {
         $patient = Patients::with(['answers.question'])
@@ -79,6 +78,7 @@ class ParamedisController extends Controller
             return [
                 'question' => $answer->question->question_text,
                 'answer' => $answer->answer_text,
+                'id'=>$answer->id,
                 'queue' => $answer->queue, // Menambahkan nomor antrian
             ];
         });
@@ -130,17 +130,16 @@ class ParamedisController extends Controller
             ->where('payment_status', 'completed') // Tambahkan kondisi untuk payment_status
             ->where('scan_status', 'completed') // Tambahkan kondisi untuk hanya menampilkan scan_status 'completed'
             ->get();
-    
+
         return Inertia::render('Dashboard/Paramedis/Screenings/Online/Index', [
             'screenings' => $screenings,
         ]);
     }
-    
-    
+
     public function showScreeningOnlineDetail($id)
     {
         $patient = PatientsOnline::with(['answers.question'])
-            ->findOrFail($id); 
+            ->findOrFail($id);
 
         $questionsAndAnswers = $patient->answers->map(function ($answer) {
             return [
@@ -156,4 +155,37 @@ class ParamedisController extends Controller
             'queue' => $patient->answers->max('queue'),
         ]);
     }
+
+    // Edit Quesioner Jawaban pasien
+    public function update(Request $request, $id)
+    {
+        // Validasi untuk memastikan jawaban ada
+        $request->validate([
+            'answer' => 'required|array', // Pastikan 'answer' adalah array
+        ]);
+    
+        // Loop untuk memperbarui jawaban satu per satu
+        foreach ($request->answer as $answerData) {
+            // Cari jawaban berdasarkan id
+            $answer = ScreeningAnswers::findOrFail($id);
+            
+            // Pastikan 'answer' ada di dalam data
+            if (isset($answerData)) {
+                // Perbarui jawaban
+                $answer->answer_text = $answerData;
+                $answer->save();
+            } else {
+                // Jika 'answer' tidak ditemukan, berikan feedback
+                return redirect()->back()->with('error', 'API Key has been successfully saved or updated');
+
+            }
+        }
+    
+        return redirect()->back()->with('message', 'Berhasil Menyimpan Jawaban');
+
+
+    }
+    
+    
 }
+    

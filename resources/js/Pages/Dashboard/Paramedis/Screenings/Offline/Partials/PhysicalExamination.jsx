@@ -11,11 +11,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 const ScreeningDialog = ({ isOpen, setIsOpen, onSuccess, examiningScreening }) => {
     const { auth } = usePage().props;
     const user = auth.user;
-
+    const paramedis = auth.paramedis;
     const { data, setData, post, processing, errors, reset } = useForm({
+        paramedis_id: paramedis[0].id,
         patient_id: '',
-        examiner_id: user.id,
-        examiner_type: user.role === 'paramedis' ? 'paramedis' : 'doctor',
         blood_pressure: '',
         heart_rate: '',
         oxygen_saturation: '',
@@ -136,6 +135,7 @@ const ScreeningDialog = ({ isOpen, setIsOpen, onSuccess, examiningScreening }) =
                                 id="reason"
                                 value={data.reason}
                                 onChange={(e) => setData('reason', e.target.value)}
+                                placeholder="Alasan (jika tidak direkomendasikan)"
                                 className="col-span-3"
                             />
                             {errors.reason && <p className="text-red-500 text-sm">{errors.reason}</p>}
@@ -169,8 +169,6 @@ const ScreeningDialog = ({ isOpen, setIsOpen, onSuccess, examiningScreening }) =
                             {errors.health_status && <p className="text-red-500 text-sm col-span-4">{errors.health_status}</p>}
                         </div>
                     </div>
-
-
                     <DialogFooter>
                         <Button type="submit" disabled={processing}>Simpan Pemeriksaan</Button>
                     </DialogFooter>

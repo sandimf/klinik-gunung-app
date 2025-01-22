@@ -2,10 +2,10 @@
 
 namespace App\Models\EMR;
 
-use App\Models\Users\Patients;
-use Illuminate\Database\Eloquent\Model;
 use App\Models\Clinic\PhysicalExamination;
+use App\Models\Users\Patients;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class MedicalRecord extends Model
 {
@@ -42,12 +42,12 @@ class MedicalRecord extends Model
     //     });
     // }
 
-//     protected function generateMedicalRecordNumber()
-// {
-//     $lastRecord = MedicalRecord::latest()->first(); // Ambil rekam medis terakhir
-//     $lastNumber = $lastRecord ? intval(substr($lastRecord->medical_record_number, 2)) : 0; // Ambil angka terakhir
-//     $newNumber = $lastNumber + 1; // Tambah 1 untuk nomor baru
+    //     protected function generateMedicalRecordNumber()
+    // {
+    //     $lastRecord = MedicalRecord::latest()->first(); // Ambil rekam medis terakhir
+    //     $lastNumber = $lastRecord ? intval(substr($lastRecord->medical_record_number, 2)) : 0; // Ambil angka terakhir
+    //     $newNumber = $lastNumber + 1; // Tambah 1 untuk nomor baru
 
-//     return 'MR' . str_pad($newNumber, 4, '0', STR_PAD_LEFT); // Format nomor: MR0001, MR0002, dst.
-// }
+    //     return 'MR' . str_pad($newNumber, 4, '0', STR_PAD_LEFT); // Format nomor: MR0001, MR0002, dst.
+    // }
 }

@@ -2,17 +2,16 @@
 
 namespace App\Http\Controllers\Payments;
 
-use Inertia\Inertia;
-use Illuminate\Http\Request;
-use App\Jobs\SendQrCodeEmail;
 use App\Http\Controllers\Controller;
-use App\Models\Users\PatientsOnline;
-use App\Models\QrCode as QrCodeModel;
-use Illuminate\Support\Facades\Crypt;
+use App\Jobs\SendQrCodeEmail;
 use App\Models\Payments\PaymentOnline;
+use App\Models\QrCode as QrCodeModel;
+use App\Models\Users\PatientsOnline;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Storage;
+use Inertia\Inertia;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
-
 
 class PaymentsOnlineController extends Controller
 {
@@ -43,7 +42,7 @@ class PaymentsOnlineController extends Controller
             'screening_online_answer_id' => 'nullable|exists:screening_online_answers,id',
             'amount_paid' => 'required|numeric|min:0',
             'payment_method' => 'required|string',
-            'payment_proof' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048'
+            'payment_proof' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
         ]);
 
         // Upload bukti pembayaran jika ada
@@ -105,7 +104,7 @@ class PaymentsOnlineController extends Controller
         $encryptedData = Crypt::encryptString(json_encode($qrData));
 
         // Membuat QR code dengan data terenkripsi
-        $qrCodePath = 'qrcodes/' . uniqid() . '.png';
+        $qrCodePath = 'qrcodes/'.uniqid().'.png';
         $qrCodeContent = QrCode::format('png')
             ->size(300)
             ->generate($encryptedData);
@@ -114,7 +113,7 @@ class PaymentsOnlineController extends Controller
         Storage::disk('public')->put($qrCodePath, $qrCodeContent);
 
         // Simpan QR code ke dalam tabel qr_codes dengan relasi ke pasien
-        $qrCode = new QrCodeModel();
+        $qrCode = new QrCodeModel;
         $qrCode->patient_id = $patient->id; // Link to the patient
         $qrCode->qrcode = Storage::url($qrCodePath); // Store the QR code URL
         $qrCode->save();

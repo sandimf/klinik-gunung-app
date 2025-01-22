@@ -37,12 +37,7 @@ class RoleMiddleware
         }
 
         $user = Auth::user();
-
-        // Cek apakah role yang diberikan sesuai dengan role user
         if ($user->role !== $role) {
-            // Log kejadian akses yang tidak sah
-            Log::warning('Unauthorized access attempt by user ID: '.$user->id.' to role: '.$role);
-
             $roleRedirects = [
                 self::ROLE_ADMIN => 'admin.dashboard',
                 self::ROLE_DOCTOR => 'doctor.dashboard',

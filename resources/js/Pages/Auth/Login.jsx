@@ -13,7 +13,7 @@ import { Input } from "@/Components/ui/input";
 import { Label } from "@/Components/ui/label";
 import { Eye, EyeOff } from "lucide-react";
 
-export default function Component({ status, canResetPassword = true }) {
+export default function Component({ social, status, canResetPassword = true }) {
     const { data, setData, post, processing, errors, reset } = useForm({
         email: "",
         password: "",
@@ -79,7 +79,9 @@ export default function Component({ status, canResetPassword = true }) {
                                 <div className="relative">
                                     <Input
                                         id="password"
-                                        type={showPassword ? "text" : "password"}
+                                        type={
+                                            showPassword ? "text" : "password"
+                                        }
                                         name="password"
                                         value={data.password}
                                         placeholder="password"
@@ -120,18 +122,24 @@ export default function Component({ status, canResetPassword = true }) {
                                 {processing ? "Logging in..." : "Login"}
                             </Button>
                         </form>
-                        <Button
-                            variant="outline"
-                            className="w-full mt-4"
-                            onClick={() => {
-                                window.location.href = '/auth/google/redirect';
-                            }}
-                        >
-                            Login with Google
-                        </Button>
+                        {social.google === 1 && (
+                            <Button
+                                variant="outline"
+                                className="w-full mt-4"
+                                onClick={() => {
+                                    window.location.href =
+                                        "/auth/google/redirect";
+                                }}
+                            >
+                                Login with Google
+                            </Button>
+                        )}
                         <div className="mt-4 text-sm text-center">
                             Don&apos;t have an account?{" "}
-                            <Link href={route("register")} className="underline">
+                            <Link
+                                href={route("register")}
+                                className="underline"
+                            >
                                 Sign up
                             </Link>
                         </div>

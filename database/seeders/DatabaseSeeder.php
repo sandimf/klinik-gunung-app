@@ -36,6 +36,16 @@ class DatabaseSeeder extends Seeder
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ],
+            [
+                'name' => 'Cashier',
+                'email' => 'cashier@example.com',
+                'email_verified_at' => Carbon::now(),
+                'role' => 'cashier',
+                'password' => Hash::make('password'),
+                'remember_token' => Str::random(60),
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ],
         ];
         foreach ($userData as $user) {
             User::create($user);

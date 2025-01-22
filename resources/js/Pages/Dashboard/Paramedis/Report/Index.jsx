@@ -22,9 +22,11 @@ export default function Report({ totalPatients, sickPatientsCount, patients }) {
             <div className="p-6">
                 <div className="flex justify-between items-center mb-6 no-print">
                     <h1 className="text-2xl font-bold">Laporan Pemeriksaan</h1>
+                    <a href={route('pdf.self.paramedis')}>
                     <Button variant="outline">
                         <Printer className="mr-2 h-4 w-4" /> Download PDF
                     </Button>
+                    </a>
                 </div>
 
                 <div className="space-y-6 no-print">
@@ -67,6 +69,7 @@ export default function Report({ totalPatients, sickPatientsCount, patients }) {
                                 <TableHead>Nama Pasien</TableHead>
                                 <TableHead>Tanggal Lahir</TableHead>
                                 <TableHead>Status Kesehatan</TableHead>
+                                <TableHead>Detail</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -75,6 +78,13 @@ export default function Report({ totalPatients, sickPatientsCount, patients }) {
                                     <TableCell className="font-medium">{patient.name}</TableCell>
                                     <TableCell>{patient.date_of_birth}</TableCell>
                                     <TableCell>{patient.health_status}</TableCell>
+                                    <TableCell>
+                                        <a href={route('pdf.healthcheck.paramedis', patient.id)}>
+                                            <Button>
+                                                <Printer/>
+                                            </Button>
+                                        </a>
+                                    </TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>

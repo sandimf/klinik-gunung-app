@@ -44,11 +44,11 @@ export default function CreateAppointmentModal({ isOpen, onClose, onCreateAppoin
       <Toaster position="top-center" />
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Create New Appointment</DialogTitle>
+          <DialogTitle>Buat Janji Temu</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="appointment_date">Date</Label>
+            <Label htmlFor="appointment_date">Tanggal Janji Temu</Label>
             <Input
               id="appointment_date"
               type="date"
@@ -61,7 +61,7 @@ export default function CreateAppointmentModal({ isOpen, onClose, onCreateAppoin
             )}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="appointment_time">Time</Label>
+            <Label htmlFor="appointment_time">Jam Janji Temu</Label>
             <div className="flex items-center">
               <Clock className="mr-2 h-4 w-4" />
               <Input

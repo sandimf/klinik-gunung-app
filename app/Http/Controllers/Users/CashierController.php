@@ -22,6 +22,7 @@ class CashierController extends Controller
     {
         return Inertia::render('Profile/Cashier');
     }
+
     /**
      * Display screening offline
      */
@@ -56,8 +57,6 @@ class CashierController extends Controller
             })
             ->get();
 
-            
-
         // Muat semua data obat dengan pricing
         $medicines = Medicine::with('pricing')->get();
 
@@ -66,6 +65,7 @@ class CashierController extends Controller
             'medicines' => $medicines,
         ]);
     }
+
     public function historyPaymentsOnline()
     {
         // Ambil data pasien dengan pembayaran dan screening yang relevan
@@ -74,7 +74,7 @@ class CashierController extends Controller
             'answers.question',        // Relasi ke jawaban dan pertanyaan screening
         ])
             ->whereHas('payments', function ($query) {
-                $query->where('payment_status', true); 
+                $query->where('payment_status', true);
             })
             ->get();
 
@@ -91,12 +91,11 @@ class CashierController extends Controller
                 $query->whereNotNull('answer_text');
             })
             ->get();
-    
+
         return Inertia::render('Dashboard/Cashier/Screenings/ScreeningOnline', [
             'screenings' => $screenings,
         ]);
     }
-    
 
     public function showPayment($id)
     {
@@ -104,7 +103,7 @@ class CashierController extends Controller
             ->where('id', $id)
             ->first();
 
-        if (!$screening) {
+        if (! $screening) {
             return redirect()->route('cashier.screening-online')->with('error', 'Screening tidak ditemukan.');
         }
         $payment = $screening->payment;

@@ -6,6 +6,7 @@ import { Label } from '@/Components/ui/label';
 import { ScrollArea } from '@/Components/ui/scroll-area';
 import { useForm } from '@inertiajs/react';
 import { toast, Toaster } from "sonner";
+import { Edit } from 'lucide-react';
 
 const EditMedicineDialog = ({ medicine, onSuccess }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -66,11 +67,11 @@ const EditMedicineDialog = ({ medicine, onSuccess }) => {
       <Toaster position='top-center' />
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
-          <Button variant="outline" size="icon">Edit</Button>
+          <Button variant="outline" size="icon"><Edit/></Button>
         </DialogTrigger>
-        <DialogContent className="sm:max-w-[800px] h-[90vh] flex flex-col">
+        <DialogContent className="sm:max-w-[800px] h-[80vh] flex flex-col">
           <DialogHeader>
-            <DialogTitle>Edit Obat</DialogTitle>
+          <DialogTitle>Edit Data Obat {medicine.medicine_name}</DialogTitle>
           </DialogHeader>
           <ScrollArea className="flex-grow">
             <form onSubmit={handleSubmit} className="space-y-6 p-6">
@@ -201,7 +202,7 @@ const EditMedicineDialog = ({ medicine, onSuccess }) => {
                 </div>
               </div>
               <Button type="submit" disabled={processing} className="w-full">
-                {processing ? 'Mengupdate...' : 'Update Obat'}
+                {processing ? 'Memperbaharui...' : 'Perbaharui Obat'}
               </Button>
             </form>
           </ScrollArea>
@@ -219,7 +220,7 @@ const EditMedicineDialog = ({ medicine, onSuccess }) => {
               Batal
             </Button>
             <Button onClick={confirmEdit} disabled={processing}>
-              {processing ? 'Mengupdate...' : 'Ya, Update Obat'}
+              {processing ? 'Memperbaharui...' : 'Ya, Perbaharui Obat'}
             </Button>
           </DialogFooter>
         </DialogContent>

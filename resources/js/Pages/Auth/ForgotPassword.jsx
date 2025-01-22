@@ -1,8 +1,9 @@
-import InputError from '@/Components/InputError';
-import PrimaryButton from '@/Components/PrimaryButton';
-import TextInput from '@/Components/TextInput';
-import GuestLayout from '@/Layouts/GuestLayout';
+import { Button } from '@/Components/ui/button';
+import { Input } from '@/Components/ui/input';
+import { Label } from '@/Components/ui/label';
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/Components/ui/card';
 import { Head, useForm } from '@inertiajs/react';
+import AuthLayout from '@/Layouts/Auth/AuthLayout';
 
 export default function ForgotPassword({ status }) {
     const { data, setData, post, processing, errors } = useForm({
@@ -16,40 +17,51 @@ export default function ForgotPassword({ status }) {
     };
 
     return (
-        <GuestLayout>
+        <AuthLayout>
             <Head title="Forgot Password" />
 
-            <div className="mb-4 text-sm text-gray-600">
-                Forgot your password? No problem. Just let us know your email
-                address and we will email you a password reset link that will
-                allow you to choose a new one.
-            </div>
+            <Card className="w-full max-w-md mx-auto mt-8">
+                <CardHeader>
+                    <CardTitle>Forgot Password</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <p className="mb-4 text-sm text-gray-600">
+                        Forgot your password? No problem. Just let us know your email
+                        address and we will email you a password reset link that will
+                        allow you to choose a new one.
+                    </p>
 
-            {status && (
-                <div className="mb-4 text-sm font-medium text-green-600">
-                    {status}
-                </div>
-            )}
+                    {status && (
+                        <p className="mb-4 text-sm font-medium text-green-600">
+                            {status}
+                        </p>
+                    )}
 
-            <form onSubmit={submit}>
-                <TextInput
-                    id="email"
-                    type="email"
-                    name="email"
-                    value={data.email}
-                    className="mt-1 block w-full"
-                    isFocused={true}
-                    onChange={(e) => setData('email', e.target.value)}
-                />
-
-                <InputError message={errors.email} className="mt-2" />
-
-                <div className="mt-4 flex items-center justify-end">
-                    <PrimaryButton className="ms-4" disabled={processing}>
+                    <form onSubmit={submit}>
+                        <div className="space-y-2">
+                            <Label htmlFor="email">Email</Label>
+                            <Input
+                                id="email"
+                                type="email"
+                                name="email"
+                                value={data.email}
+                                className="mt-1 block w-full"
+                                onChange={(e) => setData('email', e.target.value)}
+                                autoFocus
+                            />
+                            {errors.email && (
+                                <p className="text-sm text-red-600">{errors.email}</p>
+                            )}
+                        </div>
+                    </form>
+                </CardContent>
+                <CardFooter className="flex justify-end">
+                    <Button type="submit" disabled={processing} onClick={submit}>
                         Email Password Reset Link
-                    </PrimaryButton>
-                </div>
-            </form>
-        </GuestLayout>
+                    </Button>
+                </CardFooter>
+            </Card>
+        </AuthLayout>
     );
 }
+

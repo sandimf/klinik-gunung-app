@@ -2,10 +2,8 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\Users\Cashier;
-use App\Models\Users\Paramedis;
 use Inertia\Middleware;
-use App\Models\Users\Patients;
+use App\Models\Ai\Apikey;
 use Illuminate\Http\Request;
 
 class HandleInertiaRequests extends Middleware
@@ -36,21 +34,24 @@ class HandleInertiaRequests extends Middleware
             ...parent::share($request),
             'auth' => [
                 'user' => $request->user(),
-                'community' => $request->user() && $request->user()->community 
-                    ? $request->user()->community->toArray() 
+                'community' => $request->user() && $request->user()->community
+                    ? $request->user()->community->toArray()
                     : null,
                 // Tambahkan relasi patients untuk user yang sedang login
-                'patients' => $request->user() && $request->user()->patients 
-                    ? $request->user()->patients->toArray() 
+                'patients' => $request->user() && $request->user()->patients
+                    ? $request->user()->patients->toArray()
                     : null,
-                'paramedis' => $request->user() && $request->user()->paramedis 
-                    ? $request->user()->paramedis->toArray() 
+                'paramedis' => $request->user() && $request->user()->paramedis
+                    ? $request->user()->paramedis->toArray()
+                    : null,
+                'cashier' => $request->user() && $request->user()->cashier
+                    ? $request->user()->cashier->toArray()
                     : null,
             ],
             'flash' => [
                 'message' => fn () => $request->session()->get('message'),
+                'error' => fn () => $request->session()->get('error'),
             ],
         ];
     }
-        
 }

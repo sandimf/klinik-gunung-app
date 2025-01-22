@@ -1,5 +1,3 @@
-'use client'
-
 import React, { useState } from "react"
 import {
   Command,
@@ -10,9 +8,10 @@ import {
   Users,
   ChevronRight,
   Database,
-  Pill,
   NotebookPen,
   Scan,
+  Ghost,
+  Key,
 } from "lucide-react"
 import { NavUser } from "@/Components/Nav/NavUser"
 import { TeamSwitcher } from "@/Components/Nav/TeamSwitcher"
@@ -104,19 +103,35 @@ export function AppSidebar({ ...sidebarProps }) {
         ],
       },
       {
-        title: "Database",
+        title: "Backup",
         url: route("dashboard"),
         icon: Database,
         items: [
           {
-            title: "Backup",
-            url: route('community.index'),
+            title: "Backup Database",
+            url: route('database.backup'),
           },
           {
             title: "Airtable",
             url: route('dashboard'),
           },
         ],
+      },
+      {
+        title: "Auth",
+        url: route("dashboard"),
+        icon: Ghost,
+        items: [
+          {
+            title: "Social Login",
+            url: route('login.settings'),
+          },
+        ],
+      },
+      {
+        title: "Apikey",
+        url: route("apikey.index"),
+        icon: Key,
       },
       {
         title: "Settings",

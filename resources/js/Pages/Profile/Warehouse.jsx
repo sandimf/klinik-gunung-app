@@ -1,7 +1,7 @@
 import { Head } from '@inertiajs/react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card"
-import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm';
-import UpdatePasswordForm from './Partials/UpdatePasswordForm';
+import UpdateProfileInformationForm from './_components/UpdateProfileInformationForm';
+import UpdatePasswordForm from './_components/UpdatePasswordForm';
 import {toast,Toaster} from "sonner"
 import WarehouseSidebar from '@/Layouts/Dashboard/WarehouseSidebarLayout';
 export default function Edit({ mustVerifyEmail, status }) {

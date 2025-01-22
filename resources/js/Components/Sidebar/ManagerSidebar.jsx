@@ -10,6 +10,7 @@ import {
   Activity,
   Pill,
   ChartPie,
+  CreditCard,
 } from "lucide-react"
 import { NavUser } from "@/Components/Nav/NavUser"
 import { TeamSwitcher } from "@/Components/Nav/TeamSwitcher"
@@ -55,9 +56,14 @@ export function AppSidebar({ ...sidebarProps }) {
         icon: Home,
       },
       {
-        title: "Aktivitas Screening",
+        title: "Aktivitas Pemeriksaan",
         url: route("manager.screening"),
-        icon: Bandage,
+        icon: Activity,
+      },
+      {
+        title: "Aktivitas Pembayaran",
+        url: route("manager.transaction"),
+        icon: CreditCard,
       },
       {
         title: "Staff",
@@ -74,11 +80,6 @@ export function AppSidebar({ ...sidebarProps }) {
         url: route("manager.office"),
         icon: ChartPie,
       },
-      {
-        title: "Report & Analisis",
-        url: route('manager.report'),
-        icon: Activity,
-      }
     ],
   }
 

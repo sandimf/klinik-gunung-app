@@ -17,7 +17,18 @@ class ProfileUpdateRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'avatar' => ['nullable', 'image', 'max:2048'], // Mengizinkan file gambar hingga 2MB
+            'avatar' => [
+                'nullable',
+                'image',
+                'mimes:jpeg,png,jpg,gif',
+                'max:2048',
+                function ($attribute, $value, $fail) {
+                    $file = $value;
+                    if ($file && !getimagesize($file)) {
+                        $fail('The file is not a valid image.');
+                    }
+                }
+            ],
             'email' => [
                 'required',
                 'string',
@@ -28,5 +39,4 @@ class ProfileUpdateRequest extends FormRequest
             ],
         ];
     }
-    
 }

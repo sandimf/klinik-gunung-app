@@ -3,14 +3,15 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use App\Models\Users\Cashier;
-use App\Models\Users\Patients;
-use App\Models\Community\Community;
-use App\Models\Users\PatientsOnline;
-use Illuminate\Notifications\Notifiable;
 use App\Models\Clinic\PhysicalExamination;
+use App\Models\Community\Community;
+use App\Models\Users\Cashier;
+use App\Models\Users\Paramedis;
+use App\Models\Users\Patients;
+use App\Models\Users\PatientsOnline;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
@@ -29,6 +30,9 @@ class User extends Authenticatable
         'email_verified_at',
         'email',
         'password',
+        'provider',
+        'provider_id',
+        'provider_token',
     ];
 
     /**
@@ -65,6 +69,16 @@ class User extends Authenticatable
         return $this->hasMany(Patients::class); // Relasi ke model Patient
     }
 
+    public function paramedis()
+    {
+        return $this->hasMany(Paramedis::class); // Relasi ke model Patient
+    }
+
+    public function cashier()
+    {
+        return $this->hasMany(Cashier::class); // Relasi ke model Patient
+    }
+
     public function patient_online()
     {
         return $this->hasOne(PatientsOnline::class, 'user_id');
@@ -73,12 +87,6 @@ class User extends Authenticatable
     public function community()
     {
         return $this->hasOne(Community::class);
-    }
-
-
-    public function cashier()
-    {
-        return $this->hasOne(Cashier::class, 'user_id', 'id');
     }
 
     public function physicalExaminationsAsParamedis()
@@ -96,5 +104,4 @@ class User extends Authenticatable
     {
         return $this->hasMany(PhysicalExamination::class, 'paramedis_id');
     }
-
 }

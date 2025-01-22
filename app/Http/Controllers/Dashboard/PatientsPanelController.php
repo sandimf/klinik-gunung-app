@@ -2,17 +2,15 @@
 
 namespace App\Http\Controllers\Dashboard;
 
-use Inertia\Inertia;
-use App\Models\Users\Patients;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Users\Patients;
 use App\Repositories\VisitRepository;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class PatientsPanelController extends Controller
 {
-
-
     protected $user;
 
     public function __construct()
@@ -22,10 +20,9 @@ class PatientsPanelController extends Controller
 
     /**
      * Display the patient's dashboard.
-     * 
+     *
      * This method verifies the user's patient profile, logs daily visits,
      * and calculates visit counts in the last 3 months.
-     *
      */
     public function index(VisitRepository $visitRepository)
     {
@@ -33,14 +30,14 @@ class PatientsPanelController extends Controller
 
         // Check if the user has a patient profile
         $patient = Patients::where('user_id', $this->user->id)->first();
-        
-        if (!$patient) {
+
+        if (! $patient) {
             return redirect()->route('information.index');
         }
-        
+
         // Render the patient's dashboard view with the visit count
         return Inertia::render('Dashboard/Patients/Index', [
-            'visitCount' => $visitRepository->visitCount($this->user)
+            'visitCount' => $visitRepository->visitCount($this->user),
 
         ]);
     }
@@ -49,11 +46,11 @@ class PatientsPanelController extends Controller
     {
         $patient = Patients::where('user_id', $this->user->id)->first();
 
-        if (!$patient) {
+        if (! $patient) {
             return redirect()->route('information.index')
                 ->with('warning', 'Please complete your patient profile before accessing appointments.');
         }
+
         return Inertia::render('Profile/Patients');
     }
-
 }

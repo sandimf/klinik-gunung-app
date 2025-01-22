@@ -2,33 +2,34 @@
 
 namespace App\Http\Controllers\Clinic;
 
-use Inertia\Inertia;
-use Illuminate\Http\Request;
-use App\Models\Users\Patients;
-use App\Models\EMR\MedicalRecord;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
 use App\Jobs\SendScreeningNotification;
 use App\Models\Clinic\PhysicalExamination;
 use App\Models\Clinic\PhysicalExaminationOnline;
+use App\Models\EMR\MedicalRecord;
+use App\Models\Users\Patients;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class PhysicalExaminationController extends Controller
 {
-
     protected function generateMedicalRecordNumber()
     {
         $lastRecord = MedicalRecord::latest()->first(); // Ambil rekam medis terakhir
         $lastNumber = $lastRecord ? intval(substr($lastRecord->medical_record_number, 2)) : 0; // Ambil angka terakhir
         $newNumber = $lastNumber + 1; // Tambah 1 untuk nomor baru
 
-        return 'MR' . str_pad($newNumber, 4, '0', STR_PAD_LEFT); // Format nomor: MR0001, MR0002, dst.
+        return 'MR'.str_pad($newNumber, 4, '0', STR_PAD_LEFT); // Format nomor: MR0001, MR0002, dst.
     }
+
     public function store(Request $request)
     {
         $user = Auth::user(); // Get the authenticated user
 
         // Validate the request data
         $request->validate([
+            'paramedis_id' => 'required|exists:paramedis,id',
             'patient_id' => 'required|exists:patients,id',
             'blood_pressure' => 'nullable|string',
             'heart_rate' => 'nullable|integer',
@@ -41,23 +42,10 @@ class PhysicalExaminationController extends Controller
             'health_status' => 'required|in:healthy,butuh_dokter,butuh_pendamping',
         ]);
 
-        $examinerId = $user->id;
-        $paramedisId = null;
-        $doctorId = null;
-
-        if ($user->role === 'paramedis') {
-            $paramedisId = $examinerId;
-        } elseif ($user->role === 'doctor') {
-            $doctorId = $examinerId;
-        }
-
         // Create the physical examination record
         $examination = PhysicalExamination::create([
             'patient_id' => $request->patient_id,
-            'examiner_id' => $examinerId,
-            'examiner_type' => $user->role,
-            'paramedis_id' => $paramedisId,
-            'doctor_id' => $doctorId,
+            'paramedis_id' => $request->paramedis_id,
             'blood_pressure' => $request->blood_pressure,
             'heart_rate' => $request->heart_rate,
             'oxygen_saturation' => $request->oxygen_saturation,

@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Str;
+use App\Models\Users\Cashier;
 use App\Models\Users\Patients;
 use App\Models\Medicines\MedicineBatch;
 use Illuminate\Database\Eloquent\Model;
@@ -12,6 +14,8 @@ class Payments extends Model
     use HasFactory;
 
     protected $fillable = [
+        'uuid',
+        'no_transaction',
         'cashier_id',
         'patient_id',
         'payment_status',
@@ -22,9 +26,42 @@ class Payments extends Model
         'payment_proof',
     ];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Secara otomatis menghasilkan UUID dan nomor transaksi saat data dibuat
+        static::creating(function ($model) {
+            if (empty($model->uuid)) {
+                $model->uuid = (string) Str::uuid();
+            }
+
+            // Generate nomor transaksi
+            if (empty($model->no_transaction)) {
+                $model->no_transaction = self::generateUniqueTransactionNumber();
+            }
+        });
+    }
+
+    /**
+     * Menghasilkan nomor transaksi unik
+     */
+    protected static function generateUniqueTransactionNumber()
+    {
+        do {
+            // Format nomor transaksi: TRX-YYYYMMDD-XXXX
+            $date = now()->format('Ymd');
+            $randomNumber = str_pad(mt_rand(1, 9999), 4, '0', STR_PAD_LEFT);
+
+            // Gabungkan format nomor transaksi
+            $transactionNumber = "TRX-{$date}-{$randomNumber}";
+        } while (self::where('no_transaction', $transactionNumber)->exists());
+
+        return $transactionNumber;
+    }
     public function cashier()
     {
-        return $this->belongsTo(User::class, 'cashier_id');
+        return $this->belongsTo(Cashier::class);
     }
 
     public function medicineBatch()
@@ -36,6 +73,7 @@ class Payments extends Model
     {
         return $this->belongsTo(Patients::class);
     }
+
     // Metode untuk melakukan pengurangan stok obat
     public function processPurchase()
     {

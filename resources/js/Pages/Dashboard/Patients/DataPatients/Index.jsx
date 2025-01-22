@@ -6,9 +6,11 @@ import { Label } from "@/Components/ui/label";
 import { Button } from "@/Components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/Components/ui/alert";
-import {  Upload, CheckCircle2, Info, InfoIcon } from "lucide-react";
+import { Upload, CheckCircle2, Info, InfoIcon, Loader2 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/Components/ui/tabs";
 import { toast, Toaster } from "sonner";
+import { Checkbox } from "@/Components/ui/checkbox";
+
 import {
     Select,
     SelectContent,
@@ -21,18 +23,21 @@ import {
 import WebcamComponent from "./_components/webcam";
 import Sidebar from "@/Layouts/Dashboard/PatientsSidebarLayout";
 
-const genAI = new GoogleGenerativeAI("AIzaSyBfiwWwXE3Q8v0JuTPDb4xvNjh9SuvpWDE");
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+export default function PatientDataEntry({ patient,apiKey}) {
 
-export default function PatientDataEntry({ patient }) {
+    const genAI = new GoogleGenerativeAI(apiKey || "default_api_key");
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
     const [entryMethod, setEntryMethod] = useState("manual");
     const [imageFile, setImageFile] = useState(null);
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const [analysisError, setAnalysisError] = useState(null);
     const [isCameraActive, setIsCameraActive] = useState(false);
     const fileInputRef = useRef(null);
+    const [agreedToPrivacy, setAgreedToPrivacy] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
-    const { data, setData, post, processing, errors } = useForm({
+    const { data, setData, post, processing, errors, error } = useForm({
         nik: patient?.nik || "",
         name: patient?.name || "",
         email: patient?.email || "",
@@ -55,21 +60,35 @@ export default function PatientDataEntry({ patient }) {
     });
 
     const isReadOnly = Boolean(patient);
-
     const handleSubmit = (e) => {
         e.preventDefault();
-        post(route("information.store"), {
-            onSuccess: () => {
-                toast.success(`Berhasil`, {
-                    icon: <CheckCircle2 className="h-5 w-5 text-green-500" />,
-                }); // Tampilkan pesan sukses
-            },
-            onError: (errors) => {
-                // Tangani error
-                alert("Terjadi kesalahan. Periksa kembali data Anda.");
-                console.error(errors);
-            },
-        });
+
+        if (!agreedToPrivacy) {
+            toast.error(
+                "Please agree to the privacy policy before submitting."
+            );
+            return;
+        }
+
+        setIsLoading(true); // Animasi loading langsung aktif
+
+        // Tambahkan delay sebelum menjalankan `post`
+        setTimeout(() => {
+            post(route("information.store"), {
+                onSuccess: () => {
+                    setIsLoading(false); // Nonaktifkan loading setelah berhasil
+                    toast.success(`Berhasil`, {
+                        icon: (
+                            <CheckCircle2 className="h-5 w-5 text-green-500" />
+                        ),
+                    });
+                },
+                onError: () => {
+                    setIsLoading(false); // Nonaktifkan loading jika terjadi error
+                    toast.error("Ada kesalahan");
+                },
+            });
+        }, 2000); // Delay selama 2 detik
     };
 
     const handleFileChange = (event) => {
@@ -148,25 +167,33 @@ export default function PatientDataEntry({ patient }) {
             const capitalizeWords = (str) => {
                 if (!str) return "";
                 return str
-                  .toLowerCase()
-                  .replace(/\b\w/g, (match) => match.toUpperCase());
-              };
+                    .toLowerCase()
+                    .replace(/\b\w/g, (match) => match.toUpperCase());
+            };
             setData({
                 ...data,
                 nik: parsedData.NIK || "",
-                 name: capitalizeWords(parsedData.Nama || ""),
-                place_of_birth: capitalizeWords(parsedData["Tempat Lahir"] || ""),
-                date_of_birth: capitalizeWords(parsedData["Tanggal Lahir"] || ""),
+                name: capitalizeWords(parsedData.Nama || ""),
+                place_of_birth: capitalizeWords(
+                    parsedData["Tempat Lahir"] || ""
+                ),
+                date_of_birth: capitalizeWords(
+                    parsedData["Tanggal Lahir"] || ""
+                ),
                 gender: capitalizeWords(parsedData["Jenis Kelamin"] || ""),
                 address: capitalizeWords(parsedData.Alamat || ""),
                 rt_rw: capitalizeWords(parsedData["RT/RW"] || ""),
                 village: capitalizeWords(parsedData["Kelurahan/Desa"] || ""),
                 district: capitalizeWords(parsedData.Kecamatan || ""),
                 religion: capitalizeWords(parsedData.Agama || ""),
-                marital_status: capitalizeWords(parsedData["Status Perkawinan"] || ""),
+                marital_status: capitalizeWords(
+                    parsedData["Status Perkawinan"] || ""
+                ),
                 occupation: capitalizeWords(parsedData.Pekerjaan || ""),
                 nationality: capitalizeWords(parsedData.Kewarganegaraan || ""),
-                valid_until: capitalizeWords(parsedData["Berlaku Hingga"] || ""),
+                valid_until: capitalizeWords(
+                    parsedData["Berlaku Hingga"] || ""
+                ),
                 blood_type: capitalizeWords(parsedData["Golongan Darah"] || ""),
             });
         } catch (err) {
@@ -201,7 +228,8 @@ export default function PatientDataEntry({ patient }) {
                         <InfoIcon className="h-4 w-4" />
                         <AlertTitle>Informasi</AlertTitle>
                         <AlertDescription>
-                            Kamu hanya bisa mengakses fitur hanya jika sudah mengisi formulir ini.
+                            Kamu hanya bisa mengakses fitur hanya jika sudah
+                            mengisi formulir ini.
                         </AlertDescription>
                     </Alert>
 
@@ -233,7 +261,7 @@ export default function PatientDataEntry({ patient }) {
                                                 or drag and drop
                                             </p>
                                             <p className="text-xs text-gray-500 dark:text-gray-400">
-                                                SVG, PNG, JPG or GIF 
+                                                SVG, PNG, JPG or GIF
                                             </p>
                                         </div>
                                         <Input
@@ -335,7 +363,7 @@ export default function PatientDataEntry({ patient }) {
                                     </p>
                                 )}
                             </div>
-                            
+
                             <div>
                                 <Label htmlFor="place_of_birth">
                                     Tempat Lahir
@@ -462,7 +490,9 @@ export default function PatientDataEntry({ patient }) {
                                 />
                             </div>
                             <div>
-                                <Label htmlFor="marital_status">Status Perkawinan</Label>
+                                <Label htmlFor="marital_status">
+                                    Status Perkawinan
+                                </Label>
                                 <Select
                                     value={data.marital_status}
                                     onValueChange={(value) =>
@@ -474,9 +504,7 @@ export default function PatientDataEntry({ patient }) {
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectGroup>
-                                            <SelectLabel>
-                                                Status
-                                            </SelectLabel>
+                                            <SelectLabel>Status</SelectLabel>
                                             <SelectItem value="Belum Kawin">
                                                 Belum Kawin
                                             </SelectItem>
@@ -491,7 +519,7 @@ export default function PatientDataEntry({ patient }) {
                                         {errors.marital_status}
                                     </p>
                                 )}
-                                </div>
+                            </div>
 
                             <div>
                                 <Label htmlFor="occupation">Pekerjaan</Label>
@@ -506,7 +534,9 @@ export default function PatientDataEntry({ patient }) {
                                 />
                             </div>
                             <div>
-                                <Label htmlFor="nationality">Kewarganegaraan</Label>
+                                <Label htmlFor="nationality">
+                                    Kewarganegaraan
+                                </Label>
                                 <Input
                                     id="nationality"
                                     value={data.nationality}
@@ -518,7 +548,9 @@ export default function PatientDataEntry({ patient }) {
                                 />
                             </div>
                             <div>
-                                <Label htmlFor="valid_until">Berlaku Hingga</Label>
+                                <Label htmlFor="valid_until">
+                                    Berlaku Hingga
+                                </Label>
                                 <Input
                                     id="valid_until"
                                     value={data.valid_until}
@@ -530,7 +562,9 @@ export default function PatientDataEntry({ patient }) {
                                 />
                             </div>
                             <div>
-                                <Label htmlFor="blood_type">Golongan Dara</Label>
+                                <Label htmlFor="blood_type">
+                                    Golongan Dara
+                                </Label>
                                 <Input
                                     id="blood_type"
                                     value={data.blood_type}
@@ -588,14 +622,35 @@ export default function PatientDataEntry({ patient }) {
                                     </p>
                                 )}
                             </div>
+
+                            <div className="flex items-center space-x-2 mt-4">
+                                <Checkbox
+                                    id="privacyAgreement"
+                                    checked={agreedToPrivacy}
+                                    onCheckedChange={setAgreedToPrivacy}
+                                />
+                                <label
+                                    htmlFor="privacyAgreement"
+                                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                >
+                                    I agree to the privacy policy
+                                </label>
+                            </div>
                         </div>
                         {!isReadOnly && (
                             <Button
                                 type="submit"
-                                disabled={processing}
                                 className="w-full"
+                                disabled={processing || !agreedToPrivacy}
                             >
-                                Save
+                                {isLoading ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        Please wait...
+                                    </>
+                                ) : (
+                                    <>Submit</>
+                                )}
                             </Button>
                         )}
                         {isReadOnly && (

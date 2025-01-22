@@ -2,20 +2,21 @@
 
 namespace App\Models\Users;
 
-use App\Models\User;
-use Illuminate\Support\Str;
-use App\Models\Payments\PaymentOnline;
-use Illuminate\Database\Eloquent\Model;
 use App\Models\Clinic\PhysicalExaminationOnline;
+use App\Models\Payments\PaymentOnline;
 use App\Models\Screenings\ScreeningOnlineAnswers;
 use App\Models\Screenings\ScreeningOnlineQuestions;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class PatientsOnline extends Model
 {
     use HasFactory;
 
     protected $table = 'patients_online';
+
     protected $fillable = [
         'uuid',
         'user_id',
@@ -43,6 +44,20 @@ class PatientsOnline extends Model
         'payment_status',
     ];
 
+//     public function attributesToArray()
+// {
+//     $attributes = parent::attributesToArray();
+
+//     // Mengubah semua atribut string menjadi Title Case kecuali email
+//     return array_map(function ($value, $key) {
+//         // Cek jika atribut bukan email, baru diubah menjadi Title Case
+//         if ($key !== 'email' && is_string($value)) {
+//             return ucwords(strtolower($value));
+//         }
+//         return $value;
+//     }, $attributes, array_keys($attributes));
+// }
+
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
@@ -57,6 +72,7 @@ class PatientsOnline extends Model
     {
         return $this->hasOne(PaymentOnline::class, 'patient_id', 'id');
     }
+
     public function payments()
     {
         return $this->hasOne(PaymentOnline::class, 'patient_id', 'id');
@@ -71,6 +87,7 @@ class PatientsOnline extends Model
     {
         return $this->hasMany(PhysicalExaminationOnline::class, 'patient_id');
     }
+
     public function physicalExaminations()
     {
         return $this->hasMany(PhysicalExaminationOnline::class, 'patient_id');

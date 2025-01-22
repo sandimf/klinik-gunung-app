@@ -2,16 +2,16 @@
 
 namespace App\Models\Users;
 
-use App\Models\User;
-use App\Models\QrCode;
-use App\Models\Payments;
-use Illuminate\Support\Str;
-use App\Models\Medicines\Medicine;
-use Illuminate\Database\Eloquent\Model;
 use App\Models\Clinic\PhysicalExamination;
+use App\Models\Medicines\Medicine;
+use App\Models\Payments;
+use App\Models\QrCode;
 use App\Models\Screenings\ScreeningAnswers;
 use App\Models\Screenings\ScreeningQuestions;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Patients extends Model
 {
@@ -46,7 +46,6 @@ class Patients extends Model
         'payment_status',
     ];
 
-
     public function attributesToArray()
     {
         $attributes = parent::attributesToArray();
@@ -66,6 +65,7 @@ class Patients extends Model
     {
         return $this->hasMany(ScreeningAnswers::class, 'patient_id');
     }
+
     public function question()
     {
         return $this->hasMany(ScreeningQuestions::class, 'patient_id');
@@ -92,7 +92,7 @@ class Patients extends Model
     {
         return $this->hasOne(QrCode::class);
     }
-    
+
     protected static function boot()
     {
         parent::boot();

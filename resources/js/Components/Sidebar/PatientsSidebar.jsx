@@ -71,16 +71,15 @@ export function AppSidebar({ ...sidebarProps }) {
         url: route("appointments.index"),
         icon: CalendarClock,
       },
-
-      {
-        title: "Profile",
-        url: route("patients.profile"),
-        icon: CircleUser,
-      },
       {
         title: "Community",
         url: route("community.index"),
         icon: Users,
+      },
+      {
+        title: "Profile",
+        url: route("patients.profile"),
+        icon: CircleUser,
       },
     ],
   }

@@ -2,41 +2,45 @@
 
 namespace App\Http\Controllers\Screenings;
 
+use Carbon\Carbon;
 use Inertia\Inertia;
-use Illuminate\Http\Request;
 use App\Models\Users\Patients;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Screenings\ScreeningAnswers;
 use App\Models\Screenings\ScreeningQuestions;
 use App\Http\Requests\Screenings\ScreeningOfflineRequest;
-use Barryvdh\DomPDF\Facade\Pdf;
 
 class ScreeningOfflineController extends Controller
 {
     public function index()
     {
         $userId = Auth::id();
-
+    
         $user = Auth::user();
-
+    
         $patient = Patients::where('user_id', $user->id)->first();
-
-        if (!$patient) {
+    
+        if (! $patient) {
             return redirect()->route('information.index')
                 ->with('message', 'Masukan data diri kamu terlebih dahulu sebelum melakukan screening.');
         }
-
+    
         // Fetch the patient and their related questionnaire answers
         $screening = Patients::with('answers') // Eager load answers
             ->where('user_id', $userId)
             ->orderBy('created_at', 'desc')
             ->first();
-
+    
+        // Format created_at jika screening ditemukan
+        if ($screening) {
+            $screening->formatted_created_at = Carbon::parse($screening->created_at)->translatedFormat('d F Y');
+        }
+    
         return Inertia::render('Dashboard/Patients/Screenings/Offline/Index', [
             'screening' => $screening,
-            // Kirim data pasien jika ada
         ]);
     }
 
@@ -96,26 +100,25 @@ class ScreeningOfflineController extends Controller
             }
         });
 
-        return;
+        return redirect(route('screening.index'))->with('message', 'Kuesioner Kamu Berhasil Di Simpan');
+
     }
 
     public function show($uuid)
     {
         $userId = Auth::id();
-        
+
         // Mencari pasien berdasarkan uuid dan user_id
         $screening = Patients::with(['answers.question', 'physicalExaminations'])
             ->where('user_id', $userId)
             ->where('uuid', $uuid) // Menggunakan UUID di query
             ->firstOrFail(); // Gunakan firstOrFail agar jika UUID tidak ditemukan, otomatis memunculkan error
-    
+
         // Kirim data pasien beserta jawaban screening dan pemeriksaan fisik ke tampilan Inertia
         return Inertia::render('Dashboard/Patients/Screenings/Details/ScreeningOfflineDetail', [
             'screening' => $screening,
         ]);
     }
-    
-
 
     public function generatePDF($id)
     {
@@ -133,6 +136,6 @@ class ScreeningOfflineController extends Controller
         ]);
 
         // Download PDF dengan nama sesuai nama pasien
-        return $pdf->download('screening_detail_' . $patientName . '.pdf');
+        return $pdf->download('screening_detail_'.$patientName.'.pdf');
     }
 }

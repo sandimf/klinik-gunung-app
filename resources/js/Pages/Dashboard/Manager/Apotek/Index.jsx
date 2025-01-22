@@ -14,7 +14,7 @@ import { Input } from "@/Components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
 import MedicalHeader from "../_components/table-header";
 
-export default function MedicineList({ medicines, totalQuantity }) {
+export default function MedicineList({ medicines }) {
     const [searchTerm, setSearchTerm] = useState("");
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -41,46 +41,6 @@ export default function MedicineList({ medicines, totalQuantity }) {
         <ManagerSidebar header="Medicine">
             <Head title="Obat" />
             <MedicalHeader title="Apotek" />
-            <div className="grid md:grid-cols-3 gap-6 mb-6">
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">
-                            Total Obat
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        {totalQuantity === 0 ? (
-                            <div>
-                                Belum ada obat
-                            </div>
-                        ) : (
-                            <div className="text-2xl font-bold">
-                                {totalQuantity}
-                            </div>
-                        )}
-                    </CardContent>
-                </Card>
-                {/* <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">
-                            Obat Hampir Habis
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">23</div>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">
-                            Obat Kadaluarsa
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">5</div>
-                    </CardContent>
-                </Card> */}
-            </div>
             <Input
                 placeholder="Search medicines..."
                 value={searchTerm}

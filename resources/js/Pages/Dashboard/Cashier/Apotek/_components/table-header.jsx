@@ -2,7 +2,7 @@
 import AddMedicineButton from "./add-medicine-dialog"; // Impor tombol
 
 const MedicineHeader = ({
-    title = 'Medicine List',
+    title = 'Daftar Stock Obat',
     onAddMedicineClick,  // Event handler untuk membuka dialog
     children
 }) => {

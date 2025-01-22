@@ -43,8 +43,8 @@ const ScreeningOfflineIndex = ({ screenings = [] }) => {
     const filteredScreenings = screenings.filter((screening) => {
         const nameMatch = screening.name.toLowerCase().includes(searchTerm.toLowerCase());
         const typeMatch = selectedType === "all" || 
-            (selectedType === "online" && screening.answers[0]?.isOnline === true) ||
-            (selectedType === "offline" && (screening.answers[0]?.isOnline === false || screening.answers[0]?.isOnline === undefined));
+            (selectedType === "online" && screening.answers[0]?.isOnline === 1) ||
+            (selectedType === "offline" && (screening.answers[0]?.isOnline === 0 || screening.answers[0]?.isOnline === undefined));
         return nameMatch && typeMatch;
     });
 

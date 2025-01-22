@@ -3,13 +3,13 @@
 namespace App\Models\Community;
 
 use App\Models\User;
-use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Community extends Model
 {
-
     protected $table = 'community';
+
     protected $fillable = [
         'bio', 'username', 'content', 'image', 'status', 'user_id', 'slug',
     ];
@@ -20,7 +20,7 @@ class Community extends Model
 
         // Buat atau perbarui slug saat model akan dibuat atau diperbarui
         static::saving(function ($community) {
-            if (!empty($community->username)) {
+            if (! empty($community->username)) {
                 $community->slug = Str::slug($community->username);
             }
         });

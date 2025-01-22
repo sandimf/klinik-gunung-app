@@ -10,8 +10,7 @@ import { Button } from "@/Components/ui/button";
 import PatientSidebar from "@/Layouts/Dashboard/PatientsSidebarLayout";
 import {toast, Toaster} from "sonner"
 
-
-export default function Index({ questions, errors,patient }) {
+export default function Index({ questions,patient }) {
     const user = usePage().props.auth.user;
     const [answers, setAnswers] = useState({});
     const [patientData, setPatientData] = useState({

@@ -1,10 +1,12 @@
+import { useEffect } from "react";
 import { Head, usePage } from "@inertiajs/react";
 import { Alert, AlertDescription, AlertTitle } from "@/Components/ui/alert";
 import SideBar from "@/Layouts/Dashboard/PatientsSidebarLayout";
 import ScreeningInfo from "@/Pages/Dashboard/Patients/Screenings/_components/ScreeningInfo";
 import NoScreeningData from "@/Pages/Dashboard/Patients/Screenings/_components/NoScreeningData";
-import { CheckCircle } from 'lucide-react';
+import { CheckCircle,Info } from 'lucide-react';
 import { CardContent } from "@/Components/ui/card";
+import {toast, Toaster} from "sonner"
 
 export default function HistoryOffline({ screening }) {
     const user = usePage().props.auth.user;
@@ -12,10 +14,19 @@ export default function HistoryOffline({ screening }) {
     const isPending = hasScreening && screening.screening_status === "Pending";
     const isCompleted = hasScreening && screening.screening_status === "Completed";
 
-    console.log(screening);
+    const { flash } = usePage().props;
+    useEffect(() => {
+        if (flash.message) {
+            toast(flash.message, {
+                icon: <Info className="h-5 w-5 text-green-500"/>
+            });
+        }
+    }, [flash.message]);
+
     return (
         <SideBar header="Screening Now">
             <Head title="Screening Status" />
+            <Toaster position="top-center" />
             <div className="container mx-auto py-6 px-4 max-w-full">
                 {isCompleted && (
                     <Alert className="mb-6">
@@ -52,7 +63,7 @@ export default function HistoryOffline({ screening }) {
                             RouteName={'Detail'}
                             detailRouteName={route(
                                 "screening.show",
-                                screening.id
+                                screening.uuid
                             )}
                         />
                     ) : (

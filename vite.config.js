@@ -20,4 +20,10 @@ export default defineConfig({
             'ziggy-js': path.resolve(__dirname, './vendor/tightenco/ziggy'),
         },
     },
+    server: {
+        host: '127.0.0.1', // or '127.0.0.1'
+        port: 5173,
+        strictPort: true,
+        cors: true, // Enable CORS
+    },
 });

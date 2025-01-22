@@ -6,15 +6,15 @@ use App\Models\User;
 use App\Models\Users\Doctor;
 use App\Models\Users\Paramedis;
 use App\Models\Users\PatientsOnline;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class PhysicalExaminationOnline extends Model
 {
     use HasFactory;
 
     protected $table = 'physical_examinations_online';
-    
+
     protected $fillable = [
         'patient_id',
         'paramedis_id',
@@ -28,7 +28,7 @@ class PhysicalExaminationOnline extends Model
         'reason',
         'medical_advice',
         'health_status',
-        'qrcode'
+        'qrcode',
     ];
 
     // Relasi ke pasien

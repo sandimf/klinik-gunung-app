@@ -18,8 +18,8 @@ import {
 import { Button } from "@/Components/ui/button";
 import { Checkbox } from "@/Components/ui/checkbox";
 import { Input } from "@/Components/ui/input";
-import { useForm } from "@inertiajs/react";
-import {CheckCircle2} from "lucide-react"
+import { useForm, usePage } from "@inertiajs/react";
+import { CheckCircle2 } from "lucide-react";
 
 export default function PaymentDialog({
     isOpen,
@@ -30,9 +30,14 @@ export default function PaymentDialog({
     if (!screening) {
         return null;
     }
-    console.log("Screening Data:", screening);
+
+    const { auth } = usePage().props;
+
+    const cashier = auth.cashier;
+
     const [hasPurchasedProduct, setHasPurchasedProduct] = useState(false);
     const { data, setData, post, processing, errors } = useForm({
+        cashier_id: cashier[0].id,
         patient_id: screening.id,
         payment_method: "",
         amount_paid: "",
@@ -68,14 +73,9 @@ export default function PaymentDialog({
             preserveState: true,
             preserveScroll: true,
             onSuccess: () => {
-                toast.success(
-                    `Pembayaran Berhasil di Proses`,
-                    {
-                        icon: (
-                            <CheckCircle2 className="h-5 w-5 text-green-500" />
-                        ),
-                    }
-                );
+                toast.success(`Pembayaran Berhasil di Proses`, {
+                    icon: <CheckCircle2 className="h-5 w-5 text-green-500" />,
+                });
                 onClose();
             },
             onError: (errors) => {
@@ -307,7 +307,28 @@ export default function PaymentDialog({
                             )}
                         </div>
                     )}
-
+                    {(data.payment_method === "qris" ||
+                        data.payment_method === "transfer") && (
+                        <div className="space-y-2">
+                            <Label
+                                htmlFor="payment-proof"
+                                className="text-base font-semibold"
+                            >
+                                Bukti Pembayaran
+                            </Label>
+                            <Input
+                                id="payment-proof"
+                                type="file"
+                                onChange={handleFileChange}
+                                accept="image/*,.pdf"
+                            />
+                            {errors.payment_proof && (
+                                <p className="text-red-500 text-sm">
+                                    {errors.payment_proof}
+                                </p>
+                            )}
+                        </div>
+                    )}
                     <Button
                         type="submit"
                         className="w-full"

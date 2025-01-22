@@ -13,14 +13,14 @@ import {
 
 export default function Index({ users }) {
     return (
-        <ManagerSidebar header={"Daftar Tenaga Medis"}>
-            <Head title="Daftar Tenaga Medis" />
+        <ManagerSidebar header={"Daftar Staff"}>
+            <Head title="Daftar Staff" />
             <MedicalHeader/>
             <Table>
-                <TableCaption>Daftar Tenaga Medis</TableCaption>
+                <TableCaption>Daftar Staff</TableCaption>
                 <TableHeader>
                     <TableRow>
-                        <TableHead>Nama Tenaga Medis</TableHead>
+                        <TableHead>Nama</TableHead>
                         <TableHead>Email</TableHead>
                         <TableHead>Nik</TableHead>
                         <TableHead>Telepon</TableHead>

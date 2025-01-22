@@ -11,6 +11,7 @@ import {Avatar, AvatarFallback,AvatarImage} from "@/Components/ui/avatar"
 import { Head } from '@inertiajs/react';
 
 export default function Office({
+  totalPayment,
   totalIncome,
   lastPaymentDate,
   successfulTransactions,
@@ -22,7 +23,9 @@ export default function Office({
       <div className="container mx-auto p-6 space-y-8">
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold">Office Klinik Gunung</h1>
+          <a href={route('cashier.pdf.office')}>
           <Button>Generate Report</Button>
+          </a>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
@@ -33,11 +36,8 @@ export default function Office({
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {new Intl.NumberFormat("id-ID", {
-                  style: "currency",
-                  currency: "IDR",
-                }).format(totalIncome)}
-              </div>
+              {totalIncome}
+                </div>
               <p className="text-xs text-muted-foreground">+20.1% from last month</p>
             </CardContent>
           </Card>
@@ -60,10 +60,7 @@ export default function Office({
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {new Intl.NumberFormat("id-ID", {
-                  style: "currency",
-                  currency: "IDR",
-                }).format(totalIncome)}
+                {totalIncome}
               </div>
               <p className="text-xs text-muted-foreground">Current balance</p>
             </CardContent>
@@ -97,19 +94,13 @@ export default function Office({
                   <div className="flex justify-between items-center">
                     <span className="text-sm font-medium">Total Pemasukan</span>
                     <span className="text-sm font-bold text-green-600">
-                      {new Intl.NumberFormat("id-ID", {
-                        style: "currency",
-                        currency: "IDR",
-                      }).format(totalIncome)}
+                    {totalPayment}
                     </span>
                   </div>
                   <div className="flex justify-between items-center pt-2 border-t">
                     <span className="text-sm font-medium">Saldo</span>
                     <span className="text-sm font-bold">
-                      {new Intl.NumberFormat("id-ID", {
-                        style: "currency",
-                        currency: "IDR",
-                      }).format(totalIncome)}
+                    {totalIncome}
                     </span>
                   </div>
                 </div>
@@ -134,7 +125,7 @@ export default function Office({
                                     ? payment.patient_avatar.startsWith("http")
                                         ? payment.patient_avatar
                                         : `/storage/${payment.patient_avatar}`
-                                    : "/storage/avatar/avatar.jpg"
+                                    : "/storage/avatar/avatar.svg"
                             }
                             alt={payment.patient_name || "Klinik gunung"}
                         />

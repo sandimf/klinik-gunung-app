@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Clinic;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Clinic\MedicalPersonnelRequest;
+use App\Jobs\SendStaffCredentialsEmail;
 use App\Models\User;
 use App\Models\Users\Admin;
 use App\Models\Users\Cashier;
@@ -17,7 +18,7 @@ use Inertia\Inertia;
 
 class MedicalPersonnelController extends Controller
 {
-    // Halaman daftar tenaga medis
+    
     public function index()
     {
         $doctors = collect(Doctor::with('user')->get()->map(function ($doctor) {
@@ -114,55 +115,63 @@ class MedicalPersonnelController extends Controller
         return Inertia::render('Dashboard/Admin/MedicalPersonnel/New');
     }
 
-    // Memebuat tenaga medis baru
+    // Membuat tenaga medis baru
     public function store(MedicalPersonnelRequest $request)
     {
+        // Mulai transaksi database
         DB::beginTransaction();
-        try {
-            $user = User::create([
-                'name' => $request->name,
-                'email' => $request->email,
-                'password' => Hash::make($request->password),
-                'email_verified_at' => Carbon::now(),
-                'role' => $request->role,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ]);
-
-            // Siapkan data untuk jenis medical personnel
-            $data = [
-                'user_id' => $user->id,
-                'nik' => $request->nik,
-                'email' => $request->email,
-                'name' => $request->name,
-                'address' => $request->address,
-                'date_of_birth' => $request->date_of_birth,
-                'phone' => $request->phone,
-            ];
-
-            // Insert berdasarkan role
-            $classMap = [
-                'doctor' => Doctor::class,
-                'paramedis' => Paramedis::class,
-                'cashier' => Cashier::class,
-                'admin' => Admin::class,
-                'warehouse' => Warehouse::class,
-            ];
-
-            if (array_key_exists($request->role, $classMap)) {
-                $classMap[$request->role]::create($data);
-            }
-
-            // Commit transaksi
-            DB::commit();
-
-            return redirect()->back()->with('message', 'User  added successfully.');
-
-        } catch (\Exception $e) {
+    
+        // Simpan password asli sebelum di-hash
+        $plainPassword = $request->password;
+    
+        // Buat pengguna baru
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($plainPassword), // Hash password
+            'email_verified_at' => now(),
+            'role' => $request->role,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+    
+        // Siapkan data untuk jenis medical personnel
+        $medicalPersonnelData = [
+            'user_id' => $user->id,
+            'nik' => $request->nik,
+            'email' => $request->email,
+            'name' => $request->name,
+            'address' => $request->address,
+            'date_of_birth' => $request->date_of_birth,
+            'phone' => $request->phone,
+        ];
+    
+        // Peta kelas berdasarkan role
+        $classMap = [
+            'doctor' => Doctor::class,
+            'paramedis' => Paramedis::class,
+            'cashier' => Cashier::class,
+            'admin' => Admin::class,
+            'warehouse' => Warehouse::class,
+        ];
+    
+        // Cek dan simpan data berdasarkan role
+        if (!array_key_exists($request->role, $classMap)) {
             DB::rollBack();
-
-            return redirect()->back()->with('error', 'Failed to add user: '.$e->getMessage());
+            return redirect()->back()->with('error', 'Invalid role provided.');
         }
+    
+        // Simpan data medical personnel
+        $classMap[$request->role]::create($medicalPersonnelData);
+    
+        // Dispatch Job untuk mengirim email
+        SendStaffCredentialsEmail::dispatch($user, $plainPassword);
+    
+        // Commit transaksi
+        DB::commit();
+    
+        return redirect()->back()->with('message', 'User  added successfully.');
     }
 
+    
 }

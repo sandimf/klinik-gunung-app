@@ -8,14 +8,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
 import { Alert, AlertDescription } from "@/Components/ui/alert";
 import { Checkbox } from "@/Components/ui/checkbox";
 import { Textarea } from "@/Components/ui/textarea";
-import {  Upload, Info } from 'lucide-react';
+import {  Upload, Info, Loader2 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/Components/ui/tabs";
 import { toast, Toaster } from "sonner";
 import WebcamComponent from "./_components/Webcam";
 import { PatientInfoForm } from "./_components/PatientInfoForm";
 import { analyzeImage } from './_components/Ai'; // Import the analyzeImage function
+import Header from "@/Components/Navbar";
 
-export default function PatientDataEntry({questions}) {
+export default function PatientDataEntry({questions, apiKey}) {
+    const [agreedToPrivacy, setAgreedToPrivacy] = useState(false);
+
     const [entryMethod, setEntryMethod] = useState("manual");
     const [imageFile, setImageFile] = useState(null);
     const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -24,6 +27,7 @@ export default function PatientDataEntry({questions}) {
     const fileInputRef = useRef(null);
     const [formErrors, setFormErrors] = useState({});
     const [answers, setAnswers] = useState({});
+    const [isLoading, setIsLoading] = useState(false);
     
 
     const { data, setData, post, processing, errors } = useForm({
@@ -66,6 +70,8 @@ export default function PatientDataEntry({questions}) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        
+        // Validasi: pastikan semua pertanyaan sudah dijawab
         const unansweredQuestions = questions.filter(question => !answers[question.id]);
         if (unansweredQuestions.length > 0) {
             const newErrors = {};
@@ -81,30 +87,38 @@ export default function PatientDataEntry({questions}) {
             questioner_id: questionId,
             answer: answers[questionId],
         }));
-
-        router.post(
-            route('screening-now.store'),
-            {
-                ...data,
-                answers: formattedAnswers,
-            },
-            {
-                onSuccess: () => {
-                    toast.success('Screening berhasil disimpan!');
+    
+        // Menambahkan delay sebelum mengirim data
+        setIsLoading(true);  // Atur loading state jika perlu
+        
+        setTimeout(() => {
+            router.post(
+                route('screening-now.store'),
+                {
+                    ...data,
+                    answers: formattedAnswers,
                 },
-                onError: (errors) => {
-                    if (typeof errors === 'string') {
-                        toast.error(errors);
-                    } else if (typeof errors === 'object') {
-                        const errorMessages = Object.values(errors).flat();
-                        errorMessages.forEach(error => toast.error(error));
-                    } else {
-                        toast.error('An error occurred during submission.');
-                    }
-                },
-            }
-        );
+                {
+                    onSuccess: () => {
+                        toast.success('Screening berhasil disimpan!');
+                        setIsLoading(false); // Matikan loading setelah berhasil
+                    },
+                    onError: (errors) => {
+                        setIsLoading(false); // Matikan loading setelah error
+                        if (typeof errors === 'string') {
+                            toast.error(errors);
+                        } else if (typeof errors === 'object') {
+                            const errorMessages = Object.values(errors).flat();
+                            errorMessages.forEach(error => toast.error(error));
+                        } else {
+                            toast.error('An error occurred during submission.');
+                        }
+                    },
+                }
+            );
+        }, 2000); // Delay 2 detik (2000 milidetik), bisa diubah sesuai kebutuhan
     };
+    
 
     const handleFileChange = async (event) => {
         const file = event.target.files?.[0];
@@ -131,7 +145,7 @@ export default function PatientDataEntry({questions}) {
         setAnalysisError(null);
 
         try {
-            const parsedData = await analyzeImage(file);
+            const parsedData = await analyzeImage(file,apiKey);
             setData({
                 ...data,
                 nik: parsedData.NIK || "",
@@ -169,11 +183,12 @@ export default function PatientDataEntry({questions}) {
 
     return (
         <>
+        <Header/>
             <Toaster position="top-center" />
             <Card>
                 <Head title="Patient Information" />
                 <CardHeader>
-                    <CardTitle className="text-2xl font-bold">Screening</CardTitle>
+                    <CardTitle className="text-2xl font-bold">Screening Now</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <Tabs value={entryMethod} onValueChange={setEntryMethod} className="mb-4">
@@ -249,6 +264,19 @@ export default function PatientDataEntry({questions}) {
 
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <PatientInfoForm data={data} setData={setData} errors={errors} />
+                        <div className="flex items-center space-x-2 mt-4">
+                                <Checkbox
+                                    id="privacyAgreement"
+                                    checked={agreedToPrivacy}
+                                    onCheckedChange={setAgreedToPrivacy}
+                                />
+                                <label
+                                    htmlFor="privacyAgreement"
+                                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                >
+                                    I agree to the privacy policy
+                                </label>
+                            </div>
                         {questions?.map((question) => (
                         <Card key={question.id} className="mb-4">
                             <CardHeader>
@@ -392,11 +420,20 @@ export default function PatientDataEntry({questions}) {
                             </CardContent>
                         </Card>
                     ))}
-                        <Button type="submit" disabled={processing} className="w-full">
-                            Save
-                        </Button>
-
-                        
+                        <Button
+                                type="submit"
+                                className="w-full"
+                                disabled={processing || !agreedToPrivacy}
+                            >
+                                {isLoading ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        Please wait...
+                                    </>
+                                ) : (
+                                    <>Submit</>
+                                )}
+                            </Button>
                     </form>
                     
                 </CardContent>

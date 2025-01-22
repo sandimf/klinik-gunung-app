@@ -5,7 +5,7 @@ import { Input } from "@/Components/ui/input";
 import { Label } from "@/Components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/Components/ui/select";
 import { Checkbox } from "@/Components/ui/checkbox";
-import { AlertCircle, Plus, Trash2 } from "lucide-react";
+import { AlertCircle, Edit, Plus, Trash2 } from "lucide-react";
 import { Alert, AlertDescription } from "@/Components/ui/alert";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/Components/ui/dialog";
 import { toast, Toaster } from "sonner";
@@ -58,7 +58,7 @@ const EditQuestionModal = ({ question, onSave }) => {
       <Toaster position="top-center" />
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
-          <Button variant="outline" size="icon">Edit</Button>
+          <Button variant="outline" size="icon"><Edit/></Button>
         </DialogTrigger>
         <DialogContent>
           <DialogHeader>

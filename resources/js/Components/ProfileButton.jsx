@@ -7,10 +7,18 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/Components/ui/dropdown-menu";
-import { usePage } from "@inertiajs/react";
+import { usePage,useForm } from "@inertiajs/react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/Components/ui/avatar";
 
+
 export function ProfileButton() {
+    const { post } = useForm();
+
+    const handleLogout = (e) => {
+        e.preventDefault();
+        post(route("logout"));
+    };
+    
     const user = usePage().props.auth.user;
 
     return (
@@ -23,7 +31,7 @@ export function ProfileButton() {
                                 ? user.avatar.startsWith("http")
                                     ? user.avatar
                                     : `/storage/${user.avatar}`
-                                : "/storage/avatar/avatar.jpg"
+                                : "/storage/avatar/avatar.svg"
                         }
                         alt={user?.name || "Klinik gunung"}
                     />
@@ -35,9 +43,7 @@ export function ProfileButton() {
             <DropdownMenuContent align="end">
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>Profile</DropdownMenuItem>
-                <DropdownMenuItem>Settings</DropdownMenuItem>
-                <DropdownMenuItem>Logout</DropdownMenuItem>
+                <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
     );

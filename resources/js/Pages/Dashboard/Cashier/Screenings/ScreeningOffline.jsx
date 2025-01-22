@@ -11,7 +11,6 @@ import PaymentDialog from './Payments/OfflinePayments';
 import { Toaster } from 'sonner';
 
 const ScreeningOfflineIndex = ({ screenings = [], medicines }) => {
-    console.log(medicines);
     const [searchTerm, setSearchTerm] = useState('');
 
     const [currentPage, setCurrentPage] = useState(1);

@@ -47,7 +47,7 @@ export default function PaymentForm({ screening }) {
       onSuccess: () => {
         toast({
           title: "Payment Submitted",
-          description: "Your payment has been submitted successfully!",
+          description: "Pembayaran Kamu Berhasil di Simpan",
           status: "success", // Tambahkan status untuk tipe notifikasi jika diperlukan
         });
       },
@@ -58,9 +58,6 @@ export default function PaymentForm({ screening }) {
           description: errors?.message || "An error occurred while submitting your payment. Please try again.",
           status: "error", // Tambahkan status untuk tipe notifikasi jika diperlukan
         });
-  
-        // Optional: Log error ke console untuk debugging
-        console.error("Payment submission errors:", errors);
       },
     });
   };

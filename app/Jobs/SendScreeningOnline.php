@@ -3,12 +3,12 @@
 namespace App\Jobs;
 
 use App\Models\Users\PatientsOnline;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Foundation\Bus\Dispatchable; // Perhatikan perubahannya, bukan Illuminate\Foundation\Events
-use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Queue\InteractsWithQueue; // Perhatikan perubahannya, bukan Illuminate\Foundation\Events
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Mail;
 
 class SendScreeningOnline implements ShouldQueue
 {
@@ -19,7 +19,6 @@ class SendScreeningOnline implements ShouldQueue
     /**
      * Create a new job instance.
      *
-     * @param PatientsOnline $patient
      * @return void
      */
     public function __construct(PatientsOnline $patient)
@@ -46,7 +45,7 @@ class SendScreeningOnline implements ShouldQueue
             // Kirim email
             Mail::send('mail.screenings.screening-online', $data, function ($message) use ($email) {
                 $message->to($email)
-                        ->subject('Pemberitahuan Screening');
+                    ->subject('Pemberitahuan Screening');
             });
 
             // Logging jika email berhasil dikirim

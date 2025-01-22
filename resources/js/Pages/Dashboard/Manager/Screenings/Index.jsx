@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from 'react';
+import Sidebar from "@/Layouts/Dashboard/ManagerSidebarLayout";
 import { Head, usePage, Link } from "@inertiajs/react";
-import ManagerSidebar from "@/Layouts/Dashboard/ManagerSidebarLayout";
-import { Input } from "@/Components/ui/input";
 import {
     Table,
     TableBody,
@@ -10,69 +9,144 @@ import {
     TableHeader,
     TableRow,
 } from "@/Components/ui/table";
-import MedicalHeader from "../_components/table-header";
-import { Badge } from "@/Components/ui/badge";
+import { Button } from "@/Components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
+import { Printer, Search } from 'lucide-react';
+import { Input } from "@/Components/ui/input";
 
-const ScreeningOfflineIndex = ({ screenings = [] }) => {
-    const [searchTerm, setSearchTerm] = useState("");
+export default function Report({ totalPatients, sickPatientsCount, patients, totalParamedis }) {
+    const user = usePage().props.auth.user;
+    const [searchTerm, setSearchTerm] = useState('');
+    const [filteredPatients, setFilteredPatients] = useState(patients);
 
-    const capitalizeWords = (str) => {
-        return str
-            .split(" ")
-            .map(
-                (word) =>
-                    word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-            )
-            .join(" ");
-    };
+    useEffect(() => {
+        const results = patients.filter(patient =>
+            patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            patient.health_status.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            patient.examined_by.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        setFilteredPatients(results);
+    }, [searchTerm, patients]);
 
     return (
-        <ManagerSidebar header={"Aktivitas Screening"}>
-            <Head title="Aktivitas Screening" />
-            <MedicalHeader title="Aktivitas Screening" />
-            <div className="flex flex-col md:flex-row gap-4 mb-4">
-                <Input
-                    placeholder="Cari nama pasien..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="max-w-sm"
-                />
+        <Sidebar header={'Laporan'}>
+            <Head title="Laporan Paramedis" />
+            <div className="p-6">
+                <div className="flex justify-between items-center mb-6 no-print">
+                    <h1 className="text-2xl font-bold">Aktivitas Semua Pemeriksaan Fisik</h1>
+                    <a href={route('pdf.activity.manager')}>
+                        <Button variant="outline">
+                            <Printer className="mr-2 h-4 w-4" /> Download PDF
+                        </Button>
+                    </a>
+                </div>
+
+                <div className="space-y-6 no-print">
+                    <div className="grid grid-cols-3 gap-4">
+                        <Card>
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium">
+                                    Total Pemeriksaan
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold">{totalPatients}</div>
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium">
+                                    Total Pemeriksaan oleh Paramedis
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold">{totalPatients}</div>
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium">
+                                    Total Pemeriksaan oleh Dokter
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold">{totalPatients}</div>
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium">
+                                    Jumlah Pasien Sehat
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold">{sickPatientsCount}</div>
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium">
+                                    Jumlah Pasien Membutuhkan Dokter
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold">{sickPatientsCount}</div>
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium">
+                                    Jumlah Paramedis
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold">{totalParamedis}</div>
+                            </CardContent>
+                        </Card>
+                    </div>
+
+                    <div className="flex items-center space-x-2 mb-4">
+                        <Search className="h-5 w-5 text-gray-500" />
+                        <Input
+                            type="text"
+                            placeholder="Cari pasien, status kesehatan, atau pemeriksa..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="w-full max-w-sm"
+                        />
+                    </div>
+
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Nama Pasien</TableHead>
+                                <TableHead>Tanggal Lahir</TableHead>
+                                <TableHead>Status Kesehatan</TableHead>
+                                <TableHead>Pemeriksa</TableHead>
+                                <TableHead>Detail</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {filteredPatients.map((patient, index) => (
+                                <TableRow key={index}>
+                                    <TableCell className="font-medium">{patient.name}</TableCell>
+                                    <TableCell>{patient.date_of_birth}</TableCell>
+                                    <TableCell>{patient.health_status}</TableCell>
+                                    <TableCell>{patient.examined_by}</TableCell>
+                                    <TableCell>
+                                        <a href={route('pdf.healthcheck.manager', patient.id)}>
+                                            <Button>
+                                                <Printer/>
+                                            </Button>
+                                        </a>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </div>
             </div>
-
-            <Table>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead>Nomor Antrian</TableHead>
-                        <TableHead>Nama Pasien</TableHead>
-                        <TableHead>Screening type</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Status Pembayaran</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {screenings.map((screening, index) => (
-                        <TableRow key={`${screening.id}-${index}`}>
-                            <TableCell>
-                                {screening.answers[0]?.queue || "N/A"}
-                            </TableCell>
-                            <TableCell className="font-bold">
-                                {capitalizeWords(screening.name)}
-                            </TableCell>
-                            <TableCell>
-                                {screening.answers[0]?.isOnline === true
-                                    ? "Online"
-                                    : "Offline"}
-                            </TableCell>
-                            <TableCell>
-                                <Badge>{screening.screening_status}</Badge>
-                            </TableCell>
-                            <TableCell>{screening.payment_status}</TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-        </ManagerSidebar>
+        </Sidebar>
     );
-};
+}
 
-export default ScreeningOfflineIndex;

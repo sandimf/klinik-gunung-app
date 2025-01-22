@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Questioner;
 
-use Inertia\Inertia;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Screenings\ScreeningOnlineQuestions;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class QuestionerOnlineController extends Controller
 {
@@ -27,21 +27,27 @@ class QuestionerOnlineController extends Controller
 
     public function store(Request $request)
     {
-        // Validate question input
+        // Validasi input untuk pertanyaan
         $request->validate([
-            'question_text' => 'required|string',
-            'answer_type' => 'required|string',
-            'options' => 'nullable|array',
+            'question_text' => 'required|string|max:255',
+            'answer_type' => 'required|string|in:text,number,date,textarea,select,checkbox,checkbox_textarea',
+            'options' => 'nullable|array', // Pilihan untuk jawaban
         ]);
 
-        // Create a new question
+        // Format input menjadi huruf besar di awal setiap kata (Title Case)
+        $formattedQuestionText = ucwords(strtolower($request->question_text));
+        $formattedOptions = $request->options
+            ? array_map(fn($option) => ucwords(strtolower($option)), $request->options)
+            : null;
+
+        // Buat pertanyaan baru
         $question = ScreeningOnlineQuestions::create([
-            'question_text' => $request->question_text,
+            'question_text' => $formattedQuestionText,
             'answer_type' => $request->answer_type,
-            'options' => $request->options,
+            'options' => $formattedOptions,
         ]);
 
-        // Redirect back with success message
+        // Redirect kembali dengan pesan sukses
         return redirect()->back()->with('success', 'Pertanyaan berhasil ditambahkan.');
     }
 
@@ -49,22 +55,28 @@ class QuestionerOnlineController extends Controller
     {
         // Validasi input
         $request->validate([
-            'question_text' => 'required|string',
-            'answer_type' => 'required|string',
+            'question_text' => 'required|string|max:255',
+            'answer_type' => 'required|string|in:text,number,date,textarea,select,checkbox,checkbox_textarea',
             'options' => 'nullable|array',
         ]);
-    
+
+        // Format input menjadi huruf besar di awal setiap kata (Title Case)
+        $formattedQuestionText = ucwords(strtolower($request->question_text));
+        $formattedOptions = $request->options
+            ? array_map(fn($option) => ucwords(strtolower($option)), $request->options)
+            : null;
+
         // Cari dan perbarui data berdasarkan ID
         $questioner = ScreeningOnlineQuestions::findOrFail($id);
-    
+
         $questioner->update([
-            'question_text' => $request->question_text,
+            'question_text' => $formattedQuestionText,
             'answer_type' => $request->answer_type,
-            'options' => $request->options,
+            'options' => $formattedOptions,
         ]);
-    
+
         // Kembalikan respons
         return redirect()->route('questioner-online.index')
-                         ->with('success', 'Questioner updated successfully.');
+            ->with('message', 'Questioner updated successfully.');
     }
 }

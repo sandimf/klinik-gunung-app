@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers\Screenings;
 
+use Carbon\Carbon;
 use Inertia\Inertia;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\Jobs\SendScreeningOnline;
 use App\Http\Controllers\Controller;
 use App\Models\Users\PatientsOnline;
@@ -23,7 +24,7 @@ class ScreeningOnlineController extends Controller
         // Periksa apakah data pasien ada di tabel `patients`
         $patient = PatientsOnline::where('user_id', $user->id)->first();
 
-        if (!$patient) {
+        if (! $patient) {
             // Redirect ke halaman untuk melengkapi data pasien
             return redirect()->route('information.index')
                 ->with('message', 'Please complete your patient profile before accessing screening online.');
@@ -34,6 +35,10 @@ class ScreeningOnlineController extends Controller
             ->where('user_id', $userId)
             ->orderBy('created_at', 'desc')
             ->first();
+        
+            if ($screening) {
+                $screening->formatted_created_at = Carbon::parse($screening->created_at)->translatedFormat('d F Y');
+            }
 
         return Inertia::render('Dashboard/Patients/Screenings/Online/Index', [
             'screening' => $screening,
@@ -84,7 +89,7 @@ class ScreeningOnlineController extends Controller
         $patient = PatientsOnline::where('nik', $request->nik)->first();
 
         // Jika pasien tidak ditemukan, buat entri pasien baru
-        if (!$patient) {
+        if (! $patient) {
             $patient = PatientsOnline::create([
                 'user_id' => Auth::id(),
                 'nik' => $request->nik,
@@ -135,7 +140,8 @@ class ScreeningOnlineController extends Controller
         }
 
         SendScreeningOnline::dispatch($patient);
-        return response()->json(['message' => 'Jawaban dan data pasien disimpan dengan sukses.'], 201);
+
+        return redirect()->back()->with('message', 'Kuesioner Kamu Berhasil Di Simpan');
     }
 
     public function payments()

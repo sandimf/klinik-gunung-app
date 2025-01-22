@@ -16,8 +16,10 @@ return new class extends Migration
             $table->foreignId('medicine_id')->constrained('medicines')->onDelete('cascade'); // Relasi ke medicines
             $table->decimal('purchase_price', 10, 2); // Harga beli satuan
             $table->decimal('otc_price', 10, 2); // Harga jual OTC
+            $table->enum('unit_type', ['satuan', 'kardus', 'box'])->default('satuan'); // Jenis unit obat
             $table->timestamps();
         });
+        
     }
 
     /**

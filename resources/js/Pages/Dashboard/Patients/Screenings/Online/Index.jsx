@@ -4,26 +4,23 @@ import { Alert, AlertDescription, AlertTitle } from "@/Components/ui/alert";
 import SideBar from "@/Layouts/Dashboard/PatientsSidebarLayout";
 import ScreeningInfo from "@/Pages/Dashboard/Patients/Screenings/_components/ScreeningInfoOnline";
 import NoScreeningData from "@/Pages/Dashboard/Patients/Screenings/_components/NoScreeningData";
-import { CheckCircle, AlertCircle, Loader2,Info } from 'lucide-react';
+import { CheckCircle, AlertCircle, Loader2, Info } from "lucide-react";
 import { CardContent } from "@/Components/ui/card";
-import {toast, Toaster} from "sonner"
+import { Toaster } from "sonner";
+import useFlashToast from "@/hooks/flash";
 
 export default function ScreeningOnline({ screening }) {
     const user = usePage().props.auth.user;
     const hasScreening = screening !== null && screening !== undefined;
-    const isPaymentCompleted = hasScreening && screening.payment_status === "completed";
-    const isPaymentPending = hasScreening && screening.payment_status === "pending";
-    const isPaymentChecking = hasScreening && screening.payment_status === "checking";
+    const isPaymentCompleted =
+        hasScreening && screening.payment_status === "completed";
+    const isPaymentPending =
+        hasScreening && screening.payment_status === "pending";
+    const isPaymentChecking =
+        hasScreening && screening.payment_status === "checking";
 
-    const { flash } = usePage().props;
-    useEffect(() => {
-        if (flash.message) {
-            toast(flash.message, {
-                icon: <Info className="h-5 w-5 text-green-500"/>
-            });
-        }
-    }, [flash.message]);
-    
+    useFlashToast();
+
     return (
         <SideBar header="Screening Now">
             <Head title="Screening Status" />
@@ -46,21 +43,20 @@ export default function ScreeningOnline({ screening }) {
                     <Alert className="mb-6" variant="info">
                         <Loader2 className="h-4 w-4 animate-spin" />
                         <AlertTitle>
-                        Verifikasi Pembayaran Sudah Terkirim.
+                            Informasi Pembayaran Sudah Terkirim.
                         </AlertTitle>
                         <AlertDescription>
-                        Kami sedang memverifikasi pembayaran Anda. Cek email dan Halaman ini secara berkala untuk melihat hasilnya.
+                            Kami sedang memverifikasi pembayaran Anda. Cek email
+                            dan Halaman ini secara berkala.
                         </AlertDescription>
                     </Alert>
                 )}
-                
+
                 {/* Jika pasien belum membayaran tampilkan alert */}
                 {isPaymentPending && (
                     <Alert className="mb-6" variant="warning">
                         <AlertCircle className="h-4 w-4" />
-                        <AlertTitle>
-                            Payment Required
-                        </AlertTitle>
+                        <AlertTitle>Payment Required</AlertTitle>
                         <AlertDescription>
                             Lakukan pembayaran untuk mendapatkan qrcode.
                         </AlertDescription>
@@ -75,19 +71,22 @@ export default function ScreeningOnline({ screening }) {
                     ) : isPaymentPending ? (
                         <ScreeningInfo
                             screening={screening}
-                            RouteName={'Payment'}
-                            detailRouteName={route("payment.create", screening.id)}
+                            RouteName={"Payment"}
+                            detailRouteName={route(
+                                "payment.create",
+                                screening.id
+                            )}
                         />
                     ) : isPaymentChecking ? (
                         <ScreeningInfo
                             screening={screening}
-                            RouteName={'Payment Verification'}
+                            RouteName={"Edit Informasi Pembayaran"}
                             detailRouteName={route("dashboard", screening.id)}
                         />
                     ) : isPaymentCompleted ? (
                         <ScreeningInfo
                             screening={screening}
-                            RouteName={'QrCode'}
+                            RouteName={"QrCode"}
                             detailRouteName={route(
                                 "result-screening.show",
                                 screening.id
@@ -103,4 +102,3 @@ export default function ScreeningOnline({ screening }) {
         </SideBar>
     );
 }
-

@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers\Users;
 
-use Inertia\Inertia;
-use App\Models\Users\Doctor;
-use Illuminate\Http\Request;
-use App\Models\Users\Patients;
 use App\Http\Controllers\Controller;
+use App\Models\Users\Patients;
+use Inertia\Inertia;
 
 class DoctorController extends Controller
 {
@@ -68,7 +66,7 @@ class DoctorController extends Controller
         });
 
         // Mengirim data ke halaman Inertia
-        return Inertia::render('Dashboard/Doctor/Screenings/Offline/Index',        [
+        return Inertia::render('Dashboard/Doctor/Screenings/Offline/Index', [
             'patient' => $patient,
             'questionsAndAnswers' => $questionsAndAnswers,
             'queue' => $patient->answers->max('queue'),

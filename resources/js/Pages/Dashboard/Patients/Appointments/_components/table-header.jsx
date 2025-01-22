@@ -1,9 +1,10 @@
 import { Button } from "@/Components/ui/button";
 import { Link } from "@inertiajs/react";
+import { Plus } from "lucide-react";
 import PropTypes from "prop-types"; // Untuk validasi props
 
 const MedicalHeader = ({
-    title = "Appointment List",
+    title = "Daftar Janji Temu",
     buttonText = "Buat Appointments",
     setIsCreateModalOpen, // Terima fungsi sebagai prop
     children,
@@ -20,6 +21,7 @@ const MedicalHeader = ({
                         onClick={() => setIsCreateModalOpen(true)}
                         className="space-x-1"
                     >
+                        <Plus/>
                         <span>{buttonText}</span>
                     </Button>
                 )}

@@ -2,14 +2,18 @@
 
 namespace App\Http\Controllers\Medicines;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Medicines\StoreMedicineRequest;
-use App\Http\Requests\Medicines\UpdateMedicineRequest;
+use Inertia\Inertia;
+use Illuminate\Http\Request;
+use App\Imports\MedicineImport;
 use App\Models\Medicines\Medicine;
+use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Controller;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Cache;
 use App\Models\Medicines\MedicineBatch;
 use App\Models\Medicines\MedicinePricing;
-use Illuminate\Support\Facades\Cache;
-use Inertia\Inertia;
+use App\Http\Requests\Medicines\StoreMedicineRequest;
+use App\Http\Requests\Medicines\UpdateMedicineRequest;
 
 class MedicineController extends Controller
 {
@@ -35,7 +39,23 @@ class MedicineController extends Controller
      */
     public function create()
     {
-        //
+        return Inertia::render("Dashboard/Cashier/Apotek/Import");
+    }
+    public function importCombined(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:csv,txt|max:2048',
+        ]);
+
+        try {
+            Excel::import(new MedicineImport, $request->file('file'));
+
+            return redirect()->back()->with('message', 'Data berhasil diimport.');
+        } catch (\Exception $e) {
+            Log::error('Import Error: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal mengimport data. Periksa log untuk detailnya.');
+        }
+        
     }
 
     /**

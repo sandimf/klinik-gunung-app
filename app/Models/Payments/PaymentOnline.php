@@ -2,10 +2,10 @@
 
 namespace App\Models\Payments;
 
+use App\Models\Screenings\ScreeningOnlineAnswers;
 use App\Models\Users\Cashier;
 use App\Models\Users\PatientsOnline;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Screenings\ScreeningOnlineAnswers;
 
 class PaymentOnline extends Model
 {
@@ -15,13 +15,13 @@ class PaymentOnline extends Model
     // Menentukan kolom-kolom yang bisa diisi (mass assignable)
     protected $fillable = [
         'name',
-        'patient_id', 
-        'screening_online_answer_id', 
-        'cashier_id', 
-        'payment_status', 
-        'amount_paid', 
-        'payment_method', 
-        'payment_proof', 
+        'patient_id',
+        'screening_online_answer_id',
+        'cashier_id',
+        'payment_status',
+        'amount_paid',
+        'payment_method',
+        'payment_proof',
         'status',
         'qr_code',
     ];

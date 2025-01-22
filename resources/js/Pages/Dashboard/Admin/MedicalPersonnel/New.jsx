@@ -35,7 +35,7 @@ import {
     PopoverTrigger,
 } from "@/Components/ui/popover";
 
-export default function CreatePersonal({ auth }) {
+export default function CreatePersonal() {
     const [showPassword, setShowPassword] = React.useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
     const [confirmPassword, setConfirmPassword] = React.useState("");
@@ -47,7 +47,7 @@ export default function CreatePersonal({ auth }) {
         phone: "",
         address: "",
         nik: "",
-        date_of_birth: "", // tanggal lahir disimpan dalam bentuk string 'YYYY-MM-DD'
+        date_of_birth: "",
     };
 
     const generatePassword = () => {
@@ -134,7 +134,6 @@ export default function CreatePersonal({ auth }) {
                                         setData("name", e.target.value)
                                     }
                                     placeholder="Masukkan nama lengkap"
-                                    
                                 />
                                 {errors.name && (
                                     <p
@@ -181,7 +180,6 @@ export default function CreatePersonal({ auth }) {
                                         setData("email", e.target.value)
                                     }
                                     placeholder="contoh@email.com"
-                                    
                                 />
                                 {errors.email && (
                                     <p
@@ -253,7 +251,6 @@ export default function CreatePersonal({ auth }) {
                                         setData("address", e.target.value)
                                     }
                                     placeholder="Masukkan alamat"
-                                    
                                 />
                                 {errors.address && (
                                     <p
@@ -302,7 +299,6 @@ export default function CreatePersonal({ auth }) {
                                             setData("password", e.target.value)
                                         }
                                         placeholder="Masukkan password"
-                                        
                                     />
                                     <button
                                         type="button"
@@ -345,7 +341,6 @@ export default function CreatePersonal({ auth }) {
                                             setConfirmPassword(e.target.value)
                                         }
                                         placeholder="Konfirmasi password"
-                                        
                                     />
                                     <button
                                         type="button"

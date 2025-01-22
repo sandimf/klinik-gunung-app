@@ -3,9 +3,9 @@
 namespace App\Models\Users;
 
 use App\Models\User;
-use Illuminate\Support\Str;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Doctor extends Model
 {
@@ -41,5 +41,4 @@ class Doctor extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
-    
 }

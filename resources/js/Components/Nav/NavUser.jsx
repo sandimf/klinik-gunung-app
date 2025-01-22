@@ -45,7 +45,7 @@ export function NavUser() {
                                             ? user.avatar.startsWith("http")
                                                 ? user.avatar
                                                 : `/storage/${user.avatar}`
-                                            : "/storage/avatar/avatar.jpg"
+                                            : "/storage/avatar/avatar.svg"
                                     }
                                     alt={user?.name || "Klinik gunung"}
                                 />
@@ -82,7 +82,7 @@ export function NavUser() {
                                                 ? user.avatar.startsWith("http")
                                                     ? user.avatar
                                                     : `/storage/${user.avatar}`
-                                                : "/storage/avatar/avatar.jpg"
+                                                : "/storage/avatar/avatar.svg"
                                         }
                                         alt={user?.name || "Klinik gunung"}
                                     />

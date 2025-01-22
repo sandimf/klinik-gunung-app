@@ -2,21 +2,21 @@
 
 namespace App\Http\Controllers\Payments;
 
+use App\Models\Payments;
+use Illuminate\Http\Request;
+use App\Models\Users\Cashier;
+use App\Models\Users\Patients;
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\Http\Controllers\Controller;
 use App\Models\Medicines\MedicineBatch;
-use App\Models\Payments;
-use App\Models\Users\Patients;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class PaymentsController extends Controller
 {
     public function store(Request $request)
     {
-        
-        $cashierId = Auth::user()->cashier->id;  // Mengambil cashier_id yang terkait dengan user yang sedang login
 
         $request->validate([
+            'cashier_id' => 'required|exists:cashiers,id',
             'patient_id' => 'required|exists:patients,id',
             'amount_paid' => 'required|numeric|min:0',
             'payment_method' => 'required|string',
@@ -30,7 +30,6 @@ class PaymentsController extends Controller
         $data = $request->all();
 
         // Menambahkan cashier_id yang merupakan ID kasir yang sedang login
-        $data['cashier_id'] = $cashierId;
 
         // Jika ada file bukti pembayaran, simpan file tersebut
         if ($request->hasFile('payment_proof')) {
@@ -57,10 +56,37 @@ class PaymentsController extends Controller
                 return redirect()->back()->withErrors(['quantity_product' => 'Stok tidak mencukupi untuk batch obat yang dipilih.']);
             }
         }
+
         // Mengarahkan kembali dengan pesan sukses
         return redirect()->route('cashier.screening')->with('success', 'Pembayaran berhasil diproses.');
     }
 
+    public function generateNota($noTransaction)
+    {
+        // Ambil data pembayaran berdasarkan nomor transaksi
+        $payment = Payments::where('no_transaction', $noTransaction)->firstOrFail();
 
-    
+        // Ambil data pasien berdasarkan patient_id
+        $patient = Patients::findOrFail($payment->patient_id);
+
+        // Ambil data kasir berdasarkan cashier_id
+        $cashier = Cashier::findOrFail($payment->cashier_id);
+
+        // Jika ada produk yang dibeli, ambil informasi produk dan batch
+        $product = null;
+        if ($payment->quantity_product && $payment->medicine_batch_id) {
+            $product = MedicineBatch::findOrFail($payment->medicine_batch_id);
+        }
+
+        // Membuat tampilan nota
+        $pdf = Pdf::loadView('pdf.nota', [
+            'payment' => $payment,
+            'patient' => $patient,
+            'cashier' => $cashier,
+            'product' => $product,
+        ]);
+
+        // Mengunduh PDF dengan nama file "nota_pembayaran.pdf"
+        return $pdf->download('nota_pembayaran_' . $payment->no_transaction . '.pdf');
+    }
 }

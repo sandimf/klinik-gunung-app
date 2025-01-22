@@ -3,8 +3,8 @@
 namespace App\Models\Clinic;
 
 use App\Models\Users\Patients;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Consultation extends Model
 {
@@ -19,7 +19,7 @@ class Consultation extends Model
         'visit_type',
         'patient_status',
         'examination_results',
-        'notes'
+        'notes',
     ];
 
     public function patient()
