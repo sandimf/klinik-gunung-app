@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { usePage } from '@inertiajs/react';
 import { toast } from 'sonner'; // atau toastify, sesuai dengan yang Anda gunakan
-import { Info, X } from 'lucide-react';
+import { CircleCheck,  X } from 'lucide-react';
 
 const useFlashToast = () => {
     const { flash } = usePage().props;
@@ -10,7 +10,7 @@ const useFlashToast = () => {
         // Menampilkan pesan sukses
         if (flash.message) {
             toast(flash.message, {
-                icon: <Info className="h-5 w-5 text-green-500" />,
+                icon: <CircleCheck className="h-5 w-5 text-green-500" />,
                 type: "success", // Tipe success
             });
         }

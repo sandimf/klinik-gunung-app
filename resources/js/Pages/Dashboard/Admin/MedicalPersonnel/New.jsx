@@ -64,17 +64,6 @@ export default function CreatePersonal() {
         setConfirmPassword(newPassword);
     };
 
-    // State untuk menyimpan tanggal yang dipilih
-    const [selectedDate, setSelectedDate] = React.useState(new Date());
-
-    // Mengatur tanggal ketika dipilih
-    const handleDateSelect = (date) => {
-        setSelectedDate(date);
-        if (date) {
-            // Simpan tanggal yang dipilih dalam format 'YYYY-MM-DD'
-            setData("date_of_birth", date.toISOString().split("T")[0]); // YYYY-MM-DD
-        }
-    };
 
     // Form dari @inertiajs/react
     const { data, setData, post, processing, errors } = useForm(initialData);
@@ -199,36 +188,15 @@ export default function CreatePersonal() {
                                 >
                                     Tanggal Lahir
                                 </Label>
-                                <Popover>
-                                    <PopoverTrigger asChild>
-                                        <Button
-                                            variant="outline"
-                                            className="w-[240px] pl-3 text-left font-normal"
-                                        >
-                                            {data.date_of_birth ? (
-                                                data.date_of_birth // Menampilkan tanggal yang dipilih dalam format YYYY-MM-DD
-                                            ) : (
-                                                <span>Pick a date</span>
-                                            )}
-                                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                        </Button>
-                                    </PopoverTrigger>
-                                    <PopoverContent
-                                        className="w-auto p-0"
-                                        align="start"
-                                    >
-                                        <Calendar
-                                            mode="single"
-                                            selected={selectedDate}
-                                            onSelect={handleDateSelect}
-                                            disabled={(date) =>
-                                                date > new Date() ||
-                                                date < new Date("1900-01-01")
-                                            }
-                                            initialFocus
-                                        />
-                                    </PopoverContent>
-                                </Popover>
+                                <Input
+                                    id="date_of_birth"
+                                    type="date"
+                                    name="date_of_birth"
+                                    value={data.date_of_birth}
+                                    onChange={(e) =>
+                                        setData("date_of_birth", e.target.value)
+                                    }
+                                />
                                 {errors.date_of_birth && (
                                     <p
                                         className="text-sm text-red-500"

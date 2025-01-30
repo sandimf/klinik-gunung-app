@@ -1,7 +1,7 @@
 import React, { useState,useEffect } from 'react';
 import AdminSidebar from "@/Layouts/Dashboard/AdminSidebarLayout";
 import { Head, usePage } from '@inertiajs/react';
-import { Info } from 'lucide-react';
+import { CircleCheck } from 'lucide-react';
 import QuestionerHeader from './_components/table-header';
 import {
     Table,
@@ -37,7 +37,7 @@ export default function Index({ questions }) {
     useEffect(() => {
         if (flash.message) {
             toast(flash.message, {
-                icon: <Info className="h-5 w-5 text-green-500"/>
+                icon: <CircleCheck className="h-5 w-5 text-green-500"/>
             });
         }
     }, [flash.message]);

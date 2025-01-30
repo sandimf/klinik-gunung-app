@@ -1,6 +1,6 @@
-import React from 'react';
+import React from "react";
 import Sidebar from "@/Layouts/Dashboard/ParamedisSidebarLayout";
-import { Head,usePage } from "@inertiajs/react";
+import { Head, usePage } from "@inertiajs/react";
 import {
     Table,
     TableBody,
@@ -11,21 +11,20 @@ import {
 } from "@/Components/ui/table";
 import { Button } from "@/Components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
-import { Printer } from 'lucide-react';
+import { Printer } from "lucide-react";
 
-export default function Report({ totalPatients, sickPatientsCount, patients }) {
-
+export default function Report({ totalPatients, sickPatientsCount, patients, healthyPatientsCount,needPatientsCount }) {
     const user = usePage().props.auth.user;
     return (
-        <Sidebar header={'Laporan'}>
+        <Sidebar header={"Laporan"}>
             <Head title="Laporan Paramedis" />
             <div className="p-6">
                 <div className="flex justify-between items-center mb-6 no-print">
-                    <h1 className="text-2xl font-bold">Laporan Pemeriksaan</h1>
-                    <a href={route('pdf.self.paramedis')}>
-                    <Button variant="outline">
-                        <Printer className="mr-2 h-4 w-4" /> Download PDF
-                    </Button>
+                    <h1 className="text-2xl font-bold">Laporan Pemeriksaan, {user.name}.</h1>
+                    <a href={route("pdf.self.paramedis")}>
+                        <Button variant="outline">
+                            <Printer className="mr-2 h-4 w-4" /> Download PDF
+                        </Button>
                     </a>
                 </div>
 
@@ -38,7 +37,9 @@ export default function Report({ totalPatients, sickPatientsCount, patients }) {
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <div className="text-2xl font-bold">{totalPatients}</div>
+                                <div className="text-2xl font-bold">
+                                    {totalPatients}
+                                </div>
                             </CardContent>
                         </Card>
                         <Card>
@@ -48,7 +49,9 @@ export default function Report({ totalPatients, sickPatientsCount, patients }) {
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <div className="text-2xl font-bold">{sickPatientsCount}</div>
+                                <div className="text-2xl font-bold">
+                                    {healthyPatientsCount}
+                                </div>
                             </CardContent>
                         </Card>
                         <Card>
@@ -58,7 +61,21 @@ export default function Report({ totalPatients, sickPatientsCount, patients }) {
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <div className="text-2xl font-bold">{sickPatientsCount}</div>
+                                <div className="text-2xl font-bold">
+                                    {sickPatientsCount}
+                                </div>
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium">
+                                    Jumlah Pasien Membutuhkan Pendamping
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold">
+                                    {needPatientsCount}
+                                </div>
                             </CardContent>
                         </Card>
                     </div>
@@ -75,13 +92,33 @@ export default function Report({ totalPatients, sickPatientsCount, patients }) {
                         <TableBody>
                             {patients.map((patient, index) => (
                                 <TableRow key={index}>
-                                    <TableCell className="font-medium">{patient.name}</TableCell>
-                                    <TableCell>{patient.date_of_birth}</TableCell>
-                                    <TableCell>{patient.health_status}</TableCell>
+                                    <TableCell className="font-medium">
+                                        {patient.name}
+                                    </TableCell>
                                     <TableCell>
-                                        <a href={route('pdf.healthcheck.paramedis', patient.id)}>
+                                        {patient.date_of_birth}
+                                    </TableCell>
+                                    <TableCell>
+                                        {patient.health_status === "healthy"
+                                            ? "Sehat"
+                                            : patient.health_status ===
+                                              "butuh_dokter"
+                                            ? "Membutuhkan Dokter"
+                                            : patient.health_status ===
+                                              "butuh_pendamping"
+                                            ? "Membutuhkan Pendamping"
+                                            : "Status Tidak Diketahui"}
+                                    </TableCell>
+
+                                    <TableCell>
+                                        <a
+                                            href={route(
+                                                "pdf.healthcheck.paramedis",
+                                                patient.id
+                                            )}
+                                        >
                                             <Button>
-                                                <Printer/>
+                                                <Printer />
                                             </Button>
                                         </a>
                                     </TableCell>
@@ -94,4 +131,3 @@ export default function Report({ totalPatients, sickPatientsCount, patients }) {
         </Sidebar>
     );
 }
-

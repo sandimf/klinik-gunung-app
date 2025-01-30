@@ -88,32 +88,13 @@ export function AppSidebar({ ...sidebarProps }) {
         icon: Scan,
       },
       {
-        title: "Community",
-        url: route("dashboard"),
-        icon: Users,
-        items: [
-          {
-            title: "Community",
-            url: route('community.index'),
-          },
-          {
-            title: "Persetujuan Postingan",
-            url: route('dashboard'),
-          },
-        ],
-      },
-      {
         title: "Backup",
         url: route("dashboard"),
         icon: Database,
         items: [
           {
-            title: "Backup Database",
-            url: route('database.backup'),
-          },
-          {
             title: "Airtable",
-            url: route('dashboard'),
+            url: route('airtable.backup'),
           },
         ],
       },
@@ -141,18 +122,6 @@ export function AppSidebar({ ...sidebarProps }) {
             {
               title: "Profile",
               url: route('admin.profile'),
-            },
-            {
-              title: "Aplication Name",
-              url: route('manajement-staff.index'),
-            },
-            {
-              title: "PDF",
-              url: route('manajement-staff.index'),
-            },
-            {
-              title: "Theme",
-              url: route('manajement-staff.index'),
             },
         ],
       },

@@ -4,7 +4,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/Components/ui/alert";
 import SideBar from "@/Layouts/Dashboard/PatientsSidebarLayout";
 import ScreeningInfo from "@/Pages/Dashboard/Patients/Screenings/_components/ScreeningInfo";
 import NoScreeningData from "@/Pages/Dashboard/Patients/Screenings/_components/NoScreeningData";
-import { CheckCircle,Info } from 'lucide-react';
+import { CheckCircle,CircleCheck } from 'lucide-react';
 import { CardContent } from "@/Components/ui/card";
 import {toast, Toaster} from "sonner"
 
@@ -18,7 +18,7 @@ export default function HistoryOffline({ screening }) {
     useEffect(() => {
         if (flash.message) {
             toast(flash.message, {
-                icon: <Info className="h-5 w-5 text-green-500"/>
+                icon: <CircleCheck className="h-5 w-5 text-green-500"/>
             });
         }
     }, [flash.message]);

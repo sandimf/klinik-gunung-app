@@ -20,7 +20,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/Components/ui/table";
-import { Key, RefreshCw, AlertTriangle, CheckCircle, Info } from "lucide-react";
+import { Key, RefreshCw, AlertTriangle, CheckCircle, CircleCheck } from "lucide-react";
 import Sidebar from "@/Layouts/Dashboard/AdminSidebarLayout";
 import { Head, useForm } from "@inertiajs/react";
 import { toast, Toaster } from "sonner";
@@ -52,8 +52,8 @@ export default function GeminiApiKey({ apikeys }) {
 
     const handleTestApiKey = () => {
         setTimeout(() => {
-            toast('Belum bisa digunakan', {
-              icon: <Info className="h-4 w-4"/>
+            toast("Belum bisa digunakan", {
+                icon: <CircleCheck className="h-4 w-4" />,
             });
         }, 1000);
     };
@@ -63,7 +63,7 @@ export default function GeminiApiKey({ apikeys }) {
             <Head title="Apikey" />
             <div className="container mx-auto p-6 space-y-6">
                 <h1 className="text-3xl font-bold mb-6">
-                    Google Gemini AI API Key Management
+                    Google Gemini AI API Key
                 </h1>
                 <Toaster position="top-center" />
                 <Card>
@@ -73,8 +73,8 @@ export default function GeminiApiKey({ apikeys }) {
                             Set Google Gemini AI API Key
                         </CardTitle>
                         <CardDescription>
-                            Enter your Google Gemini AI API key to enable AI
-                            features
+                            Masukkan kunci API AI Google Gemini Anda untuk
+                            mengaktifkan fitur AI
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -83,7 +83,7 @@ export default function GeminiApiKey({ apikeys }) {
                                 <Label htmlFor="apiKey">API Key</Label>
                                 <Input
                                     id="apiKey"
-                                    placeholder="Enter your Gemini AI API key"
+                                    placeholder="Masukkan kunci API Gemini AI Anda"
                                     value={data.apiKey}
                                     onChange={(e) =>
                                         setData("api_key", e.target.value)
@@ -99,7 +99,7 @@ export default function GeminiApiKey({ apikeys }) {
                             disable={processing}
                             onClick={saveApikey}
                         >
-                            Save API Key
+                            Simpan Api Key
                         </Button>
                     </CardFooter>
                 </Card>
@@ -111,51 +111,47 @@ export default function GeminiApiKey({ apikeys }) {
                             API Key Status
                         </CardTitle>
                         <CardDescription>
-                            Current status of your Gemini AI API key
+                            Status kunci API Gemini AI Anda saat ini
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead>Last Updated</TableHead>
+                                    <TableHead>Terakhir Diperbarui</TableHead>
                                     <TableHead>ApiKey</TableHead>
-                                    <TableHead>Actions</TableHead>
                                 </TableRow>
                             </TableHeader>
-                                <TableBody>
-                                    {/* Pastikan apikeys adalah objek dan tidak null */}
-                                    {apikeys ? (
-                                        <TableRow key={apikeys.id}>
-                                            <TableCell>
-                                            {new Date(apikeys.created_at).toLocaleString()}
-                                            </TableCell>
-                                            <TableCell>
-          {/* Menampilkan 3 karakter pertama dan 3 karakter terakhir dari api_key */}
-          {apikeys.api_key ? `${apikeys.api_key.slice(0, 3)}...${apikeys.api_key.slice(-3)}` : 'No API Key'}
-        </TableCell>
-                                            {/* Menampilkan api_key */}
-                                            <TableCell>
-                                                <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                    className="mr-2"
-                                                    onClick={handleTestApiKey}
-                                                    disable
-                                                >
-                                                    <RefreshCw className="h-4 w-4 mr-2" />
-                                                    Test Key
-                                                </Button>
-                                            </TableCell>
-                                        </TableRow>
-                                    ) : (
-                                        <TableRow>
-                                            <TableCell colSpan={4}>
-                                                No API keys found
-                                            </TableCell>
-                                        </TableRow>
-                                    )}
-                                </TableBody>
+                            <TableBody>
+                                {/* Pastikan apikeys adalah objek dan tidak null */}
+                                {apikeys ? (
+                                    <TableRow key={apikeys.id}>
+                                        <TableCell>
+                                            {new Date(
+                                                apikeys.created_at
+                                            ).toLocaleString()}
+                                        </TableCell>
+                                        <TableCell>
+                                            {/* Menampilkan 3 karakter pertama dan 3 karakter terakhir dari api_key */}
+                                            {apikeys.api_key
+                                                ? `${apikeys.api_key.slice(
+                                                      0,
+                                                      3
+                                                  )}...${apikeys.api_key.slice(
+                                                      -3
+                                                  )}`
+                                                : "No API Key"}
+                                        </TableCell>
+                                        {/* Menampilkan api_key */}
+                                    </TableRow>
+                                ) : (
+                                    <TableRow>
+                                        <TableCell colSpan={4}>
+                                            No API keys found
+                                        </TableCell>
+                                    </TableRow>
+                                )}
+                            </TableBody>
                         </Table>
                     </CardContent>
                 </Card>
@@ -164,31 +160,15 @@ export default function GeminiApiKey({ apikeys }) {
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                             <AlertTriangle className="h-6 w-6" />
-                            Important Information
+                            Informasi Penting
                         </CardTitle>
                         <CardDescription>
-                            Key details about using the Google Gemini AI API
+                        Detail penting tentang penggunaan Google Gemini AI API
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
                         <ul className="list-disc pl-5 space-y-2">
-                            <li>Keep your API key confidential and secure.</li>
-                            <li>
-                                Do not share your API key in public repositories
-                                or client-side code.
-                            </li>
-                            <li>
-                                Regularly rotate your API key for enhanced
-                                security.
-                            </li>
-                            <li>
-                                Monitor your API usage to stay within quota
-                                limits.
-                            </li>
-                            <li>
-                                Refer to the Google Gemini AI documentation for
-                                best practices and usage guidelines.
-                            </li>
+                            <li>Jaga kerahasiaan dan keamanan kunci API Anda.</li>
                         </ul>
                     </CardContent>
                 </Card>

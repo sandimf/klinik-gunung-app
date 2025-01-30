@@ -31,29 +31,6 @@ export function PatientInfoForm({ data, setData, errors }) {
       </div>
 
       {/* Email field */}
-      <div>
-        <Label htmlFor="email">Email</Label>
-        <Input
-          id="email"
-          type="email"
-          value={data.email}
-          placeholder="email@example.com"
-          onChange={(e) => setData("email", e.target.value)}
-        />
-        {errors.email && <p className="text-red-600">{errors.email}</p>}
-      </div>
-
-      {/* Contact field */}
-      <div>
-        <Label htmlFor="contact">Nomor Telepon</Label>
-        <Input
-          id="contact"
-          value={data.contact}
-          placeholder="Nomor Telepon"
-          onChange={(e) => setData("contact", e.target.value)}
-        />
-        {errors.contact && <p className="text-red-600">{errors.contact}</p>}
-      </div>
 
       {/* Place of Birth field */}
       <div>
@@ -219,6 +196,31 @@ export function PatientInfoForm({ data, setData, errors }) {
           onChange={(e) => setData("age", e.target.value)}
         />
       </div>
+
+      <div>
+        <Label htmlFor="email">Email</Label>
+        <Input
+          id="email"
+          type="email"
+          value={data.email}
+          placeholder="email@example.com"
+          onChange={(e) => setData("email", e.target.value)}
+        />
+        {errors.email && <p className="text-red-600">{errors.email}</p>}
+      </div>
+
+      {/* Contact field */}
+      <div>
+        <Label htmlFor="contact">Nomor Telepon</Label>
+        <Input
+          id="contact"
+          value={data.contact}
+          placeholder="Nomor Telepon"
+          onChange={(e) => setData("contact", e.target.value)}
+        />
+        {errors.contact && <p className="text-red-600">{errors.contact}</p>}
+      </div>
+
     </div>
   );
 }

@@ -69,7 +69,7 @@ export default function CreateQuestionnaire() {
             onSuccess: () => {
                 setIsLoading(false);
                 toast.success("Berhasil Membuat Kuesioner",{
-                    icon: <Info/>
+                    icon: <CircleCheck className="h-5 w-5 text-green-500"/>
                 });
             },
             onError: (errors) => {

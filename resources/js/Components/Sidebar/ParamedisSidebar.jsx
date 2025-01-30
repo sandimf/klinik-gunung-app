@@ -96,16 +96,6 @@ export function AppSidebar({ ...sidebarProps }) {
             },
             
             {
-                title: "Community",
-                icon: Users,
-                items: [
-                    {
-                        title: "Community",
-                        url: route("community.index"),
-                    },
-                ],
-            },
-            {
                 title: "Settings",
                 url: route("paramedis.profile"),
                 icon: Settings2,

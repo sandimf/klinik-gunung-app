@@ -144,7 +144,28 @@ class GuestController extends Controller
             // Simpan jawaban screening ke tabel `screening_answers`
             $lastQueuePosition = ScreeningAnswers::max('queue') ?? 0;
             foreach ($request->answers as $index => $answer) {
-                $answerText = is_array($answer['answer']) ? implode(', ', $answer['answer']) : $answer['answer'];
+                $answerText = '';
+
+                if (is_array($answer['answer'])) {
+                    if (isset($answer['answer']['options']) && isset($answer['answer']['textarea'])) {
+                        // Jika ada checkbox dan textarea
+                        $answerText = implode(', ', (array) $answer['answer']['options']) . ', ' . $answer['answer']['textarea'];
+                    } elseif (isset($answer['answer']['options'])) {
+                        // Jika hanya checkbox
+                        $answerText = implode(', ', (array) $answer['answer']['options']);
+                    } elseif (isset($answer['answer']['textarea'])) {
+                        // Jika hanya textarea
+                        $answerText = $answer['answer']['textarea'];
+                    } elseif (count($answer['answer']) > 0) {
+                        // Jika hanya checkbox tanpa key `options`
+                        $answerText = implode(', ', (array) $answer['answer']);
+                    } else {
+                        // Jika benar-benar kosong
+                        $answerText = '';
+                    }
+                } else {
+                    $answerText = $answer['answer']; // Jika langsung string
+                }
 
                 ScreeningAnswers::create([
                     'question_id' => $answer['questioner_id'],

@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState } from "react";
 import {
     Command,
@@ -60,11 +58,6 @@ export function AppSidebar({ ...sidebarProps }) {
                 title: "Obat",
                 url: route("medicine.warehouse"),
                 icon: Pill,
-            },
-            {
-                title: "Community",
-                url: route("community.index"),
-                icon: Users,
             },
             {
                 title: "Settings",

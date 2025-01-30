@@ -139,17 +139,6 @@ export function AppSidebar({ ...sidebarProps }) {
         icon: ChartPie,
       },
       {
-        title: "Community",
-        url: route("dashboard"),
-        icon: Users,
-        items: [
-          {
-            title: "Community",
-            url: route('dashboard'),
-          },
-        ],
-      },
-      {
         title: "Settings",
         url: route("cashier.profile"),
         icon: Settings2,

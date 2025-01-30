@@ -591,12 +591,11 @@ export default function Index({ questions, errors, patient }) {
                             <DialogContent>
                                 <DialogHeader>
                                     <DialogTitle>
-                                        Confirm Submission
+                                        Konfirmasi Kirim
                                     </DialogTitle>
                                     <DialogDescription>
-                                        Are you sure you want to submit this
-                                        screening form? This action cannot be
-                                        undone.
+                                    Apakah Anda yakin ingin mengirimkan ini
+                                    formulir?
                                     </DialogDescription>
                                 </DialogHeader>
                                 <DialogFooter>
@@ -607,7 +606,7 @@ export default function Index({ questions, errors, patient }) {
                                         Cancel
                                     </Button>
                                     <Button onClick={confirmSubmit}>
-                                        Confirm
+                                        Konfirmasi
                                     </Button>
                                 </DialogFooter>
                             </DialogContent>

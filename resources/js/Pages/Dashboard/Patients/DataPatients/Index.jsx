@@ -6,7 +6,7 @@ import { Label } from "@/Components/ui/label";
 import { Button } from "@/Components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/Components/ui/alert";
-import { Upload, CheckCircle2, Info, InfoIcon, Loader2 } from "lucide-react";
+import { Upload, CheckCircle2, CircleCheck, InfoIcon, Loader2 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/Components/ui/tabs";
 import { toast, Toaster } from "sonner";
 import { Checkbox } from "@/Components/ui/checkbox";
@@ -24,6 +24,8 @@ import WebcamComponent from "./_components/webcam";
 import Sidebar from "@/Layouts/Dashboard/PatientsSidebarLayout";
 
 export default function PatientDataEntry({ patient,apiKey}) {
+
+    const user = usePage().props.auth.user;
 
     const genAI = new GoogleGenerativeAI(apiKey || "default_api_key");
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
@@ -208,7 +210,7 @@ export default function PatientDataEntry({ patient,apiKey}) {
     useEffect(() => {
         if (flash.message) {
             toast(flash.message, {
-                icon: <Info className="h-5 w-5 text-green-500" />,
+                icon: <CircleCheck className="h-5 w-5 text-green-500" />,
             });
         }
     }, [flash.message]);

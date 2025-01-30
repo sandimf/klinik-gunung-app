@@ -6,9 +6,35 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/Components/ui/table"
 import { Database, Save, RotateCcw, Clock, HardDrive } from 'lucide-react'
 import Sidebar from "@/Layouts/Dashboard/AdminSidebarLayout";
-import { Head } from "@inertiajs/react"
+import { Head,Link } from "@inertiajs/react"
 
 export default function DatabaseBackup() {
+
+  const handleBackup = async () => {
+    setLoading(true);
+    try {
+        const response = await fetch(route('database.sql'), { method: "GET" });
+
+        if (!response.ok) {
+            throw new Error("Gagal membuat backup");
+        }
+
+        // Buat file dan trigger unduhan otomatis
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "backup-database.sql"; // Nama file saat diunduh
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+    } catch (error) {
+        alert("Terjadi kesalahan: " + error.message);
+    }
+    setLoading(false);
+};
+
   return (
     <Sidebar>
       <Head title="Database Backup" />
@@ -36,7 +62,9 @@ export default function DatabaseBackup() {
           </div>
         </CardContent>
         <CardFooter>
-          <Button className="w-full">Create Backup</Button>
+          <Link href={route('database.sql')}>
+          <Button className="w-full">Buat Backup</Button>
+          </Link>
         </CardFooter>
       </Card>
 

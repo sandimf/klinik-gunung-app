@@ -10,8 +10,11 @@ use App\Http\Controllers\Users\AdminController;
 use App\Http\Controllers\Users\DoctorController;
 use App\Http\Controllers\Auth\ProviderController;
 use App\Http\Controllers\Clinic\OfficeController;
+use App\Http\Controllers\Pdf\CustomPdfController;
 use App\Http\Controllers\Users\CashierController;
 use App\Http\Controllers\Users\ManagerController;
+use App\Http\Controllers\Backup\AirtableController;
+use App\Http\Controllers\Product\ProductController;
 use App\Http\Controllers\Users\ParamedisController;
 use App\Http\Controllers\Users\WarehouseController;
 use App\Http\Controllers\Screenings\GuestController;
@@ -24,7 +27,7 @@ use App\Http\Controllers\Clinic\MedicalRecordController;
 use App\Http\Controllers\Dashboard\AdminPanelController;
 use App\Http\Controllers\Report\CashierReportController;
 use App\Http\Controllers\Report\ManagerReportController;
-use App\Http\Controllers\Backup\DatabaseBackupController;
+use App\Http\Controllers\Transaction\PurchaseController;
 use App\Http\Controllers\Questioner\QuestionerController;
 use App\Http\Controllers\Clinic\ManagementStaffController;
 use App\Http\Controllers\Dashboard\ManagerPanelController;
@@ -43,10 +46,6 @@ use App\Http\Controllers\Questioner\QuestionerOnlineController;
 use App\Http\Controllers\Screenings\ScreeningOfflineController;
 use App\Http\Controllers\Appointments\AppointmentDoctorController;
 use App\Http\Controllers\Clinic\PhysicalExaminationOnlineController;
-use App\Http\Controllers\Pdf\CustomPdfController;
-use App\Http\Controllers\Product\ProductController;
-use App\Http\Controllers\Transaction\PurchaseController;
-use App\Models\Users\Paramedis;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -239,7 +238,7 @@ Route::prefix('dashboard/admin')->middleware(['auth', 'role:admin'])->group(func
     // Profile Edit
     Route::get('profile', [AdminController::class, 'profile'])->name('admin.profile');
 
-    Route::get('bakcup/database', [DatabaseBackupController::class, 'index'])->name('database.backup');
+    Route::get('bakcup/airtable', [AirtableController::class, 'index'])->name('airtable.backup');
 
     // social media settings
     Route::get('auth', [AdminPanelController::class, 'AuthSetting'])->name('login.settings');

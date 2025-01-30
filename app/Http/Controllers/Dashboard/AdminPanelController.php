@@ -42,4 +42,5 @@ class AdminPanelController extends Controller
         }
         return redirect()->back()->with('message', 'Social login settings updated successfully!');
     }
+    
 }

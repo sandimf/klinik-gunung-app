@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers\Report;
 
-use App\Http\Controllers\Controller;
-use App\Models\Clinic\PhysicalExamination;
-use App\Models\Users\Paramedis;
-use App\Models\Users\Patients;
-use Barryvdh\DomPDF\Facade\pdf;
-use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 use Inertia\Inertia;
+use App\Models\Users\Patients;
+use App\Models\Users\Paramedis;
+use Barryvdh\DomPDF\Facade\pdf;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Request;
+use App\Models\Clinic\PhysicalExamination;
 
 class ParamedisReportController extends Controller
 {
@@ -25,25 +27,29 @@ class ParamedisReportController extends Controller
         }
 
         // Ambil data pemeriksaan fisik yang dilakukan oleh paramedis ini
-        $examinations = PhysicalExamination::with('patient') // Ambil data pasien terkait
+        $examinations = PhysicalExamination::with('patient:id,uuid,name,date_of_birth,gender') // Hanya ambil field yang diperlukan
             ->where('paramedis_id', $paramedis->id)
             ->get();
 
         // Hitung total jumlah pasien yang diperiksa
         $totalPatients = $examinations->count();
 
-        // Hitung jumlah pasien yang sakit
-        $sickPatientsCount = $examinations->where('health_status', 'butuh_dokter')->count();
+        // Hitung jumlah pasien berdasarkan status kesehatan
+        $healthCounts = $examinations->groupBy('health_status')->map->count();
+        $sickPatientsCount = $healthCounts->get('butuh_dokter', 0);
+        $needPatientsCount = $healthCounts->get('butuh_pendamping', 0);
+        $healthyPatientsCount = $healthCounts->get('healthy', 0);
 
-        // Ambil nama-nama pasien
+        // Ambil data pasien dengan validasi null
         $patients = $examinations->map(function ($examination) {
+            $patient = $examination->patient;
             return [
-                'id' => $examination->patient->id,
-                'uuid' => $examination->patient->uuid,
-                'name' => $examination->patient->name,
+                'id' => $patient->id ?? null,
+                'uuid' => $patient->uuid ?? null,
+                'name' => $patient->name ?? 'Tidak Diketahui',
                 'health_status' => $examination->health_status,
-                'date_of_birth' => $examination->patient->date_of_birth,
-                'gender' => $examination->patient->gender,
+                'date_of_birth' => $patient->date_of_birth ?? null,
+                'gender' => $patient->gender ?? null,
             ];
         });
 
@@ -52,24 +58,47 @@ class ParamedisReportController extends Controller
             'patients' => $patients,
             'totalPatients' => $totalPatients,
             'sickPatientsCount' => $sickPatientsCount,
+            'healthyPatientsCount' => $healthyPatientsCount,
+            'needPatientsCount' => $needPatientsCount,
         ]);
     }
 
     public function activity()
     {
-        // Ambil semua data pemeriksaan fisik dan relasi dengan pasien serta paramedis
-        $examinations = PhysicalExamination::with(['patient', 'paramedis'])->get();
-
-        // Hitung total jumlah pasien yang diperiksa
+        $filter = Request::input('filter', 'all');
+        $startDate = null;
+        $endDate = null;
+    
+        switch ($filter) {
+            case 'daily':
+                $startDate = Carbon::today();
+                $endDate = Carbon::tomorrow();
+                break;
+            case 'weekly':
+                $startDate = Carbon::now()->startOfWeek();
+                $endDate = Carbon::now()->endOfWeek();
+                break;
+            case 'monthly':
+                $startDate = Carbon::now()->startOfMonth();
+                $endDate = Carbon::now()->endOfMonth();
+                break;
+        }
+    
+        $query = PhysicalExamination::with(['patient', 'paramedis']);
+    
+        if ($startDate && $endDate) {
+            $query->whereBetween('created_at', [$startDate, $endDate]);
+        }
+    
+        $examinations = $query->get();
+    
+        // Rest of your code remains the same
         $totalPatients = $examinations->count();
-
-        // Hitung jumlah pasien yang sakit
         $sickPatientsCount = $examinations->where('health_status', 'butuh_dokter')->count();
-
-        // Hitung total jumlah paramedis yang terlibat
+        $needPatientsCount = $examinations->where('health_status', 'butuh_pendamping')->count();
+        $healthyPatientsCount = $examinations->where('health_status', 'healthy')->count();
         $totalParamedis = $examinations->pluck('paramedis_id')->unique()->count();
-
-        // Ambil nama-nama pasien beserta paramedis yang memeriksa
+    
         $patients = $examinations->map(function ($examination) {
             return [
                 'id' => $examination->patient->id,
@@ -77,34 +106,59 @@ class ParamedisReportController extends Controller
                 'health_status' => $examination->health_status,
                 'date_of_birth' => $examination->patient->date_of_birth,
                 'gender' => $examination->patient->gender,
-                'examined_by' => $examination->paramedis->name ?? 'Tidak Diketahui', // Nama paramedis
+                'examined_by' => $examination->paramedis->name ?? 'Tidak Diketahui',
+                'examined_at' => $examination->created_at->format('Y-m-d H:i:s'),
             ];
         });
-
-        // Kirim data ke frontend
+    
         return Inertia::render('Dashboard/Paramedis/Activity/Index', [
             'patients' => $patients,
             'totalPatients' => $totalPatients,
             'sickPatientsCount' => $sickPatientsCount,
-            'totalParamedis' => $totalParamedis, // Menambahkan jumlah paramedis
+            'totalParamedis' => $totalParamedis,
+            'needPatientsCount' => $needPatientsCount,
+            'healthyPatientsCount' => $healthyPatientsCount,
+            'currentFilter' => $filter,
         ]);
     }
 
-    public function generatePDFActivity()
+    public function generatePDFActivity(Request $request)
     {
-        // Ambil semua data pemeriksaan fisik dan relasi dengan pasien serta paramedis
-        $examinations = PhysicalExamination::with(['patient', 'paramedis'])->get();
-
-        // Hitung total jumlah pasien yang diperiksa
+        $filter = Request::input('filter', 'all'); // Perbaikan pengambilan input
+        $startDate = null;
+        $endDate = null;
+    
+        switch ($filter) {
+            case 'daily':
+                $startDate = Carbon::today();
+                $endDate = Carbon::tomorrow();
+                break;
+            case 'weekly':
+                $startDate = Carbon::now()->startOfWeek();
+                $endDate = Carbon::now()->endOfWeek();
+                break;
+            case 'monthly':
+                $startDate = Carbon::now()->startOfMonth();
+                $endDate = Carbon::now()->endOfMonth();
+                break;
+        }
+    
+        $query = PhysicalExamination::with(['patient', 'paramedis']);
+    
+        if ($startDate && $endDate) {
+            $query->whereBetween('created_at', [$startDate, $endDate]);
+        }
+    
+        $examinations = $query->get();
+    
+        // Hitung statistik
         $totalPatients = $examinations->count();
-
-        // Hitung jumlah pasien yang sakit
         $sickPatientsCount = $examinations->where('health_status', 'butuh_dokter')->count();
-
-        // Hitung total jumlah paramedis yang terlibat
+        $needPatientsCount = $examinations->where('health_status', 'butuh_pendamping')->count();
+        $healthyPatientsCount = $examinations->where('health_status', 'healthy')->count();
         $totalParamedis = $examinations->pluck('paramedis_id')->unique()->count();
-
-        // Ambil nama-nama pasien beserta paramedis yang memeriksa
+    
+        // Format data pasien
         $patients = $examinations->map(function ($examination) {
             return [
                 'id' => $examination->patient->id,
@@ -112,23 +166,33 @@ class ParamedisReportController extends Controller
                 'health_status' => $examination->health_status,
                 'date_of_birth' => $examination->patient->date_of_birth,
                 'gender' => $examination->patient->gender,
-                'examined_by' => $examination->paramedis->name ?? 'Tidak Diketahui', // Nama paramedis
+                'examined_by' => $examination->paramedis->name ?? 'Tidak Diketahui',
+                'examined_at' => $examination->created_at->format('Y-m-d H:i:s'),
             ];
         });
-
-        // Menyusun data yang akan dikirim ke view untuk PDF
+    
+        // Format tanggal untuk tampilan dan nama file
+        $formattedStartDate = $startDate ? $startDate->format('Y-m-d') : 'all';
+        $formattedEndDate = $endDate ? $endDate->format('Y-m-d') : 'all';
+        $dateRange = $startDate && $endDate ? "{$formattedStartDate} to {$formattedEndDate}" : "All Time";
+    
+        // Data untuk PDF
         $data = [
             'patients' => $patients,
             'totalPatients' => $totalPatients,
             'sickPatientsCount' => $sickPatientsCount,
             'totalParamedis' => $totalParamedis,
+            'healthyPatientsCount' => $healthyPatientsCount,
+            'needPatientsCount' => $needPatientsCount,
+            'filter' => ucfirst($filter), // Tampilkan nama filter di PDF
+            'dateRange' => $dateRange, // Tambahkan rentang tanggal
         ];
-
-        // Load view dengan data untuk di-render menjadi PDF
+    
+        // Load view dengan data
         $pdf = Pdf::loadView('pdf.activity.paramedis.activity', $data);
-
-        // Download PDF
-        return $pdf->download('activity_report.pdf');
+    
+        // Nama file sesuai filter dan tanggal
+        return $pdf->download("activity_report_{$filter}_{$formattedStartDate}_{$formattedEndDate}.pdf");
     }
 
     public function generatePDFHealthCheck($id)

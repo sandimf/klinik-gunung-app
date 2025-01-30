@@ -103,7 +103,6 @@ const ScreeningOfflineIndex = ({ screenings = [] }) => {
                                 <TableHead>Nama Pasien</TableHead>
                                 <TableHead>Screening</TableHead>
                                 <TableHead>Status</TableHead>
-                                <TableHead>Aksi</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -118,21 +117,6 @@ const ScreeningOfflineIndex = ({ screenings = [] }) => {
                                     </TableCell>
                                     <TableCell>
                                         <Badge>{screening.screening_status}</Badge>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Link
-                                            href={route("edit.screening", {
-                                                id: screening.id,
-                                            })}
-                                        >
-                                            <Button
-                                                variant="outline"
-                                                className="mb-4"
-                                            >
-                                                <Edit className="mr-2 h-4 w-4" />{" "}
-                                                Edit
-                                            </Button>
-                                        </Link>
                                     </TableCell>
                                 </TableRow>
                             ))}

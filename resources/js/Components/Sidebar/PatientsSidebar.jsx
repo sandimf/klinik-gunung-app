@@ -72,11 +72,6 @@ export function AppSidebar({ ...sidebarProps }) {
         icon: CalendarClock,
       },
       {
-        title: "Community",
-        url: route("community.index"),
-        icon: Users,
-      },
-      {
         title: "Profile",
         url: route("patients.profile"),
         icon: CircleUser,

@@ -12,7 +12,7 @@ import {
     SelectValue,
 } from "@/Components/ui/select";
 import { Checkbox } from "@/Components/ui/checkbox";
-import { AlertCircle, Plus, Trash2,Info,X } from "lucide-react";
+import { AlertCircle, Plus, Trash2,CircleCheck,X } from "lucide-react";
 import { Alert, AlertDescription } from "@/Components/ui/alert";
 import AdminSidebar from "@/Layouts/Dashboard/AdminSidebarLayout";
 import { Toaster, toast } from "sonner";
@@ -47,7 +47,7 @@ export default function CreateQuestionnaire() {
             preserveScroll: true,
             onSuccess: () => {
                 toast.success("Berhasil Membuat Kuesioner",{
-                    icon: <Info className="h-5 w-5 text-green-500" />
+                    icon: <CircleCheck className="h-5 w-5 text-green-500" />
                 });
                 setData({
                     question_text: "",

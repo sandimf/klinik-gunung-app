@@ -3,7 +3,7 @@ import { Head,usePage } from "@inertiajs/react";
 import Sidebar from "@/Layouts/Dashboard/PatientsSidebarLayout";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/Components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
-import { CalendarDays, Activity, Pill, Phone,Info } from "lucide-react";
+import { CalendarDays, Activity, Pill, Phone,CircleCheck } from "lucide-react";
 import {toast, Toaster} from "sonner"
 
 export default function Dashboard({ screening, visitCount }) {
@@ -13,7 +13,7 @@ export default function Dashboard({ screening, visitCount }) {
     useEffect(() => {
         if (flash.message) {
             toast(flash.message, {
-                icon: <Info className="h-5 w-5 text-green-500"/>
+                icon: <CircleCheck className="h-5 w-5 text-green-500"/>
             });
         }
     }, [flash.message]);

@@ -38,30 +38,4 @@ class GuestScreeningRequest extends FormRequest
         ];
     }
 
-    public function messages()
-    {
-        return [
-            'nik.required' => 'NIK is required.',
-            'nik.numeric' => 'NIK must be a number.',
-            'nik.unique' => 'This NIK is already registered.',
-            'name.required' => 'Name is required.',
-            'place_of_birth.required' => 'Place of birth is required.',
-            'date_of_birth.required' => 'Date of birth is required.',
-            'rt_rw.required' => 'Rt Rw is required.',
-            'address.required' => 'Address is required.',
-            'village.required' => 'Village is required.',
-            'district.required' => 'District is required.',
-            'religion.required' => 'Religion is required.',
-            'marital_status.required' => 'Marital status is required.',
-            'occupation.required' => 'Occupation is required.',
-            'nationality.required' => 'Nationality is required.',
-            'gender.required' => 'Gender is required.',
-            'bloo_type.required' => 'Golangan Darah Wajib Di Isi',
-            'email.required' => 'Email is required.',
-            'contact.required' => 'Contact is required.',
-            'answers.required' => 'Answers are required.',
-            'answers.*.questioner_id.required' => 'Each answer must have a valid question ID.',
-            'answers.*.answer.required' => 'Each answer must be provided.',
-        ];
-    }
 }

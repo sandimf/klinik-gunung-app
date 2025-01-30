@@ -77,7 +77,7 @@ class PhysicalExaminationController extends Controller
         // Dispatch a notification
         SendScreeningNotification::dispatch($patient);
 
-        return back()->with('message', 'Pemeriksaan Fisik Berhasil');
+        return back()->with('message', 'Pemeriksaan Fisik Berhasil Berhasil di Simpan!');
     }
 
     public function editScreening($id)

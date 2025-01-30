@@ -27,7 +27,7 @@ class ScreeningOnlineController extends Controller
         if (! $patient) {
             // Redirect ke halaman untuk melengkapi data pasien
             return redirect()->route('information.index')
-                ->with('message', 'Please complete your patient profile before accessing screening online.');
+                ->with('message', 'Silakan lengkapi profil pasien Anda sebelum mengakses Screening online.');
         }
 
         // Fetch the patient and their related questionnaire answers
@@ -60,7 +60,7 @@ class ScreeningOnlineController extends Controller
         if ($patient->screening_status === 'pending') {
             // Jika status 'pending', redirect ke halaman lain (misalnya halaman error)
             return redirect()->route('screening-online.index')
-                ->with('error', 'Screening status Anda masih pending. Silakan selesaikan screening terlebih dahulu.');
+                ->with('message', 'Screening status Anda masih pending. Silakan selesaikan pembayaran terlebih dahulu.');
         }
 
         // Jika status tidak 'pending', lanjutkan dan tampilkan halaman screening

@@ -35,6 +35,7 @@ export default function PaymentDialog({
 
     const cashier = auth.cashier;
 
+    console.log(cashier);
     const [hasPurchasedProduct, setHasPurchasedProduct] = useState(false);
     const { data, setData, post, processing, errors } = useForm({
         cashier_id: cashier[0].id,

@@ -14,6 +14,7 @@ class Cashier extends Model
     protected $table = 'cashiers';
 
     protected $fillable = [
+        'id',
         'uuid',
         'user_id',
         'nik',
@@ -36,6 +37,7 @@ class Cashier extends Model
             }
         });
     }
+
 
     public function user()
     {

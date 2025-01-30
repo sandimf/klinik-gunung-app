@@ -1,11 +1,11 @@
 
 import PatientsSidebar from '@/Layouts/Dashboard/PatientsSidebarLayout';
 import Profile from './Profile';
-export default function Edit() {
 
+export default function Edit() {
     return (
         <PatientsSidebar header={'Profile'}>
-        <Profile/>
+            <Profile />
         </PatientsSidebar>
     );
 }

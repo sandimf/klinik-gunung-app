@@ -359,7 +359,7 @@ return (
                         </Card>
                     ))}
 
-                    <Button type="submit">Submit Answers</Button>
+                    <Button type="submit">Submit</Button>
                 </form>
             )}
         </div>

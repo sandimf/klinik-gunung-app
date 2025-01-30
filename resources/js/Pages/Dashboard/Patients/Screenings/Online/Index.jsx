@@ -80,8 +80,8 @@ export default function ScreeningOnline({ screening }) {
                     ) : isPaymentChecking ? (
                         <ScreeningInfo
                             screening={screening}
-                            RouteName={"Edit Informasi Pembayaran"}
-                            detailRouteName={route("dashboard", screening.id)}
+                            RouteName={"Sedang pengecekan"}
+                            detailRouteName={route("screening-online.index")}
                         />
                     ) : isPaymentCompleted ? (
                         <ScreeningInfo

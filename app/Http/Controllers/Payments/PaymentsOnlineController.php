@@ -70,7 +70,7 @@ class PaymentsOnlineController extends Controller
         }
 
         return redirect()->route('screening-online.index', $payment->id)
-            ->with('message', 'Payment has been successfully recorded.');
+            ->with('message', 'Pembayaran telah berhasil dicatat.');
     }
 
     public function confirmPayment($id)
