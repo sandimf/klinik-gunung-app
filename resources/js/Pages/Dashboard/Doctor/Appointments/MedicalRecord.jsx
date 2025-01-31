@@ -10,7 +10,7 @@ import { format } from "date-fns"
 import { cn } from "@/lib/utils"
 import { Popover, PopoverContent, PopoverTrigger } from "@/Components/ui/popover"
 import DoctorSidebar from "@/Layouts/Dashboard/DoctorSidebarLayout";
-import { BodyMap } from '../_components/BodyMap/Index'
+// import { BodyMap } from '../_components/BodyMap/Index'
 import { Head } from '@inertiajs/react'
 export default function MedicalRecordForm() {
   const [specialNotes, setSpecialNotes] = useState('')
