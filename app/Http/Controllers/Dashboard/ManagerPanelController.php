@@ -16,52 +16,58 @@ use App\Models\Medicines\Medicine;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Cache;
 use App\Models\Payments\PaymentOnline;
+use App\Models\Transaction\Transaction;
 use App\Models\Clinic\PhysicalExamination;
 
 class ManagerPanelController extends Controller
 {
-    public function Office()
+    public function office()
     {
-        // Ambil semua pembayaran yang berhasil (offline), dan juga data pasien serta informasi lainnya
+        // Ambil semua pembayaran yang berhasil (offline)
         $payments = Payments::with(['patient.user', 'medicineBatch'])
             ->where('payment_status', true)
             ->orderBy('created_at', 'desc')
             ->get();
-
+    
         // Ambil semua pembayaran online yang berhasil
         $paymentsOnline = PaymentOnline::with(['patient.user', 'screeningAnswer'])
             ->where('payment_status', true)
             ->orderBy('created_at', 'desc')
             ->get();
-
+    
         // Gabungkan pembayaran offline dan online
-        $totalPayment = number_format($payments->sum('amount_paid'), 0, ',', '.'); // Format as IDR (Rp)
         $paymentsAll = $payments->merge($paymentsOnline);
-
-        // Debug: Print the amount paid of each payment
-
-        // Hitung total pemasukan (Pastikan penjumlahan dilakukan setelah penggabungan)
-        $totalIncome = $paymentsAll->sum('amount_paid');  // Sum the amount_paid correctly after merging
-
-        // Format total pemasukan sebagai IDR (Rp) jika diperlukan
-        $formattedTotalIncome = number_format($totalIncome, 0, ',', '.');  // Format as IDR (Rp)
-
+    
+        // Hitung total pemasukan dari pembayaran
+        $totalIncome = $paymentsAll->sum('amount_paid');
+    
+        // Hitung total harga produk dari transaksi
+        $totalProductPrice = Transaction::sum('total_price');
+    
+        // Hitung total keseluruhan pemasukan (pembayaran + produk)
+        $totalOverallIncome = $totalIncome + $totalProductPrice;
+    
+        // Format semua angka sebagai IDR (Rp)
+        $formattedTotalIncome = 'Rp ' . number_format($totalIncome, 0, ',', '.');
+        $formattedTotalProduct = 'Rp ' . number_format($totalProductPrice, 0, ',', '.');
+        $formattedTotalOverall = 'Rp ' . number_format($totalOverallIncome, 0, ',', '.');
+    
         // Hitung jumlah transaksi yang berhasil
         $successfulTransactions = $paymentsAll->count();
-
-        // Dapatkan tanggal pembayaran terbaru dalam zona waktu Asia/Jakarta
+    
+        // Dapatkan tanggal pembayaran terbaru
         $lastPaymentDate = $paymentsAll->isNotEmpty()
             ? Carbon::parse($paymentsAll->first()->created_at)
                 ->timezone('Asia/Jakarta')
                 ->translatedFormat('j F Y')
             : null;
-
-        // Format data untuk setiap pembayaran yang berhasil dan menampilkan informasi tambahan
+    
+        // Format data pembayaran untuk tampilan
         $paymentsDetails = $paymentsAll->take(3)->map(function ($payment) {
             $payment->formatted_date = Carbon::parse($payment->created_at)
                 ->timezone('Asia/Jakarta')
                 ->translatedFormat('j F Y');
-
+    
             if ($payment instanceof PaymentOnline) {
                 $payment->patient_name = $payment->patient ? $payment->patient->name : 'Tidak diketahui';
                 $payment->screening_details = $payment->screeningAnswer ? $payment->screeningAnswer->answer : 'Tidak ada jawaban screening';
@@ -70,21 +76,19 @@ class ManagerPanelController extends Controller
                 $payment->medicine_details = $payment->medicineBatch ? $payment->medicineBatch->name : 'Obat tidak tersedia';
                 $payment->quantity_details = $payment->quantity_product ? $payment->quantity_product : 'Jumlah tidak tersedia';
             }
-
+    
             // Avatar
             $payment->patient_avatar = $payment->patient && $payment->patient->user ? $payment->patient->user->avatar : 'default-avatar.jpg';
-
+    
             return $payment;
         });
-
-        // Hitung total pemasukan dari obat (medicine_income)
-        $totalMedicineIncome = $paymentsDetails->sum('medicine_income');
-
+    
         // Kirim data ke view
         return Inertia::render('Dashboard/Manager/Office/Index', [
-            'totalPayment' => $totalPayment,
-            'totalIncome' => 'Rp '.$formattedTotalIncome,
-            'totalMedicineIncome' => $totalMedicineIncome,
+            'totalPayment' => $formattedTotalIncome,
+            'totalIncome' => $formattedTotalIncome,
+            'totalProductIncome' => $formattedTotalProduct,
+            'totalOverallIncome' => $formattedTotalOverall,
             'lastPaymentDate' => $lastPaymentDate,
             'successfulTransactions' => $successfulTransactions,
             'paymentsDetails' => $paymentsDetails,

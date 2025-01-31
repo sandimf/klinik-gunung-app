@@ -1,68 +1,99 @@
-import { useState, useEffect } from "react"
-import Sidebar from "@/Layouts/Dashboard/ParamedisSidebarLayout"
-import { Head, usePage } from "@inertiajs/react"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/Components/ui/table"
-import { Button } from "@/Components/ui/button"
-import { Printer } from "lucide-react"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/Components/ui/select"
+import { useState, useEffect } from "react";
+import Sidebar from "@/Layouts/Dashboard/ParamedisSidebarLayout";
+import { Head, usePage } from "@inertiajs/react";
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/Components/ui/table";
+import { Button } from "@/Components/ui/button";
+import { Printer } from "lucide-react";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/Components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
-import { Search } from "lucide-react"
-import { Input } from "@/Components/ui/input"
+import { Search } from "lucide-react";
+import { Input } from "@/Components/ui/input";
+import { Badge } from "@/Components/ui/badge";
+
 export default function Report({
-  totalPatients,
-  sickPatientsCount,
-  patients,
-  totalParamedis,
-  needPatientsCount,
-  healthyPatientsCount,
-  currentFilter,
+    totalPatients,
+    sickPatientsCount,
+    patients,
+    totalParamedis,
+    needPatientsCount,
+    healthyPatientsCount,
+    currentFilter,
 }) {
-  const user = usePage().props.auth.user
-  const [searchTerm, setSearchTerm] = useState("")
-  const [filteredPatients, setFilteredPatients] = useState(patients)
-  const [filter, setFilter] = useState(currentFilter || "all")
-  const [selectedFilter, setSelectedFilter] = useState(currentFilter || "all");
-  useEffect(() => {
-    const results = patients.filter(
-      (patient) =>
-        patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        patient.health_status.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        patient.examined_by.toLowerCase().includes(searchTerm.toLowerCase()),
-    )
-    setFilteredPatients(results)
-  }, [searchTerm, patients])
+    const user = usePage().props.auth.user;
+    const [searchTerm, setSearchTerm] = useState("");
+    const [filteredPatients, setFilteredPatients] = useState(patients);
+    const [filter, setFilter] = useState(currentFilter || "all");
+    const [selectedFilter, setSelectedFilter] = useState(
+        currentFilter || "all"
+    );
+    useEffect(() => {
+        const results = patients.filter(
+            (patient) =>
+                patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                patient.health_status
+                    .toLowerCase()
+                    .includes(searchTerm.toLowerCase()) ||
+                patient.examined_by
+                    .toLowerCase()
+                    .includes(searchTerm.toLowerCase())
+        );
+        setFilteredPatients(results);
+    }, [searchTerm, patients]);
 
-  const handleFilterChange = (value) => {
-    setFilter(value)
-    window.location.href = route("activity.healthcheck", { filter: value })
-  }
+    const handleFilterChange = (value) => {
+        setFilter(value);
+        window.location.href = route("activity.healthcheck", { filter: value });
+    };
 
-  return (
-    <Sidebar header={"Laporan"}>
-      <Head title="Laporan Paramedis" />
-      <div className="p-6">
-        <div className="flex justify-between items-center mb-6 no-print">
-          <h1 className="text-2xl font-bold">Aktivitas Semua Pemeriksaan Fisik</h1>
-          <div className="flex items-center space-x-4">
-            <Select value={filter} onValueChange={handleFilterChange}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Filter by" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Time</SelectItem>
-                <SelectItem value="daily">Daily</SelectItem>
-                <SelectItem value="weekly">Weekly</SelectItem>
-                <SelectItem value="monthly">Monthly</SelectItem>
-              </SelectContent>
-            </Select>
-            <a href={route("pdf.activity.paramedis", { filter: selectedFilter })}>
-              <Button variant="outline">
-                <Printer className="mr-2 h-4 w-4" /> Download PDF
-              </Button>
-            </a>
-          </div>
-        </div>
-        <div className="space-y-6 no-print">
+    return (
+        <Sidebar header={"Laporan"}>
+            <Head title="Laporan Paramedis" />
+            <div className="p-6">
+                <div className="flex justify-between items-center mb-6 no-print">
+                    <h1 className="text-2xl font-bold">
+                        Aktivitas Semua Pemeriksaan Fisik
+                    </h1>
+                    <div className="flex items-center space-x-4">
+                        <Select
+                            value={filter}
+                            onValueChange={handleFilterChange}
+                        >
+                            <SelectTrigger className="w-[180px]">
+                                <SelectValue placeholder="Filter by" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">All Time</SelectItem>
+                                <SelectItem value="daily">Daily</SelectItem>
+                                <SelectItem value="weekly">Weekly</SelectItem>
+                                <SelectItem value="monthly">Monthly</SelectItem>
+                            </SelectContent>
+                        </Select>
+                        <a
+                            href={route("pdf.activity.paramedis", {
+                                filter: selectedFilter,
+                            })}
+                        >
+                            <Button variant="outline">
+                                <Printer className="mr-2 h-4 w-4" /> Download
+                                PDF
+                            </Button>
+                        </a>
+                    </div>
+                </div>
+                <div className="space-y-6 no-print">
                     <div className="grid grid-cols-3 gap-4">
                         <Card>
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -71,7 +102,9 @@ export default function Report({
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <div className="text-2xl font-bold">{totalPatients}</div>
+                                <div className="text-2xl font-bold">
+                                    {totalPatients}
+                                </div>
                             </CardContent>
                         </Card>
                         <Card>
@@ -81,7 +114,9 @@ export default function Report({
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <div className="text-2xl font-bold">{totalPatients}</div>
+                                <div className="text-2xl font-bold">
+                                    {totalPatients}
+                                </div>
                             </CardContent>
                         </Card>
                         <Card>
@@ -91,7 +126,9 @@ export default function Report({
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <div className="text-2xl font-bold">{healthyPatientsCount}</div>
+                                <div className="text-2xl font-bold">
+                                    {healthyPatientsCount}
+                                </div>
                             </CardContent>
                         </Card>
                         <Card>
@@ -101,7 +138,9 @@ export default function Report({
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <div className="text-2xl font-bold">{sickPatientsCount}</div>
+                                <div className="text-2xl font-bold">
+                                    {sickPatientsCount}
+                                </div>
                             </CardContent>
                         </Card>
                         <Card>
@@ -111,7 +150,9 @@ export default function Report({
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <div className="text-2xl font-bold">{needPatientsCount}</div>
+                                <div className="text-2xl font-bold">
+                                    {needPatientsCount}
+                                </div>
                             </CardContent>
                         </Card>
                         <Card>
@@ -121,7 +162,9 @@ export default function Report({
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <div className="text-2xl font-bold">{totalParamedis}</div>
+                                <div className="text-2xl font-bold">
+                                    {totalParamedis}
+                                </div>
                             </CardContent>
                         </Card>
                     </div>
@@ -136,40 +179,58 @@ export default function Report({
                             className="w-full max-w-sm"
                         />
                     </div>
-</div>
+                </div>
 
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Nama Pasien</TableHead>
-              <TableHead>Tanggal Lahir</TableHead>
-              <TableHead>Status Kesehatan</TableHead>
-              <TableHead>Pemeriksa</TableHead>
-              <TableHead>Tanggal Pemeriksaan</TableHead>
-              <TableHead>Detail</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredPatients.map((patient, index) => (
-              <TableRow key={index}>
-                <TableCell className="font-medium">{patient.name}</TableCell>
-                <TableCell>{patient.date_of_birth}</TableCell>
-                <TableCell>{patient.health_status}</TableCell>
-                <TableCell>{patient.examined_by}</TableCell>
-                <TableCell>{patient.examined_at}</TableCell>
-                <TableCell>
-                  <a href={route("pdf.healthcheck.paramedis", patient.id)}>
-                    <Button>
-                      <Printer />
-                    </Button>
-                  </a>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
-    </Sidebar>
-  )
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>Nama Pasien</TableHead>
+                            <TableHead>Tanggal Lahir</TableHead>
+                            <TableHead>Status Kesehatan</TableHead>
+                            <TableHead>Pemeriksa</TableHead>
+                            <TableHead>Tanggal Pemeriksaan</TableHead>
+                            <TableHead>Detail</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {filteredPatients.map((patient, index) => (
+                            <TableRow key={index}>
+                                <TableCell className="font-medium">
+                                    {patient.name}
+                                </TableCell>
+                                <TableCell>{patient.date_of_birth}</TableCell>
+                                <TableCell>
+                                    <Badge>
+                                        {patient.health_status === "healthy"
+                                            ? "Sehat"
+                                            : patient.health_status ===
+                                              "butuh_dokter"
+                                            ? "Membutuhkan Dokter"
+                                            : patient.health_status ===
+                                              "butuh_pendamping"
+                                            ? "Membutuhkan Pendamping"
+                                            : "Status Tidak Diketahui"}
+                                    </Badge>
+                                </TableCell>
+                                <TableCell>{patient.examined_by}</TableCell>
+                                <TableCell>{patient.examined_at}</TableCell>
+                                <TableCell>
+                                    <a
+                                        href={route(
+                                            "pdf.healthcheck.paramedis",
+                                            patient.id
+                                        )}
+                                    >
+                                        <Button>
+                                            <Printer />
+                                        </Button>
+                                    </a>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </div>
+        </Sidebar>
+    );
 }
-

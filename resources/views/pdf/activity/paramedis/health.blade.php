@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Laporan Pemeriksaan Kesehatan</title>
 </head>
+
 <body>
     <h1>Laporan Pemeriksaan Kesehatan Pasien</h1>
 
@@ -17,7 +19,6 @@
     <table border="1" cellpadding="5">
         <thead>
             <tr>
-                <th>ID Pemeriksaan</th>
                 <th>Status Kesehatan</th>
                 <th>Tekanan Darah</th>
                 <th>Denyut Jantung</th>
@@ -27,16 +28,24 @@
         </thead>
         <tbody>
             @foreach ($examinations as $examination)
-                <tr>
-                    <td>{{ $examination->id }}</td>
-                    <td>{{ $examination->health_status }}</td>
-                    <td>{{ $examination->blood_pressure }}</td>
-                    <td>{{ $examination->heart_rate }}</td>
-                    <td>{{ $examination->oxygen_saturation }}</td>
-                    <td>{{ $examination->paramedis->name ?? 'Tidak Diketahui' }}</td>
-                </tr>
+            <tr>
+                <td> @if ($examination['health_status'] === 'healthy')
+                    Sehat
+                    @elseif ($examination['health_status'] === 'butuh_dokter')
+                    Membutuhkan Dokter
+                    @elseif ($examination['health_status'] === 'butuh_pendamping')
+                    Membutuhkan Pendamping
+                    @else
+                    Status Tidak Diketahui
+                    @endif</td>
+                <td>{{ $examination->blood_pressure }}</td>
+                <td>{{ $examination->heart_rate }}</td>
+                <td>{{ $examination->oxygen_saturation }}</td>
+                <td>{{ $examination->paramedis->name ?? 'Tidak Diketahui' }}</td>
+            </tr>
             @endforeach
         </tbody>
     </table>
 </body>
+
 </html>

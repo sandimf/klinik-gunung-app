@@ -1,5 +1,3 @@
-'use client'
-
 import { v4 as uuidv4 } from 'uuid';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/Components/ui/tabs"
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card"
@@ -13,10 +11,13 @@ import { Head } from '@inertiajs/react';
 export default function Office({
   totalPayment,
   totalIncome,
+  totalOverallIncome,
   lastPaymentDate,
   successfulTransactions,
   paymentsDetails,
+  totalProductIncome,
 }) {
+
   return (
     <CashierSidebar header={'Office'}>
       <Head title='Office' />
@@ -36,7 +37,31 @@ export default function Office({
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
+              {totalOverallIncome}
+                </div>
+              <p className="text-xs text-muted-foreground">+20.1% from last month</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">Total Pemasukan Screening</CardTitle>
+              <ArrowUpRight className="h-4 w-4 text-green-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
               {totalIncome}
+                </div>
+              <p className="text-xs text-muted-foreground">+20.1% from last month</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">Total Pemasukan Produk</CardTitle>
+              <ArrowUpRight className="h-4 w-4 text-green-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+              {totalProductIncome}
                 </div>
               <p className="text-xs text-muted-foreground">+20.1% from last month</p>
             </CardContent>
@@ -50,19 +75,6 @@ export default function Office({
             <CardContent>
               <div className="text-2xl font-bold">{lastPaymentDate}</div>
               <p className="text-xs text-muted-foreground">Last recorded payment</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Saldo</CardTitle>
-              <DollarSign className="h-4 w-4 text-yellow-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {totalIncome}
-              </div>
-              <p className="text-xs text-muted-foreground">Current balance</p>
             </CardContent>
           </Card>
 
@@ -92,15 +104,21 @@ export default function Office({
               <CardContent>
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium">Total Pemasukan</span>
+                    <span className="text-sm font-medium">Total Pemasukan Screening</span>
                     <span className="text-sm font-bold text-green-600">
                     {totalPayment}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-medium">Total Pemasukan Produk</span>
+                    <span className="text-sm font-bold text-green-600">
+                    {totalProductIncome}
                     </span>
                   </div>
                   <div className="flex justify-between items-center pt-2 border-t">
                     <span className="text-sm font-medium">Saldo</span>
                     <span className="text-sm font-bold">
-                    {totalIncome}
+                    {totalOverallIncome}
                     </span>
                   </div>
                 </div>

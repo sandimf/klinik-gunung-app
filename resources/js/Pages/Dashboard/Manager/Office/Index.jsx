@@ -1,30 +1,31 @@
+import { v4 as uuidv4 } from 'uuid';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/Components/ui/tabs"
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card"
 import { Button } from "@/Components/ui/button"
-import { ArrowUpRight, DollarSign, Activity, CalendarCheck, CreditCard, Printer, BarChart3 } from 'lucide-react'
+import { ArrowUpRight, DollarSign, Activity, CalendarCheck, CreditCard, Users, BarChart3 } from 'lucide-react'
 import { ScrollArea } from "@/Components/ui/scroll-area"
 import ManagerSidebar from "@/Layouts/Dashboard/ManagerSidebarLayout"
 import {Avatar, AvatarFallback,AvatarImage} from "@/Components/ui/avatar"
-import { Head} from "@inertiajs/react";
+import { Head } from '@inertiajs/react';
 
 export default function Office({
+  totalPayment,
   totalIncome,
+  totalOverallIncome,
   lastPaymentDate,
   successfulTransactions,
   paymentsDetails,
-  totalMedicineIncome
+  totalProductIncome,
 }) {
+
   return (
     <ManagerSidebar header={'Office'}>
-        <Head title="Office" />
+      <Head title='Office' />
       <div className="container mx-auto p-6 space-y-8">
         <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold">Office Klinik</h1>
-          <a href={route('manager.office.pdf')}>
-          <Button>
-            <Printer/>
-            Generate Report
-        </Button>
+          <h1 className="text-3xl font-bold">Office Klinik Gunung</h1>
+          <a href={route('cashier.pdf.office')}>
+          <Button>Generate Report</Button>
           </a>
         </div>
 
@@ -36,23 +37,32 @@ export default function Office({
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-              {totalIncome}
-              </div>
+              {totalOverallIncome}
+                </div>
               <p className="text-xs text-muted-foreground">+20.1% from last month</p>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Total Pemasukan Dari Obat</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">Total Pemasukan Screening</CardTitle>
               <ArrowUpRight className="h-4 w-4 text-green-500" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {new Intl.NumberFormat("id-ID", {
-                  style: "currency",
-                  currency: "IDR",
-                }).format(totalMedicineIncome)}
-              </div>
+              {totalIncome}
+                </div>
+              <p className="text-xs text-muted-foreground">+20.1% from last month</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">Total Pemasukan Produk</CardTitle>
+              <ArrowUpRight className="h-4 w-4 text-green-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+              {totalProductIncome}
+                </div>
               <p className="text-xs text-muted-foreground">+20.1% from last month</p>
             </CardContent>
           </Card>
@@ -65,19 +75,6 @@ export default function Office({
             <CardContent>
               <div className="text-2xl font-bold">{lastPaymentDate}</div>
               <p className="text-xs text-muted-foreground">Last recorded payment</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Saldo</CardTitle>
-              <DollarSign className="h-4 w-4 text-yellow-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {totalIncome}
-              </div>
-              <p className="text-xs text-muted-foreground">Current balance</p>
             </CardContent>
           </Card>
 
@@ -107,16 +104,21 @@ export default function Office({
               <CardContent>
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium">Total Pemasukan</span>
+                    <span className="text-sm font-medium">Total Pemasukan Screening</span>
                     <span className="text-sm font-bold text-green-600">
-                    {totalIncome}
+                    {totalPayment}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-medium">Total Pemasukan Produk</span>
+                    <span className="text-sm font-bold text-green-600">
+                    {totalProductIncome}
                     </span>
                   </div>
                   <div className="flex justify-between items-center pt-2 border-t">
                     <span className="text-sm font-medium">Saldo</span>
                     <span className="text-sm font-bold">
-                    {totalIncome}
-
+                    {totalOverallIncome}
                     </span>
                   </div>
                 </div>
@@ -133,7 +135,7 @@ export default function Office({
                 <ScrollArea className="h-[400px]">
                   <div className="space-y-6">
                     {paymentsDetails.map((payment) => (
-                      <div key={payment.id} className="flex items-center space-x-4 rounded-lg border p-4">
+                      <div key={uuidv4()} className="flex items-center space-x-4 rounded-lg border p-4">
                         <Avatar className="h-10 w-10">
                         <AvatarImage
                             src={
@@ -141,7 +143,7 @@ export default function Office({
                                     ? payment.patient_avatar.startsWith("http")
                                         ? payment.patient_avatar
                                         : `/storage/${payment.patient_avatar}`
-                                    : "/storage/avatar/svg"
+                                    : "/storage/avatar/avatar.svg"
                             }
                             alt={payment.patient_name || "Klinik gunung"}
                         />
@@ -152,7 +154,7 @@ export default function Office({
                         <div className="flex-1 space-y-1">
                           <p className="text-sm font-medium leading-none">{payment.patient_name}</p>
                           <p className="text-sm text-muted-foreground">{payment.medicine_details}</p>
-                          <p className="text-xs text-muted-foreground">Quantity: {payment.quantity_details}</p>
+                          <p className="text-xs text-muted-foreground">{payment.quantity_details}</p>
                         </div>
                         <div className="text-right">
                           <p className="text-sm font-medium">

@@ -21,7 +21,6 @@ class PurchaseController extends Controller
         ]);
     }
 
-
     public function store(Request $request)
     {
         // Validasi input
@@ -92,8 +91,6 @@ class PurchaseController extends Controller
         }
     }
     
-    
-
     public function history()
     {
         // Ambil transaksi dan termasuk detail items terkait

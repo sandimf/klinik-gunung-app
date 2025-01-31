@@ -12,15 +12,24 @@ import {
 import { Button } from "@/Components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
 import { Printer } from "lucide-react";
+import { Badge } from "@/Components/ui/badge";
 
-export default function Report({ totalPatients, sickPatientsCount, patients, healthyPatientsCount,needPatientsCount }) {
+export default function Report({
+    totalPatients,
+    sickPatientsCount,
+    patients,
+    healthyPatientsCount,
+    needPatientsCount,
+}) {
     const user = usePage().props.auth.user;
     return (
         <Sidebar header={"Laporan"}>
             <Head title="Laporan Paramedis" />
             <div className="p-6">
                 <div className="flex justify-between items-center mb-6 no-print">
-                    <h1 className="text-2xl font-bold">Laporan Pemeriksaan, {user.name}.</h1>
+                    <h1 className="text-2xl font-bold">
+                        Laporan Pemeriksaan, {user.name}.
+                    </h1>
                     <a href={route("pdf.self.paramedis")}>
                         <Button variant="outline">
                             <Printer className="mr-2 h-4 w-4" /> Download PDF
@@ -99,15 +108,17 @@ export default function Report({ totalPatients, sickPatientsCount, patients, hea
                                         {patient.date_of_birth}
                                     </TableCell>
                                     <TableCell>
-                                        {patient.health_status === "healthy"
-                                            ? "Sehat"
-                                            : patient.health_status ===
-                                              "butuh_dokter"
-                                            ? "Membutuhkan Dokter"
-                                            : patient.health_status ===
-                                              "butuh_pendamping"
-                                            ? "Membutuhkan Pendamping"
-                                            : "Status Tidak Diketahui"}
+                                        <Badge>
+                                            {patient.health_status === "healthy"
+                                                ? "Sehat"
+                                                : patient.health_status ===
+                                                  "butuh_dokter"
+                                                ? "Membutuhkan Dokter"
+                                                : patient.health_status ===
+                                                  "butuh_pendamping"
+                                                ? "Membutuhkan Pendamping"
+                                                : "Status Tidak Diketahui"}
+                                        </Badge>
                                     </TableCell>
 
                                     <TableCell>

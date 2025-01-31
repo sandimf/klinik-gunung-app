@@ -146,7 +146,7 @@ export default function Component({ social, status, canResetPassword = true }) {
                     </CardContent>
                 </Card>
                 <div className="absolute bottom-0 right-0 text-xs text-gray-500 -mb-6">
-                    v1.0.0
+                    v0.1
                 </div>
             </div>
         </AuthLayout>

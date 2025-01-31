@@ -9,7 +9,7 @@ export default function Index() {
         <ParamedisSidebar header={'Dashboard Paremdis'}>
             <Head title='Dashboard Paramedis'/>
         <div>
-            <h1>Welcome to my app {user.name}</h1>
+            <h1>Selamat Datang di Dashboard Paramedis, {user.name} 👋</h1>
         </div>
         </ParamedisSidebar>
     );

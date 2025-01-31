@@ -30,29 +30,7 @@ export default function Report({ patients,totalTransactions,totalPayment }) {
                 </div>
 
                 <div className="space-y-6 no-print">
-                    <div className="grid grid-cols-3 gap-4">
-                        <Card>
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">
-                                    Total Transaksi
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-2xl font-bold">{totalTransactions}</div>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">
-                                    Total Pemasukan
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-2xl font-bold">{totalPayment}</div>
-                            </CardContent>
-                        </Card>
-                        
-                    </div>
+ 
 
                     <Table>
                         <TableHeader>

@@ -23,7 +23,10 @@ export default function Product({ transactions }) {
         )
     );
     const formatCurrency = (value) => {
-        return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(value);
+        return new Intl.NumberFormat("id-ID", {
+            style: "currency",
+            currency: "IDR",
+        }).format(value);
     };
 
     useFlashToast();
@@ -43,6 +46,7 @@ export default function Product({ transactions }) {
                     <TableRow>
                         <TableHead>Nomor Transaksi</TableHead>
                         <TableHead>Produk Di Beli</TableHead>
+                        <TableHead>Metode Pembayaran</TableHead>
                         <TableHead>Bukti Pembayaran</TableHead>
                         <TableHead>Total Pembayaran</TableHead>
                     </TableRow>
@@ -54,25 +58,28 @@ export default function Product({ transactions }) {
                                 {transaction.no_transaction}
                             </TableCell>
                             <TableCell className="font-medium">
-                {/* Menampilkan semua product_name dalam items_details */}
-                {transaction.items_details.map(item => (
-                    <div key={item.item_id}>{item.product_name}</div>
-                ))}
+                                {transaction.items_details.map((item) => (
+                                    <div key={item.item_id}>
+                                        {item.product_name}
+                                    </div>
+                                ))}
                             </TableCell>
                             <TableCell className="font-medium">
                                 {transaction.payment_method}
                             </TableCell>
                             <TableCell className="font-medium">
-                                {transaction.payment_proof || '-'}
+                                {transaction.payment_proof || "-"}
                             </TableCell>
-                            <TableCell>{formatCurrency(parseFloat(transaction.total_price))}</TableCell>
                             <TableCell>
+                                {formatCurrency(
+                                    parseFloat(transaction.total_price)
+                                )}
                             </TableCell>
+                            <TableCell></TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
             </Table>
-
         </CashierSidebar>
     );
 }

@@ -226,26 +226,30 @@ class ParamedisReportController extends Controller
     public function generatePDFself()
     {
         $userId = Auth::id();
-
+    
         // Cari paramedis berdasarkan user ID
         $paramedis = Paramedis::where('user_id', $userId)->first();
-
+    
         // Pastikan paramedis ditemukan
         if (! $paramedis) {
             return back()->withErrors('Paramedis tidak ditemukan');
         }
-
+    
         // Ambil data pemeriksaan fisik yang dilakukan oleh paramedis ini
-        $examinations = PhysicalExamination::with('patient') // Ambil data pasien terkait
+        $examinations = PhysicalExamination::with('patient')
             ->where('paramedis_id', $paramedis->id)
             ->get();
-
+    
         // Hitung total jumlah pasien yang diperiksa
         $totalPatients = $examinations->count();
+    
 
         // Hitung jumlah pasien yang sakit
-        $sickPatientsCount = $examinations->where('health_status', 'butuh_dokter')->count();
-
+        $healthCounts = $examinations->groupBy('health_status')->map->count();
+        $sickPatientsCount = $healthCounts->get('butuh_dokter', 0);
+        $needPatientsCount = $healthCounts->get('butuh_pendamping', 0);
+        $healthyPatientsCount = $healthCounts->get('healthy', 0);
+    
         // Ambil nama-nama pasien
         $patients = $examinations->map(function ($examination) {
             return [
@@ -256,18 +260,25 @@ class ParamedisReportController extends Controller
                 'gender' => $examination->patient->gender,
             ];
         });
-
-        // Menyusun data yang akan dikirim ke view untuk PDF
+    
+        // Menyusun data untuk view PDF
         $data = [
             'patients' => $patients,
             'totalPatients' => $totalPatients,
             'sickPatientsCount' => $sickPatientsCount,
+            'needPatientsCount' => $needPatientsCount,
+            'healthyPatientsCount' => $healthyPatientsCount
         ];
-
-        // Load view dengan data untuk di-render menjadi PDF
+    
+        // Load view dengan data
         $pdf = PDF::loadView('pdf.activity.paramedis.self', $data);
-
-        // Download PDF
-        return $pdf->download('my_report.pdf');
+    
+        // Format nama file PDF
+        $paramedisName = str_replace(' ', '_', $paramedis->name); // Ganti spasi dengan underscore
+        $date = now()->format('Y-m-d'); // Format tanggal hari ini
+        $fileName = "{$paramedisName}_{$date}.pdf";
+    
+        // Download PDF dengan nama file yang sesuai
+        return $pdf->download($fileName);
     }
 }

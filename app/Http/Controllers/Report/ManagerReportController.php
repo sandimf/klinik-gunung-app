@@ -2,30 +2,52 @@
 
 namespace App\Http\Controllers\Report;
 
-use App\Http\Controllers\Controller;
-use App\Models\Clinic\PhysicalExamination;
-use App\Models\Payments;
-use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Support\Carbon;
 use Inertia\Inertia;
+use App\Models\Payments;
+use Illuminate\Support\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Request;
+use App\Models\Clinic\PhysicalExamination;
 
 class ManagerReportController extends Controller
 {
     public function index()
     {
-        // Ambil semua data pemeriksaan fisik dan relasi dengan pasien serta paramedis
-        $examinations = PhysicalExamination::with(['patient', 'paramedis'])->get();
-
-        // Hitung total jumlah pasien yang diperiksa
+        $filter = Request::input('filter', 'all');
+        $startDate = null;
+        $endDate = null;
+    
+        switch ($filter) {
+            case 'daily':
+                $startDate = Carbon::today();
+                $endDate = Carbon::tomorrow();
+                break;
+            case 'weekly':
+                $startDate = Carbon::now()->startOfWeek();
+                $endDate = Carbon::now()->endOfWeek();
+                break;
+            case 'monthly':
+                $startDate = Carbon::now()->startOfMonth();
+                $endDate = Carbon::now()->endOfMonth();
+                break;
+        }
+    
+        $query = PhysicalExamination::with(['patient', 'paramedis']);
+    
+        if ($startDate && $endDate) {
+            $query->whereBetween('created_at', [$startDate, $endDate]);
+        }
+    
+        $examinations = $query->get();
+    
+        // Rest of your code remains the same
         $totalPatients = $examinations->count();
-
-        // Hitung jumlah pasien yang sakit
         $sickPatientsCount = $examinations->where('health_status', 'butuh_dokter')->count();
-
-        // Hitung total jumlah paramedis yang terlibat
+        $needPatientsCount = $examinations->where('health_status', 'butuh_pendamping')->count();
+        $healthyPatientsCount = $examinations->where('health_status', 'healthy')->count();
         $totalParamedis = $examinations->pluck('paramedis_id')->unique()->count();
-
-        // Ambil nama-nama pasien beserta paramedis yang memeriksa
+    
         $patients = $examinations->map(function ($examination) {
             return [
                 'id' => $examination->patient->id,
@@ -33,16 +55,19 @@ class ManagerReportController extends Controller
                 'health_status' => $examination->health_status,
                 'date_of_birth' => $examination->patient->date_of_birth,
                 'gender' => $examination->patient->gender,
-                'examined_by' => $examination->paramedis->name ?? 'Tidak Diketahui', // Nama paramedis
+                'examined_by' => $examination->paramedis->name ?? 'Tidak Diketahui',
+                'examined_at' => $examination->created_at->format('Y-m-d H:i:s'),
             ];
         });
-
-        // Kirim data ke frontend
+    
         return Inertia::render('Dashboard/Manager/Screenings/Index', [
             'patients' => $patients,
             'totalPatients' => $totalPatients,
             'sickPatientsCount' => $sickPatientsCount,
-            'totalParamedis' => $totalParamedis, // Menambahkan jumlah paramedis
+            'totalParamedis' => $totalParamedis,
+            'needPatientsCount' => $needPatientsCount,
+            'healthyPatientsCount' => $healthyPatientsCount,
+            'currentFilter' => $filter,
         ]);
     }
 

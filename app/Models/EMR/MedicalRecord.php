@@ -2,10 +2,11 @@
 
 namespace App\Models\EMR;
 
-use App\Models\Clinic\PhysicalExamination;
+use Illuminate\Support\Str;
 use App\Models\Users\Patients;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Clinic\PhysicalExamination;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class MedicalRecord extends Model
 {
@@ -14,7 +15,7 @@ class MedicalRecord extends Model
     protected $table = 'medical_records';
 
     protected $fillable = [
-        'patient_id', 'physical_examination_id', 'medical_record_number',
+        'uuid','patient_id', 'physical_examination_id', 'medical_record_number',
     ];
 
     // Relasi ke model Patient
@@ -50,4 +51,16 @@ class MedicalRecord extends Model
 
     //     return 'MR' . str_pad($newNumber, 4, '0', STR_PAD_LEFT); // Format nomor: MR0001, MR0002, dst.
     // }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Secara otomatis menghasilkan UUID saat data dibuat
+        static::creating(function ($model) {
+            if (empty($model->uuid)) {
+                $model->uuid = (string) Str::uuid();
+            }
+        });
+    }
 }

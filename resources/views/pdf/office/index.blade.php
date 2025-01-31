@@ -8,7 +8,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 0;
+            margin: 20px;
             padding: 0;
         }
         table {
@@ -23,15 +23,16 @@
             padding: 8px;
             text-align: left;
         }
-        h2, h3 {
+        h2, h3, h4 {
             text-align: center;
         }
     </style>
 </head>
 <body>
-    <h2>Laporan Pembayaran Klinik Gunung</h2>
-    <h3>Total Pemasukan: Rp {{ number_format($totalIncome, 0, ',', '.') }}</h3>
-    <h3>Total Pemasukan dari Pembelian Obat: Rp {{ number_format($totalMedicineIncome, 0, ',', '.') }}</h3>
+    <h2>Laporan Keuangan Klinik Gunung</h2>
+    <h3>Total Pemasukan Pembayaran Screening: Rp {{ $totalIncome}}</h3>
+    <h3>Total Pemasukan dari Produk: Rp {{$totalProductIncome}}</h3>
+    <h2><strong>Total Keseluruhan: Rp {{$totalOverallIncome}}</strong></h2>
     <h4>Jumlah Transaksi Berhasil: {{ $successfulTransactions }}</h4>
     <h4>Tanggal Pembayaran Terbaru: {{ $lastPaymentDate }}</h4>
 
@@ -39,9 +40,9 @@
         <thead>
             <tr>
                 <th>Nama Pasien</th>
-                <th>Obat</th>
-                <th>Jumlah Obat</th>
-                <th>Pemasukan Obat</th>
+                <th>Obat / Produk</th>
+                <th>Jumlah</th>
+                <th>Pemasukan dari Produk</th>
                 <th>Pembayaran Screening</th>
                 <th>Tanggal</th>
             </tr>

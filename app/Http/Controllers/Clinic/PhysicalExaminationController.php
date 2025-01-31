@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers\Clinic;
 
+use Inertia\Inertia;
+use Illuminate\Http\Request;
+use App\Models\Users\Patients;
+use App\Models\EMR\MedicalRecord;
 use App\Http\Controllers\Controller;
+use App\Jobs\SyncPatientsToAirtable;
+use Illuminate\Support\Facades\Auth;
 use App\Jobs\SendScreeningNotification;
 use App\Models\Clinic\PhysicalExamination;
 use App\Models\Clinic\PhysicalExaminationOnline;
-use App\Models\EMR\MedicalRecord;
-use App\Models\Users\Patients;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Inertia\Inertia;
 
 class PhysicalExaminationController extends Controller
 {
@@ -77,6 +78,8 @@ class PhysicalExaminationController extends Controller
         // Dispatch a notification
         SendScreeningNotification::dispatch($patient);
 
+        SyncPatientsToAirtable::dispatch();
+        
         return back()->with('message', 'Pemeriksaan Fisik Berhasil Berhasil di Simpan!');
     }
 

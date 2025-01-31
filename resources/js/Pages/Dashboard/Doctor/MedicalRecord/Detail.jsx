@@ -4,23 +4,32 @@ import { Button } from "@/Components/ui/button";
 import {
     Card,
     CardContent,
-    CardFooter,
     CardHeader,
     CardTitle,
 } from "@/Components/ui/card";
 import { Separator } from "@/Components/ui/separator";
 import { CalendarDays, FileText, Phone, MapPin } from "lucide-react";
 import DoctorSidebar from "@/Layouts/Dashboard/DoctorSidebarLayout";
+import { Head } from "@inertiajs/react";
 
 export default function MedicalRecordDetail({ medicalRecord }) {
     return (
-        <DoctorSidebar>
+        <DoctorSidebar header={`Medical Record ${medicalRecord.patient?.name}`}>
+            <Head title="Medical Record"/>
             <Card>
                 <CardHeader className="flex flex-row items-center gap-4">
-                    <Avatar className="w-20 h-20">
+                    <Avatar className="h-8 w-8 rounded-lg">
                         <AvatarImage
-                            src={`https://api.dicebear.com/6.x/initials/svg?seed=${medicalRecord.patient?.name}`}
-                            alt={medicalRecord.patient?.name}
+                            src={
+                                medicalRecord.patient?.user?.avatar
+                                    ? medicalRecord.patient?.user.avatar.startsWith(
+                                          "http"
+                                      )
+                                        ? medicalRecord.patient.user.avatar
+                                        : `/storage/${user.avatar}`
+                                    : "/storage/avatar/avatar.svg"
+                            }
+                            alt={medicalRecord.patient.name || "Klinik gunung"}
                         />
                         <AvatarFallback>
                             {medicalRecord.patient?.name
@@ -69,24 +78,21 @@ export default function MedicalRecordDetail({ medicalRecord }) {
                                 <p className="text-sm text-muted-foreground">
                                     Nama
                                 </p>
-                                <p>
-                                    {medicalRecord.patient?.name || "N/A"}
-                                </p>
+                                <p>{medicalRecord.patient?.name || "N/A"}</p>
                             </div>
                             <div>
                                 <p className="text-sm text-muted-foreground">
                                     NIK
                                 </p>
-                                <p>
-                                    {medicalRecord.patient?.nik}
-                                </p>
+                                <p>{medicalRecord.patient?.nik}</p>
                             </div>
                             <div>
                                 <p className="text-sm text-muted-foreground">
                                     Tempat Lahir
                                 </p>
                                 <p>
-                                    {medicalRecord.patient.place_of_birth || "N/A"}
+                                    {medicalRecord.patient.place_of_birth ||
+                                        "N/A"}
                                 </p>
                             </div>
                             <div>
@@ -94,9 +100,12 @@ export default function MedicalRecordDetail({ medicalRecord }) {
                                     Alamat
                                 </p>
                                 <p>
-                                    RT/RW: {medicalRecord.patient?.rt_rw || "N/A"}, {" "}
-                                    Kel/Desa: {medicalRecord.patient?.village || "N/A"}, {" "}
-                                    Kecamatan:{medicalRecord.patient?.district || "N/A"}
+                                    RT/RW:{" "}
+                                    {medicalRecord.patient?.rt_rw || "N/A"},{" "}
+                                    Kel/Desa:{" "}
+                                    {medicalRecord.patient?.village || "N/A"},{" "}
+                                    Kecamatan:
+                                    {medicalRecord.patient?.district || "N/A"}
                                 </p>
                             </div>
                             <div>
@@ -112,7 +121,8 @@ export default function MedicalRecordDetail({ medicalRecord }) {
                                     Status Perkawinan
                                 </p>
                                 <div className="flex gap-1 flex-wrap">
-                                    {medicalRecord.patient?.marital_status || "N/A"}
+                                    {medicalRecord.patient?.marital_status ||
+                                        "N/A"}
                                 </div>
                             </div>
                             <div>
@@ -128,7 +138,8 @@ export default function MedicalRecordDetail({ medicalRecord }) {
                                     Kewarganegaraan
                                 </p>
                                 <div className="flex gap-1 flex-wrap">
-                                    {medicalRecord.patient?.nationality || "N/A"}
+                                    {medicalRecord.patient?.nationality ||
+                                        "N/A"}
                                 </div>
                             </div>
                         </div>
@@ -200,24 +211,7 @@ export default function MedicalRecordDetail({ medicalRecord }) {
                     {/* Informasi Pasien */}
 
                     <Separator />
-
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                            <CalendarDays className="w-4 h-4 text-muted-foreground" />
-                            <span>Next Appointment</span>
-                        </div>
-                        <Button variant="outline" size="sm">
-                            Reschedule
-                        </Button>
-                    </div>
                 </CardContent>
-                <CardFooter className="justify-between">
-                    <Button variant="outline">
-                        <FileText className="w-4 h-4 mr-2" />
-                        Full Medical History
-                    </Button>
-                    <Button>Edit Record</Button>
-                </CardFooter>
             </Card>
         </DoctorSidebar>
     );

@@ -116,7 +116,7 @@ const ScreeningOfflineIndex = ({ screenings = [] }) => {
                                         {screening.answers[0]?.isOnline === 1 ? 'Online' : 'Offline'}
                                     </TableCell>
                                     <TableCell>
-                                        <Badge>{screening.screening_status}</Badge>
+                                        <Badge>{screening.screening_status === 'Completed' ? 'Selesai' : screening.screening_status}</Badge>
                                     </TableCell>
                                 </TableRow>
                             ))}

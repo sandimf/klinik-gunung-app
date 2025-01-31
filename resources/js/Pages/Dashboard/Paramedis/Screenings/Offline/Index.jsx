@@ -73,7 +73,7 @@ const ScreeningOfflineIndex = ({ screenings = [] }) => {
     }, [flash.message]);
 
     return (
-        <ParamedisSidebar header={"Daftar Screening Offline"}>
+        <ParamedisSidebar header={"Daftar Screening"}>
             <Head title="Screening Offline" />
             <Toaster position='top-center' />
 
@@ -89,19 +89,7 @@ const ScreeningOfflineIndex = ({ screenings = [] }) => {
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className="max-w-sm"
                         />
-                        <Select
-                            value={selectedType}
-                            onValueChange={setSelectedType}
-                        >
-                            <SelectTrigger className="max-w-[180px]">
-                                <SelectValue placeholder="Pilih tipe screening" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all">Semua</SelectItem>
-                            </SelectContent>
-                        </Select>
                     </div>
-
                     <Table>
                         <TableHeader>
                             <TableRow>
