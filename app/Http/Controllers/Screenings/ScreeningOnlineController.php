@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers\Screenings;
 
-use Carbon\Carbon;
-use Inertia\Inertia;
-use Illuminate\Http\Request;
-use Barryvdh\DomPDF\Facade\Pdf;
-use App\Jobs\SendScreeningOnline;
 use App\Http\Controllers\Controller;
-use App\Models\Users\PatientsOnline;
-use Illuminate\Support\Facades\Auth;
+use App\Jobs\SendScreeningOnline;
 use App\Models\Screenings\ScreeningOnlineAnswers;
 use App\Models\Screenings\ScreeningOnlineQuestions;
+use App\Models\Users\PatientsOnline;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class ScreeningOnlineController extends Controller
 {
@@ -35,10 +35,10 @@ class ScreeningOnlineController extends Controller
             ->where('user_id', $userId)
             ->orderBy('created_at', 'desc')
             ->first();
-        
-            if ($screening) {
-                $screening->formatted_created_at = Carbon::parse($screening->created_at)->translatedFormat('d F Y');
-            }
+
+        if ($screening) {
+            $screening->formatted_created_at = Carbon::parse($screening->created_at)->translatedFormat('d F Y');
+        }
 
         return Inertia::render('Dashboard/Patients/Screenings/Online/Index', [
             'screening' => $screening,
@@ -180,7 +180,7 @@ class ScreeningOnlineController extends Controller
         ]);
 
         // Pastikan nama file aman
-        $fileName = 'screening_detail_' . $patientName . '.pdf';
+        $fileName = 'screening_detail_'.$patientName.'.pdf';
 
         // Kembalikan file PDF untuk diunduh
         return $pdf->download($fileName);

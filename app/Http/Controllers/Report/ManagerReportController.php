@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Report;
 
-use Inertia\Inertia;
-use App\Models\Payments;
-use Illuminate\Support\Carbon;
-use Barryvdh\DomPDF\Facade\Pdf;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Request;
 use App\Models\Clinic\PhysicalExamination;
+use App\Models\Payments;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Request;
+use Inertia\Inertia;
 
 class ManagerReportController extends Controller
 {
@@ -17,7 +17,7 @@ class ManagerReportController extends Controller
         $filter = Request::input('filter', 'all');
         $startDate = null;
         $endDate = null;
-    
+
         switch ($filter) {
             case 'daily':
                 $startDate = Carbon::today();
@@ -32,22 +32,22 @@ class ManagerReportController extends Controller
                 $endDate = Carbon::now()->endOfMonth();
                 break;
         }
-    
+
         $query = PhysicalExamination::with(['patient', 'paramedis']);
-    
+
         if ($startDate && $endDate) {
             $query->whereBetween('created_at', [$startDate, $endDate]);
         }
-    
+
         $examinations = $query->get();
-    
+
         // Rest of your code remains the same
         $totalPatients = $examinations->count();
         $sickPatientsCount = $examinations->where('health_status', 'butuh_dokter')->count();
         $needPatientsCount = $examinations->where('health_status', 'butuh_pendamping')->count();
         $healthyPatientsCount = $examinations->where('health_status', 'healthy')->count();
         $totalParamedis = $examinations->pluck('paramedis_id')->unique()->count();
-    
+
         $patients = $examinations->map(function ($examination) {
             return [
                 'id' => $examination->patient->id,
@@ -59,7 +59,7 @@ class ManagerReportController extends Controller
                 'examined_at' => $examination->created_at->format('Y-m-d H:i:s'),
             ];
         });
-    
+
         return Inertia::render('Dashboard/Manager/Screenings/Index', [
             'patients' => $patients,
             'totalPatients' => $totalPatients,

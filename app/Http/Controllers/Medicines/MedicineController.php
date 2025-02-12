@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers\Medicines;
 
-use Inertia\Inertia;
-use Illuminate\Http\Request;
-use App\Imports\MedicineImport;
-use App\Models\Medicines\Medicine;
-use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
-use Maatwebsite\Excel\Facades\Excel;
-use Illuminate\Support\Facades\Cache;
-use App\Models\Medicines\MedicineBatch;
-use App\Models\Medicines\MedicinePricing;
 use App\Http\Requests\Medicines\StoreMedicineRequest;
 use App\Http\Requests\Medicines\UpdateMedicineRequest;
+use App\Imports\MedicineImport;
+use App\Models\Medicines\Medicine;
+use App\Models\Medicines\MedicineBatch;
+use App\Models\Medicines\MedicinePricing;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
+use Inertia\Inertia;
+use Maatwebsite\Excel\Facades\Excel;
 
 class MedicineController extends Controller
 {
@@ -39,8 +39,9 @@ class MedicineController extends Controller
      */
     public function create()
     {
-        return Inertia::render("Dashboard/Cashier/Apotek/Import");
+        return Inertia::render('Dashboard/Cashier/Apotek/Import');
     }
+
     public function importCombined(Request $request)
     {
         $request->validate([
@@ -52,10 +53,11 @@ class MedicineController extends Controller
 
             return redirect()->back()->with('message', 'Data berhasil diimport.');
         } catch (\Exception $e) {
-            Log::error('Import Error: ' . $e->getMessage());
+            Log::error('Import Error: '.$e->getMessage());
+
             return redirect()->back()->with('error', 'Gagal mengimport data. Periksa log untuk detailnya.');
         }
-        
+
     }
 
     /**

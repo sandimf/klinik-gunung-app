@@ -31,6 +31,7 @@ class Medicine extends Model
         return $this->belongsToMany(Patients::class, 'medicine_patient', 'medicine_id', 'patient_id')
             ->withPivot('quantity');
     }
+
     public function deductStock($quantity)
     {
         $this->quantity -= $quantity;

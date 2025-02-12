@@ -50,7 +50,6 @@ export default function Layout({
             </div>
             <div className="flex items-center space-x-4">
               <ModeToggle/>
-              {/* <NotificationButton /> */}
               <ProfileButton />
             </div>
           </header>

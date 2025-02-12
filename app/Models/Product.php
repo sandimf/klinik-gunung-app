@@ -11,7 +11,6 @@ class Product extends Model
 
     protected $fillable = ['name', 'price', 'stock'];
 
-
     public function transactions()
     {
         return $this->hasMany(Transaction::class, 'item_id');

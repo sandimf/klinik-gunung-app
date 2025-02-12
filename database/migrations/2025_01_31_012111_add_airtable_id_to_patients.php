@@ -15,7 +15,7 @@ return new class extends Migration
             $table->string('airtable_id')->nullable()->after('payment_status');
         });
     }
-    
+
     public function down()
     {
         Schema::table('patients', function (Blueprint $table) {

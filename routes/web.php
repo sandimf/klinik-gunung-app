@@ -1,51 +1,50 @@
 <?php
 
-use Inertia\Inertia;
-use Illuminate\Support\Facades\Route;
-use Illuminate\Foundation\Application;
-use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AI\ApikeyController;
-use App\Http\Controllers\Data\QrcodeController;
-use App\Http\Controllers\Users\AdminController;
-use App\Http\Controllers\Users\DoctorController;
+use App\Http\Controllers\Appointments\AppointmentController;
+use App\Http\Controllers\Appointments\AppointmentDoctorController;
 use App\Http\Controllers\Auth\ProviderController;
-use App\Http\Controllers\Clinic\OfficeController;
-use App\Http\Controllers\Pdf\CustomPdfController;
-use App\Http\Controllers\Users\CashierController;
-use App\Http\Controllers\Users\ManagerController;
-use App\Http\Controllers\Backup\AirtableController;
-use App\Http\Controllers\Product\ProductController;
-use App\Http\Controllers\Users\ParamedisController;
-use App\Http\Controllers\Users\WarehouseController;
-use App\Http\Controllers\Screenings\GuestController;
-use App\Http\Controllers\Consultation\BodyController;
-use App\Http\Controllers\Data\PatientsDataController;
-use App\Http\Controllers\Payments\PaymentsController;
-use App\Http\Controllers\Medicines\MedicineController;
-use App\Http\Controllers\Community\CommunityController;
+use App\Http\Controllers\Clinic\ManagementStaffController;
+use App\Http\Controllers\Clinic\MedicalPersonnelController;
 use App\Http\Controllers\Clinic\MedicalRecordController;
+use App\Http\Controllers\Clinic\OfficeController;
+use App\Http\Controllers\Clinic\PhysicalExaminationController;
+use App\Http\Controllers\Clinic\PhysicalExaminationOnlineController;
+use App\Http\Controllers\Community\CommunityController;
+use App\Http\Controllers\Community\CreateAccountController;
+use App\Http\Controllers\Community\ProfileAccountController;
+use App\Http\Controllers\Consultation\BodyController;
+use App\Http\Controllers\Consultation\ConsultationController;
 use App\Http\Controllers\Dashboard\AdminPanelController;
+use App\Http\Controllers\Dashboard\ManagerPanelController;
+use App\Http\Controllers\Dashboard\PatientsPanelController;
+use App\Http\Controllers\Data\PatientsDataController;
+use App\Http\Controllers\Data\QrcodeController;
+use App\Http\Controllers\Emergency\EmergencyContactController;
+use App\Http\Controllers\Medicines\MedicineController;
+use App\Http\Controllers\Payments\PaymentsController;
+use App\Http\Controllers\Payments\PaymentsOnlineController;
+use App\Http\Controllers\Pdf\CustomPdfController;
+use App\Http\Controllers\Product\ProductController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Questioner\QuestionerController;
+use App\Http\Controllers\Questioner\QuestionerOnlineController;
 use App\Http\Controllers\Report\CashierReportController;
 use App\Http\Controllers\Report\ManagerReportController;
-use App\Http\Controllers\Transaction\PurchaseController;
-use App\Http\Controllers\Questioner\QuestionerController;
-use App\Http\Controllers\Clinic\ManagementStaffController;
-use App\Http\Controllers\Dashboard\ManagerPanelController;
 use App\Http\Controllers\Report\ParamedisReportController;
-use App\Http\Controllers\Clinic\MedicalPersonnelController;
-use App\Http\Controllers\Community\CreateAccountController;
-use App\Http\Controllers\Dashboard\PatientsPanelController;
-use App\Http\Controllers\Payments\PaymentsOnlineController;
-use App\Http\Controllers\Appointments\AppointmentController;
-use App\Http\Controllers\Community\ProfileAccountController;
-use App\Http\Controllers\Consultation\ConsultationController;
-use App\Http\Controllers\Clinic\PhysicalExaminationController;
-use App\Http\Controllers\Emergency\EmergencyContactController;
-use App\Http\Controllers\Screenings\ScreeningOnlineController;
-use App\Http\Controllers\Questioner\QuestionerOnlineController;
+use App\Http\Controllers\Screenings\GuestController;
 use App\Http\Controllers\Screenings\ScreeningOfflineController;
-use App\Http\Controllers\Appointments\AppointmentDoctorController;
-use App\Http\Controllers\Clinic\PhysicalExaminationOnlineController;
+use App\Http\Controllers\Screenings\ScreeningOnlineController;
+use App\Http\Controllers\Transaction\PurchaseController;
+use App\Http\Controllers\Users\AdminController;
+use App\Http\Controllers\Users\CashierController;
+use App\Http\Controllers\Users\DoctorController;
+use App\Http\Controllers\Users\ManagerController;
+use App\Http\Controllers\Users\ParamedisController;
+use App\Http\Controllers\Users\WarehouseController;
+use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -238,8 +237,6 @@ Route::prefix('dashboard/admin')->middleware(['auth', 'role:admin'])->group(func
     // Profile Edit
     Route::get('profile', [AdminController::class, 'profile'])->name('admin.profile');
 
-    Route::get('bakcup/airtable', [AirtableController::class, 'index'])->name('airtable.backup');
-
     // social media settings
     Route::get('auth', [AdminPanelController::class, 'AuthSetting'])->name('login.settings');
 
@@ -321,4 +318,4 @@ Route::get('auth/{provider}/callback', [ProviderController::class, 'callback']);
 Route::post('/body', [BodyController::class, 'store'])->name('body.store');
 Route::get('/body/show', [BodyController::class, 'show'])->name('body.show');
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';

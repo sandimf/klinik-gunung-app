@@ -24,7 +24,6 @@ class AppointmentController extends Controller
                 ->with('message', 'Silakan lengkapi profil pasien Anda sebelum mengakses janji temu.');
         }
 
-        // Ambil semua janji temu dengan data pasien (eager loading)
         $appointments = Appointments::with('patient')
             ->where('patient_id', $patient->id)
             ->latest('created_at')

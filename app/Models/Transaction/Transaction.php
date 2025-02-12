@@ -2,8 +2,8 @@
 
 namespace App\Models\Transaction;
 
-use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Transaction extends Model
 {

@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Users;
 
-use Inertia\Inertia;
-use Illuminate\Http\Request;
-use App\Models\Users\Patients;
 use App\Http\Controllers\Controller;
-use App\Models\Users\PatientsOnline;
 use App\Models\Screenings\ScreeningAnswers;
+use App\Models\Users\Patients;
+use App\Models\Users\PatientsOnline;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class ParamedisController extends Controller
 {
@@ -78,7 +78,7 @@ class ParamedisController extends Controller
             return [
                 'question' => $answer->question->question_text,
                 'answer' => $answer->answer_text,
-                'id'=>$answer->id,
+                'id' => $answer->id,
                 'queue' => $answer->queue, // Menambahkan nomor antrian
             ];
         });
@@ -163,12 +163,12 @@ class ParamedisController extends Controller
         $request->validate([
             'answer' => 'required|array', // Pastikan 'answer' adalah array
         ]);
-    
+
         // Loop untuk memperbarui jawaban satu per satu
         foreach ($request->answer as $answerData) {
             // Cari jawaban berdasarkan id
             $answer = ScreeningAnswers::findOrFail($id);
-            
+
             // Pastikan 'answer' ada di dalam data
             if (isset($answerData)) {
                 // Perbarui jawaban
@@ -180,12 +180,8 @@ class ParamedisController extends Controller
 
             }
         }
-    
+
         return redirect()->back()->with('message', 'Berhasil Menyimpan Jawaban');
 
-
     }
-    
-    
 }
-    

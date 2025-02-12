@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Dashboard;
 
-use App\Models\User;
-use Inertia\Inertia;
-use Illuminate\Http\Request;
-use App\Models\Auth\SocialLogin;
 use App\Http\Controllers\Controller;
+use App\Models\Auth\SocialLogin;
+use App\Models\User;
 use App\Repositories\VisitRepository;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class AdminPanelController extends Controller
 {
@@ -24,15 +24,13 @@ class AdminPanelController extends Controller
         $social = SocialLogin::firstOrCreate([], [
             'google' => false,
         ]);
-        
-    
+
         return Inertia::render('Dashboard/Admin/AuthSettings/Social', [
             'initialData' => [
                 'google' => $social->google,
             ],
         ]);
     }
-    
 
     public function updateAuth(Request $request)
     {
@@ -40,7 +38,7 @@ class AdminPanelController extends Controller
         if ($socialLogin) {
             $socialLogin->update($request->only(['google']));
         }
+
         return redirect()->back()->with('message', 'Social login settings updated successfully!');
     }
-    
 }

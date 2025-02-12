@@ -2,11 +2,11 @@
 
 namespace App\Models\EMR;
 
-use Illuminate\Support\Str;
-use App\Models\Users\Patients;
-use Illuminate\Database\Eloquent\Model;
 use App\Models\Clinic\PhysicalExamination;
+use App\Models\Users\Patients;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class MedicalRecord extends Model
 {
@@ -15,7 +15,7 @@ class MedicalRecord extends Model
     protected $table = 'medical_records';
 
     protected $fillable = [
-        'uuid','patient_id', 'physical_examination_id', 'medical_record_number',
+        'uuid', 'patient_id', 'physical_examination_id', 'medical_record_number',
     ];
 
     // Relasi ke model Patient

@@ -14,6 +14,4 @@ class Apikey extends Model
 
     // Jika tabel tidak memiliki kolom 'created_at' dan 'updated_at', matikan fitur timestamps
     public $timestamps = true;  // Jika tidak memerlukan timestamps, set ke false
-
-
 }

@@ -24,10 +24,10 @@ class ProfileUpdateRequest extends FormRequest
                 'max:2048',
                 function ($attribute, $value, $fail) {
                     $file = $value;
-                    if ($file && !getimagesize($file)) {
+                    if ($file && ! getimagesize($file)) {
                         $fail('The file is not a valid image.');
                     }
-                }
+                },
             ],
             'email' => [
                 'required',

@@ -2,14 +2,14 @@
 
 namespace App\Jobs;
 
-use Illuminate\Bus\Queueable;
 use App\Models\Users\Patients;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log; // Import Log facade
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Foundation\Bus\Dispatchable; // Import Log facade
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class SyncPatientsToAirtable implements ShouldQueue
 {
@@ -22,7 +22,7 @@ class SyncPatientsToAirtable implements ShouldQueue
         $tableName = 'tblhRve40ahLSgGdo'; // Sesuaikan dengan nama tabel di Airtable
 
         // Log untuk memulai eksekusi job
-        Log::info("Starting SyncPatientsToAirtable job.");
+        Log::info('Starting SyncPatientsToAirtable job.');
 
         // Ambil pasien yang sudah screening dan belum dikirim ke Airtable
         $patients = Patients::where('health_check_status', 'completed')
@@ -31,12 +31,13 @@ class SyncPatientsToAirtable implements ShouldQueue
             ->get();
 
         if ($patients->isEmpty()) {
-            Log::info("No patients found to sync.");
+            Log::info('No patients found to sync.');
+
             return;
         }
 
         // Log jumlah pasien yang ditemukan
-        Log::info("Found " . $patients->count() . " patients to sync.");
+        Log::info('Found '.$patients->count().' patients to sync.');
 
         // Format data untuk Airtable API
         $records = [];
@@ -60,22 +61,22 @@ class SyncPatientsToAirtable implements ShouldQueue
                     'Age' => $patient->age,
                     'Contact' => $patient->contact,
                     'Health Status' => $patient->health_status,
-                ]
+                ],
             ];
         }
 
         // Kirim data ke Airtable
-        Log::info("Sending data to Airtable API...");
+        Log::info('Sending data to Airtable API...');
         $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $apiKey,
+            'Authorization' => 'Bearer '.$apiKey,
             'Content-Type' => 'application/json',
         ])->post("https://api.airtable.com/v0/{$baseId}/{$tableName}", [
-            'records' => $records
+            'records' => $records,
         ]);
 
         // Log status response dari Airtable
         if ($response->successful()) {
-            Log::info("Data successfully sent to Airtable.");
+            Log::info('Data successfully sent to Airtable.');
 
             $savedRecords = $response->json('records');
 
@@ -85,7 +86,7 @@ class SyncPatientsToAirtable implements ShouldQueue
             }
         } else {
             // Log jika permintaan gagal
-            Log::error("Failed to send data to Airtable. Response: " . $response->body());
+            Log::error('Failed to send data to Airtable. Response: '.$response->body());
         }
     }
 }

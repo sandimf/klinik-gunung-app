@@ -29,6 +29,7 @@ export default function QrScanner() {
           encryptedData: decodedText,
         })
 
+        
         if (response.data.success) {
           setDecryptedData(response.data.data)
           setError("")

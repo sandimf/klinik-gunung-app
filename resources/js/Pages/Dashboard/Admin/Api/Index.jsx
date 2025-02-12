@@ -20,7 +20,13 @@ import {
     TableHeader,
     TableRow,
 } from "@/Components/ui/table";
-import { Key, RefreshCw, AlertTriangle, CheckCircle, CircleCheck } from "lucide-react";
+import {
+    Key,
+    RefreshCw,
+    AlertTriangle,
+    CheckCircle,
+    CircleCheck,
+} from "lucide-react";
 import Sidebar from "@/Layouts/Dashboard/AdminSidebarLayout";
 import { Head, useForm } from "@inertiajs/react";
 import { toast, Toaster } from "sonner";
@@ -147,7 +153,7 @@ export default function GeminiApiKey({ apikeys }) {
                                 ) : (
                                     <TableRow>
                                         <TableCell colSpan={4}>
-                                            No API keys found
+                                            Tidak ada kunci API yang ditemukan
                                         </TableCell>
                                     </TableRow>
                                 )}
@@ -163,12 +169,15 @@ export default function GeminiApiKey({ apikeys }) {
                             Informasi Penting
                         </CardTitle>
                         <CardDescription>
-                        Detail penting tentang penggunaan Google Gemini AI API
+                            Detail penting tentang penggunaan Google Gemini AI
+                            API
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
                         <ul className="list-disc pl-5 space-y-2">
-                            <li>Jaga kerahasiaan dan keamanan kunci API Anda.</li>
+                            <li>
+                                Jaga kerahasiaan dan keamanan kunci API Anda.
+                            </li>
                         </ul>
                     </CardContent>
                 </Card>

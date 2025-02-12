@@ -19,6 +19,7 @@ class PatientsDataController extends Controller
         $apiKey = Apikey::first()?->api_key;
         // Cari data pasien terkait user yang login
         $patient = $user->patient; // Relasi harus sudah diatur di model User
+
         return Inertia::render('Dashboard/Patients/DataPatients/Index', [
             'patient' => $patient, // Kirim data pasien jika ada
             'apiKey' => $apiKey,
@@ -39,7 +40,7 @@ class PatientsDataController extends Controller
         }
 
         $validated['email'] = strtolower($validated['email']);
-        
+
         // Simpan data pasien ke dalam database
         Patients::create([
             'user_id' => Auth::id(),

@@ -44,19 +44,19 @@ class PatientsOnline extends Model
         'payment_status',
     ];
 
-//     public function attributesToArray()
-// {
-//     $attributes = parent::attributesToArray();
+    //     public function attributesToArray()
+    // {
+    //     $attributes = parent::attributesToArray();
 
-//     // Mengubah semua atribut string menjadi Title Case kecuali email
-//     return array_map(function ($value, $key) {
-//         // Cek jika atribut bukan email, baru diubah menjadi Title Case
-//         if ($key !== 'email' && is_string($value)) {
-//             return ucwords(strtolower($value));
-//         }
-//         return $value;
-//     }, $attributes, array_keys($attributes));
-// }
+    //     // Mengubah semua atribut string menjadi Title Case kecuali email
+    //     return array_map(function ($value, $key) {
+    //         // Cek jika atribut bukan email, baru diubah menjadi Title Case
+    //         if ($key !== 'email' && is_string($value)) {
+    //             return ucwords(strtolower($value));
+    //         }
+    //         return $value;
+    //     }, $attributes, array_keys($attributes));
+    // }
 
     public function user()
     {

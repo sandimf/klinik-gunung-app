@@ -88,17 +88,6 @@ export function AppSidebar({ ...sidebarProps }) {
         icon: Scan,
       },
       {
-        title: "Backup",
-        url: route("dashboard"),
-        icon: Database,
-        items: [
-          {
-            title: "Airtable",
-            url: route('airtable.backup'),
-          },
-        ],
-      },
-      {
         title: "Auth",
         url: route("dashboard"),
         icon: Ghost,

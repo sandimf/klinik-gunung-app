@@ -25,7 +25,6 @@ class GuestController extends Controller
 
         $apiKey = Apikey::first()?->api_key;
 
-
         return Inertia::render('Dashboard/Guest/ScreeningOffline', [
             'questions' => $questions,
             'apiKey' => $apiKey,
@@ -149,7 +148,7 @@ class GuestController extends Controller
                 if (is_array($answer['answer'])) {
                     if (isset($answer['answer']['options']) && isset($answer['answer']['textarea'])) {
                         // Jika ada checkbox dan textarea
-                        $answerText = implode(', ', (array) $answer['answer']['options']) . ', ' . $answer['answer']['textarea'];
+                        $answerText = implode(', ', (array) $answer['answer']['options']).', '.$answer['answer']['textarea'];
                     } elseif (isset($answer['answer']['options'])) {
                         // Jika hanya checkbox
                         $answerText = implode(', ', (array) $answer['answer']['options']);

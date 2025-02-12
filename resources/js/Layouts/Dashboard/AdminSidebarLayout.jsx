@@ -28,7 +28,6 @@ export default function Layout({
       <AppSidebar />
       <SidebarInset>
         <main>
-         
           <header className="flex items-center justify-between p-4 border-b">
             <div className="flex items-center space-x-4">
               <SidebarTrigger />
@@ -50,7 +49,6 @@ export default function Layout({
             </div>
             <div className="flex items-center space-x-4">
                 <ModeToggle />
-                <NotificationButton />
                 <ProfileButton />
             </div>
           </header>

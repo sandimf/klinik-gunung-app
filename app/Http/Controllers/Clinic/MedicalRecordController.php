@@ -12,8 +12,8 @@ class MedicalRecordController extends Controller
     {
         // Ambil semua medical record beserta relasi pasien dan pemeriksaan fisik
         $medicalRecords = MedicalRecord::with([
-            'patient.user:id,name,avatar', 
-            'physicalExamination'
+            'patient.user:id,name,avatar',
+            'physicalExamination',
         ])->get();
 
         // Kirimkan data ke halaman Inertia
@@ -27,10 +27,9 @@ class MedicalRecordController extends Controller
         $medicalRecord = MedicalRecord::with(['patient', 'physicalExamination'])
             ->where('uuid', $uuid)
             ->firstOrFail();
-    
+
         return Inertia::render('Dashboard/Doctor/MedicalRecord/Detail', [
             'medicalRecord' => $medicalRecord,
         ]);
     }
-    
 }

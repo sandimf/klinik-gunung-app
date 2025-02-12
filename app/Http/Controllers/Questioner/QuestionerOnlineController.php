@@ -37,7 +37,7 @@ class QuestionerOnlineController extends Controller
         // Format input menjadi huruf besar di awal setiap kata (Title Case)
         $formattedQuestionText = ucwords(strtolower($request->question_text));
         $formattedOptions = $request->options
-            ? array_map(fn($option) => ucwords(strtolower($option)), $request->options)
+            ? array_map(fn ($option) => ucwords(strtolower($option)), $request->options)
             : null;
 
         // Buat pertanyaan baru
@@ -63,7 +63,7 @@ class QuestionerOnlineController extends Controller
         // Format input menjadi huruf besar di awal setiap kata (Title Case)
         $formattedQuestionText = ucwords(strtolower($request->question_text));
         $formattedOptions = $request->options
-            ? array_map(fn($option) => ucwords(strtolower($option)), $request->options)
+            ? array_map(fn ($option) => ucwords(strtolower($option)), $request->options)
             : null;
 
         // Cari dan perbarui data berdasarkan ID

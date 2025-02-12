@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from "react";
-import { Head, useForm, usePage, router } from "@inertiajs/react";
+import React, { useState, useRef } from "react";
+import { Head, useForm, router } from "@inertiajs/react";
 import { Input } from "@/Components/ui/input";
 import { Label } from "@/Components/ui/label";
 import { Button } from "@/Components/ui/button";
@@ -14,12 +14,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
 import { Alert, AlertDescription } from "@/Components/ui/alert";
 import { Checkbox } from "@/Components/ui/checkbox";
 import { Textarea } from "@/Components/ui/textarea";
-import { Upload, CircleCheck, Loader2 } from "lucide-react";
+import { Upload,Loader2 ,X,CircleCheck} from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/Components/ui/tabs";
 import { toast, Toaster } from "sonner";
 import WebcamComponent from "./_components/Webcam";
 import { PatientInfoForm } from "./_components/PatientInfoForm";
-import { analyzeImage } from "./_components/Ai"; // Import the analyzeImage function
+import { analyzeImage } from "./_components/Ai";
 import Header from "@/Components/Navbar";
 
 export default function PatientDataEntry({ questions, apiKey }) {
@@ -34,7 +34,7 @@ export default function PatientDataEntry({ questions, apiKey }) {
     const [answers, setAnswers] = useState({});
     const [isLoading, setIsLoading] = useState(false);
 
-    const { data, setData, post, processing, errors } = useForm({
+    const { data, setData, post, processing, errors,reset } = useForm({
         nik: "",
         name: "",
         email: "",
@@ -59,7 +59,7 @@ export default function PatientDataEntry({ questions, apiKey }) {
     const handleAnswerChange = (questionId, answer) => {
         const newErrors = { ...formErrors };
         if (!answer) {
-            newErrors[questionId] = "This question is required";
+            newErrors[questionId] = "Pertanyaan ini diperlukan";
         } else {
             delete newErrors[questionId];
         }
@@ -73,8 +73,6 @@ export default function PatientDataEntry({ questions, apiKey }) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-
-        // Validasi: pastikan semua pertanyaan sudah dijawab
         const unansweredQuestions = questions.filter(
             (question) => !answers[question.id]
         );
@@ -92,9 +90,8 @@ export default function PatientDataEntry({ questions, apiKey }) {
             questioner_id: questionId,
             answer: answers[questionId],
         }));
-
-        // Menambahkan delay sebelum mengirim data
-        setIsLoading(true); // Atur loading state jika perlu
+        
+        setIsLoading(true);
 
         setTimeout(() => {
             router.post(
@@ -105,20 +102,37 @@ export default function PatientDataEntry({ questions, apiKey }) {
                 },
                 {
                     onSuccess: () => {
-                        toast.success("Screening berhasil disimpan!");
+                        toast.success("Screening berhasil disimpan!",{
+                            icon: <CircleCheck className="h-5 w-5 text-green-500" />
+                        });
                         setIsLoading(false); // Matikan loading setelah berhasil
+                        reset();
+                        setAgreedToPrivacy(false);
+                        setEntryMethod("manual");
+                        setImageFile(null);
+                        setIsAnalyzing(false);
+                        setAnalysisError(null);
+                        setIsCameraActive(false);
+                        setFormErrors({});
+                        setAnswers({});
                     },
                     onError: (errors) => {
                         setIsLoading(false); // Matikan loading setelah error
                         if (typeof errors === "string") {
-                            toast.error(errors);
+                            toast.error(errors, {
+                                icon: <X className="h-5 w-5 text-red-500" />
+                            });
                         } else if (typeof errors === "object") {
                             const errorMessages = Object.values(errors).flat();
                             errorMessages.forEach((error) =>
-                                toast.error(error)
+                                toast.error(error, {
+                                    icon: <X className="h-5 w-5 text-red-500" />
+                                })
                             );
                         } else {
-                            toast.error("Sepertinya Ada Kesalahan!");
+                            toast.error("Sepertinya Ada Kesalahan!", {
+                                icon: <X className="h-5 w-5 text-red-500" />
+                            });
                         }
                     },
                 }
@@ -179,527 +193,563 @@ export default function PatientDataEntry({ questions, apiKey }) {
         }
     };
 
-    const { flash } = usePage().props;
-    useEffect(() => {
-        if (flash.message) {
-            toast(flash.message, {
-                icon: <CircleCheck className="h-5 w-5 text-green-500" />,
-            });
-        }
-    }, [flash.message]);
+
 
     return (
         <>
             <Header />
             <Toaster position="top-center" />
-            <div className="container mx-auto p-4">
-                <Card className="mb-6">
-                    <Head title="Screening" />
-                    <CardHeader>
-                        <CardTitle className="text-2xl font-bold">
-                            Screening Now
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <Tabs
-                            value={entryMethod}
-                            onValueChange={setEntryMethod}
-                            className="mb-4"
-                        >
-                            <TabsList className="grid w-full grid-cols-3">
-                                <TabsTrigger value="manual">
-                                    Input Manual
-                                </TabsTrigger>
-                                <TabsTrigger value="upload">
-                                    Upload KTP
-                                </TabsTrigger>
-                                <TabsTrigger value="camera">
-                                    Scan KTP
-                                </TabsTrigger>
-                            </TabsList>
-                            <TabsContent value="upload">
-                                <div className="space-y-4">
-                                    <div className="flex items-center justify-center w-full">
-                                        <Label
-                                            htmlFor="dropzone-file"
-                                            className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
-                                        >
-                                            <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                                <Upload className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" />
-                                                <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                                                    <span className="font-semibold">
-                                                        Click to upload
-                                                    </span>{" "}
-                                                    or drag and drop
-                                                </p>
-                                                <p className="text-xs text-gray-500 dark:text-gray-400">
-                                                    SVG, PNG, JPG or GIF (MAX.
-                                                    800x400px)
-                                                </p>
-                                            </div>
-                                            <Input
-                                                id="dropzone-file"
-                                                type="file"
-                                                className="hidden"
-                                                accept="image/*"
-                                                onChange={handleFileChange}
-                                                ref={fileInputRef}
-                                            />
-                                        </Label>
-                                    </div>
-                                    {imageFile && (
-                                        <div className="mt-4">
-                                            <p className="text-sm text-gray-500">
-                                                Selected file: {imageFile.name}
-                                            </p>
-                                        </div>
-                                    )}
-                                    <Button
-                                        onClick={() =>
-                                            fileInputRef.current?.click()
-                                        }
-                                        disabled={isAnalyzing}
-                                        className="w-full"
-                                    >
-                                        {isAnalyzing
-                                            ? "Analyzing..."
-                                            : "Select KTP Image"}
-                                    </Button>
-                                    {analysisError && (
-                                        <Alert variant="destructive">
-                                            <AlertDescription>
-                                                {analysisError}
-                                            </AlertDescription>
-                                        </Alert>
-                                    )}
-                                </div>
-                            </TabsContent>
-                            <TabsContent value="camera">
-                                <div className="space-y-4">
-                                    <WebcamComponent
-                                        onCapture={handleCameraCapture}
-                                        isActive={isCameraActive}
-                                        setIsActive={setIsCameraActive}
-                                    />
-                                    <Button
-                                        onClick={() =>
-                                            setIsCameraActive(!isCameraActive)
-                                        }
-                                        className="w-full"
-                                    >
-                                        {isCameraActive
-                                            ? "Stop Camera"
-                                            : "Start Camera"}
-                                    </Button>
-                                    {analysisError && (
-                                        <Alert variant="destructive">
-                                            <AlertDescription>
-                                                {analysisError}
-                                            </AlertDescription>
-                                        </Alert>
-                                    )}
-                                </div>
-                            </TabsContent>
-                        </Tabs>
-
-                        <form onSubmit={handleSubmit} className="space-y-4">
-                            <PatientInfoForm
-                                data={data}
-                                setData={setData}
-                                errors={errors}
-                            />
-                        </form>
-                    </CardContent>
-                </Card>
-
-                <Card className="mb-6">
-                    <CardHeader>
-                        <CardTitle className="text-xl font-bold">
-                            Kuesioner
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <form onSubmit={handleSubmit} className="space-y-4">
-                            {questions?.map((question) => (
-                                <div
-                                    key={question.id}
-                                    className=" rounded-lg"
-                                >
-                                    <h3 className="text-lg font-semibold mb-3">
-                                        {question.question_text}
-                                    </h3>
-                                    <div className="space-y-1">
-                                        {question.answer_type === "text" && (
-                                            <div>
+            {questions.length === 0 ? (
+                <div className="text-center">
+                    <h1 className="text-2xl font-bold">Ups Maaf</h1>
+                    <p className="text-lg font-semibold text-gray-500">
+                        Belum bisa melakukan screening. Tidak ada kuesioner yang
+                        tersedia saat ini.
+                    </p>
+                </div>
+            ) : (
+                <div className="container mx-auto p-4">
+                    <Card className="mb-6">
+                        <Head title="Screening" />
+                        <CardHeader>
+                            <CardTitle className="text-2xl font-bold">
+                                Screening Now
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <Tabs
+                                value={entryMethod}
+                                onValueChange={setEntryMethod}
+                                className="mb-4"
+                            >
+                                <TabsList className="grid w-full grid-cols-3">
+                                    <TabsTrigger value="manual">
+                                        Input Manual
+                                    </TabsTrigger>
+                                    <TabsTrigger value="upload">
+                                        Upload KTP
+                                    </TabsTrigger>
+                                    <TabsTrigger value="camera">
+                                        Scan KTP
+                                    </TabsTrigger>
+                                </TabsList>
+                                <TabsContent value="upload">
+                                    <div className="space-y-4">
+                                        <div className="flex items-center justify-center w-full">
+                                            <Label
+                                                htmlFor="dropzone-file"
+                                                className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
+                                            >
+                                                <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                                    <Upload className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" />
+                                                    <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                                                        <span className="font-semibold">
+                                                            Click to upload
+                                                        </span>{" "}
+                                                        or drag and drop
+                                                    </p>
+                                                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                        SVG, PNG, JPG or GIF
+                                                        (MAX. 800x400px)
+                                                    </p>
+                                                </div>
                                                 <Input
-                                                    type="text"
-                                                    value={
-                                                        answers[question.id] ||
-                                                        ""
-                                                    }
-                                                    onChange={(e) =>
-                                                        handleAnswerChange(
-                                                            question.id,
-                                                            e.target.value
-                                                        )
-                                                    }
-                                                    placeholder="Enter your answer"
+                                                    id="dropzone-file"
+                                                    type="file"
+                                                    className="hidden"
+                                                    accept="image/*"
+                                                    onChange={handleFileChange}
+                                                    ref={fileInputRef}
                                                 />
-                                                {formErrors[question.id] && (
-                                                    <p className="text-sm text-red-500">
-                                                        {
-                                                            formErrors[
-                                                                question.id
-                                                            ]
-                                                        }
-                                                    </p>
-                                                )}
+                                            </Label>
+                                        </div>
+                                        {imageFile && (
+                                            <div className="mt-4">
+                                                <p className="text-sm text-gray-500">
+                                                    Selected file:{" "}
+                                                    {imageFile.name}
+                                                </p>
                                             </div>
                                         )}
-                                        {question.answer_type ===
-                                            "checkbox" && (
-                                            <div className="space-y-1">
-                                                {Array.isArray(
-                                                    question.options
-                                                ) &&
-                                                    question.options.map(
-                                                        (option, index) => (
-                                                            <div
-                                                                key={index}
-                                                                className="flex items-center space-x-2"
-                                                            >
-                                                                <Checkbox
-                                                                    checked={answers[
-                                                                        question
-                                                                            .id
-                                                                    ]?.includes(
-                                                                        option
-                                                                    )}
-                                                                    onCheckedChange={(
-                                                                        checked
-                                                                    ) => {
-                                                                        const updatedAnswers =
-                                                                            checked
-                                                                                ? [
-                                                                                      ...(answers[
-                                                                                          question
-                                                                                              .id
-                                                                                      ] ||
-                                                                                          []),
-                                                                                      option,
-                                                                                  ]
-                                                                                : (
-                                                                                      answers[
-                                                                                          question
-                                                                                              .id
-                                                                                      ] ||
-                                                                                      []
-                                                                                  ).filter(
-                                                                                      (
-                                                                                          answer
-                                                                                      ) =>
-                                                                                          answer !==
-                                                                                          option
-                                                                                  );
-                                                                        handleAnswerChange(
-                                                                            question.id,
-                                                                            updatedAnswers
-                                                                        );
-                                                                    }}
-                                                                />
-                                                                <span>
-                                                                    {option}
-                                                                </span>
-                                                            </div>
-                                                        )
+                                        <Button
+                                            onClick={() =>
+                                                fileInputRef.current?.click()
+                                            }
+                                            disabled={isAnalyzing}
+                                            className="w-full"
+                                        >
+                                            {isAnalyzing
+                                                ? "Analyzing..."
+                                                : "Select KTP Image"}
+                                        </Button>
+                                        {analysisError && (
+                                            <Alert variant="destructive">
+                                                <AlertDescription>
+                                                    {analysisError}
+                                                </AlertDescription>
+                                            </Alert>
+                                        )}
+                                    </div>
+                                </TabsContent>
+                                <TabsContent value="camera">
+                                    <div className="space-y-4">
+                                        <WebcamComponent
+                                            onCapture={handleCameraCapture}
+                                            isActive={isCameraActive}
+                                            setIsActive={setIsCameraActive}
+                                        />
+                                        <Button
+                                            onClick={() =>
+                                                setIsCameraActive(
+                                                    !isCameraActive
+                                                )
+                                            }
+                                            className="w-full"
+                                        >
+                                            {isCameraActive
+                                                ? "Stop Camera"
+                                                : "Start Camera"}
+                                        </Button>
+                                        {analysisError && (
+                                            <Alert variant="destructive">
+                                                <AlertDescription>
+                                                    {analysisError}
+                                                </AlertDescription>
+                                            </Alert>
+                                        )}
+                                    </div>
+                                </TabsContent>
+                            </Tabs>
+
+                            <form onSubmit={handleSubmit} className="space-y-4">
+                                <PatientInfoForm
+                                    data={data}
+                                    setData={setData}
+                                    errors={errors}
+                                />
+                            </form>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="mb-6">
+                        <CardHeader>
+                            <CardTitle className="text-xl font-bold">
+                                Kuesioner
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <form onSubmit={handleSubmit} className="space-y-4">
+                                {questions?.map((question) => (
+                                    <div
+                                        key={question.id}
+                                        className=" rounded-lg"
+                                    >
+                                        <h3 className="text-lg font-semibold mb-3">
+                                            {question.question_text}
+                                        </h3>
+                                        <div className="space-y-1">
+                                            {question.answer_type ===
+                                                "text" && (
+                                                <div>
+                                                    <Input
+                                                        type="text"
+                                                        value={
+                                                            answers[
+                                                                question.id
+                                                            ] || ""
+                                                        }
+                                                        onChange={(e) =>
+                                                            handleAnswerChange(
+                                                                question.id,
+                                                                e.target.value
+                                                            )
+                                                        }
+                                                        placeholder="Enter your answer"
+                                                    />
+                                                    {formErrors[
+                                                        question.id
+                                                    ] && (
+                                                        <p className="text-sm text-red-500">
+                                                            {
+                                                                formErrors[
+                                                                    question.id
+                                                                ]
+                                                            }
+                                                        </p>
                                                     )}
-                                                {formErrors[question.id] && (
-                                                    <p className="text-sm text-red-500">
-                                                        {
-                                                            formErrors[
-                                                                question.id
-                                                            ]
-                                                        }
-                                                    </p>
-                                                )}
-                                            </div>
-                                        )}
-                                        {question.answer_type ===
-                                            "checkbox_textarea" && (
-                                            <div className="space-y-1">
-                                                {Array.isArray(
-                                                    question.options
-                                                ) &&
-                                                    question.options.map(
-                                                        (option, index) => (
-                                                            <div
-                                                                key={index}
-                                                                className="flex items-center space-x-2"
-                                                            >
-                                                                <Checkbox
-                                                                    checked={
-                                                                        Array.isArray(
+                                                </div>
+                                            )}
+                                            {question.answer_type ===
+                                                "checkbox" && (
+                                                <div className="space-y-1">
+                                                    {Array.isArray(
+                                                        question.options
+                                                    ) &&
+                                                        question.options.map(
+                                                            (option, index) => (
+                                                                <div
+                                                                    key={index}
+                                                                    className="flex items-center space-x-2"
+                                                                >
+                                                                    <Checkbox
+                                                                        checked={answers[
+                                                                            question
+                                                                                .id
+                                                                        ]?.includes(
+                                                                            option
+                                                                        )}
+                                                                        onCheckedChange={(
+                                                                            checked
+                                                                        ) => {
+                                                                            const updatedAnswers =
+                                                                                checked
+                                                                                    ? [
+                                                                                          ...(answers[
+                                                                                              question
+                                                                                                  .id
+                                                                                          ] ||
+                                                                                              []),
+                                                                                          option,
+                                                                                      ]
+                                                                                    : (
+                                                                                          answers[
+                                                                                              question
+                                                                                                  .id
+                                                                                          ] ||
+                                                                                          []
+                                                                                      ).filter(
+                                                                                          (
+                                                                                              answer
+                                                                                          ) =>
+                                                                                              answer !==
+                                                                                              option
+                                                                                      );
+                                                                            handleAnswerChange(
+                                                                                question.id,
+                                                                                updatedAnswers
+                                                                            );
+                                                                        }}
+                                                                    />
+                                                                    <span>
+                                                                        {option}
+                                                                    </span>
+                                                                </div>
+                                                            )
+                                                        )}
+                                                    {formErrors[
+                                                        question.id
+                                                    ] && (
+                                                        <p className="text-sm text-red-500">
+                                                            {
+                                                                formErrors[
+                                                                    question.id
+                                                                ]
+                                                            }
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            )}
+                                            {question.answer_type ===
+                                                "checkbox_textarea" && (
+                                                <div className="space-y-1">
+                                                    {Array.isArray(
+                                                        question.options
+                                                    ) &&
+                                                        question.options.map(
+                                                            (option, index) => (
+                                                                <div
+                                                                    key={index}
+                                                                    className="flex items-center space-x-2"
+                                                                >
+                                                                    <Checkbox
+                                                                        checked={
+                                                                            Array.isArray(
+                                                                                answers[
+                                                                                    question
+                                                                                        .id
+                                                                                ]
+                                                                                    ?.options
+                                                                            ) &&
                                                                             answers[
                                                                                 question
                                                                                     .id
-                                                                            ]
-                                                                                ?.options
-                                                                        ) &&
-                                                                        answers[
-                                                                            question
-                                                                                .id
-                                                                        ]?.options.includes(
-                                                                            option
-                                                                        )
-                                                                    }
-                                                                    onCheckedChange={(
-                                                                        checked
-                                                                    ) => {
-                                                                        const updatedAnswers =
-                                                                            {
-                                                                                ...answers[
-                                                                                    question
-                                                                                        .id
-                                                                                ],
-                                                                            };
-                                                                        updatedAnswers.options =
-                                                                            Array.isArray(
-                                                                                updatedAnswers.options
-                                                                            )
-                                                                                ? [
-                                                                                      ...updatedAnswers.options,
-                                                                                  ]
-                                                                                : [];
-                                                                        if (
-                                                                            checked
-                                                                        ) {
-                                                                            updatedAnswers.options.push(
+                                                                            ]?.options.includes(
                                                                                 option
-                                                                            );
-                                                                        } else {
-                                                                            const indexToRemove =
-                                                                                updatedAnswers.options.indexOf(
+                                                                            )
+                                                                        }
+                                                                        onCheckedChange={(
+                                                                            checked
+                                                                        ) => {
+                                                                            const updatedAnswers =
+                                                                                {
+                                                                                    ...answers[
+                                                                                        question
+                                                                                            .id
+                                                                                    ],
+                                                                                };
+                                                                            updatedAnswers.options =
+                                                                                Array.isArray(
+                                                                                    updatedAnswers.options
+                                                                                )
+                                                                                    ? [
+                                                                                          ...updatedAnswers.options,
+                                                                                      ]
+                                                                                    : [];
+                                                                            if (
+                                                                                checked
+                                                                            ) {
+                                                                                updatedAnswers.options.push(
                                                                                     option
                                                                                 );
-                                                                            if (
-                                                                                indexToRemove >
-                                                                                -1
-                                                                            ) {
-                                                                                updatedAnswers.options.splice(
-                                                                                    indexToRemove,
-                                                                                    1
-                                                                                );
+                                                                            } else {
+                                                                                const indexToRemove =
+                                                                                    updatedAnswers.options.indexOf(
+                                                                                        option
+                                                                                    );
+                                                                                if (
+                                                                                    indexToRemove >
+                                                                                    -1
+                                                                                ) {
+                                                                                    updatedAnswers.options.splice(
+                                                                                        indexToRemove,
+                                                                                        1
+                                                                                    );
+                                                                                }
                                                                             }
-                                                                        }
-                                                                        handleAnswerChange(
-                                                                            question.id,
-                                                                            updatedAnswers
-                                                                        );
-                                                                    }}
-                                                                />
-                                                                <span>
-                                                                    {option}
-                                                                </span>
-                                                            </div>
-                                                        )
-                                                    )}
-                                                <Textarea
-                                                    value={
-                                                        answers[question.id]
-                                                            ?.textarea || ""
-                                                    }
-                                                    onChange={(e) => {
-                                                        const updatedAnswers = {
-                                                            ...answers[
-                                                                question.id
-                                                            ],
-                                                            textarea:
-                                                                e.target.value,
-                                                        };
-                                                        handleAnswerChange(
-                                                            question.id,
-                                                            updatedAnswers
-                                                        );
-                                                    }}
-                                                    placeholder="Jelaskan"
-                                                />
-                                                {formErrors[question.id] && (
-                                                    <p className="text-sm text-red-500">
-                                                        {
-                                                            formErrors[
-                                                                question.id
-                                                            ]
-                                                        }
-                                                    </p>
-                                                )}
-                                            </div>
-                                        )}
-                                        {question.answer_type === "select" && (
-                                            <div>
-                                                <Select
-                                                    value={
-                                                        answers[question.id] ||
-                                                        ""
-                                                    }
-                                                    onValueChange={(value) =>
-                                                        handleAnswerChange(
-                                                            question.id,
-                                                            value
-                                                        )
-                                                    }
-                                                >
-                                                    <SelectTrigger>
-                                                        <SelectValue placeholder="Select an option" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        {Array.isArray(
-                                                            question.options
-                                                        ) &&
-                                                            question.options.map(
-                                                                (
-                                                                    option,
-                                                                    index
-                                                                ) => (
-                                                                    <SelectItem
-                                                                        key={
-                                                                            index
-                                                                        }
-                                                                        value={
-                                                                            option
-                                                                        }
-                                                                    >
+                                                                            handleAnswerChange(
+                                                                                question.id,
+                                                                                updatedAnswers
+                                                                            );
+                                                                        }}
+                                                                    />
+                                                                    <span>
                                                                         {option}
-                                                                    </SelectItem>
-                                                                )
-                                                            )}
-                                                    </SelectContent>
-                                                </Select>
-                                                {formErrors[question.id] && (
-                                                    <p className="text-sm text-red-500">
-                                                        {
-                                                            formErrors[
-                                                                question.id
-                                                            ]
+                                                                    </span>
+                                                                </div>
+                                                            )
+                                                        )}
+                                                    <Textarea
+                                                        value={
+                                                            answers[question.id]
+                                                                ?.textarea || ""
                                                         }
-                                                    </p>
-                                                )}
-                                            </div>
-                                        )}
-                                        {question.answer_type ===
-                                            "textarea" && (
-                                            <div>
-                                                <Textarea
-                                                    value={
-                                                        answers[question.id] ||
-                                                        ""
-                                                    }
-                                                    onChange={(e) =>
-                                                        handleAnswerChange(
-                                                            question.id,
-                                                            e.target.value
-                                                        )
-                                                    }
-                                                    placeholder="Enter your answer"
-                                                />
-                                                {formErrors[question.id] && (
-                                                    <p className="text-sm text-red-500">
-                                                        {
-                                                            formErrors[
+                                                        onChange={(e) => {
+                                                            const updatedAnswers =
+                                                                {
+                                                                    ...answers[
+                                                                        question
+                                                                            .id
+                                                                    ],
+                                                                    textarea:
+                                                                        e.target
+                                                                            .value,
+                                                                };
+                                                            handleAnswerChange(
+                                                                question.id,
+                                                                updatedAnswers
+                                                            );
+                                                        }}
+                                                        placeholder="Jelaskan"
+                                                    />
+                                                    {formErrors[
+                                                        question.id
+                                                    ] && (
+                                                        <p className="text-sm text-red-500">
+                                                            {
+                                                                formErrors[
+                                                                    question.id
+                                                                ]
+                                                            }
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            )}
+                                            {question.answer_type ===
+                                                "select" && (
+                                                <div>
+                                                    <Select
+                                                        value={
+                                                            answers[
                                                                 question.id
-                                                            ]
+                                                            ] || ""
                                                         }
-                                                    </p>
-                                                )}
-                                            </div>
-                                        )}
-                                        {question.answer_type === "number" && (
-                                            <div>
-                                                <Input
-                                                    type="number"
-                                                    value={
-                                                        answers[question.id] ||
-                                                        ""
-                                                    }
-                                                    onChange={(e) =>
-                                                        handleAnswerChange(
-                                                            question.id,
-                                                            e.target.value
-                                                        )
-                                                    }
-                                                    placeholder="Enter your answer"
-                                                />
-                                                {formErrors[question.id] && (
-                                                    <p className="text-sm text-red-500">
-                                                        {
-                                                            formErrors[
+                                                        onValueChange={(
+                                                            value
+                                                        ) =>
+                                                            handleAnswerChange(
+                                                                question.id,
+                                                                value
+                                                            )
+                                                        }
+                                                    >
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder="Select an option" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            {Array.isArray(
+                                                                question.options
+                                                            ) &&
+                                                                question.options.map(
+                                                                    (
+                                                                        option,
+                                                                        index
+                                                                    ) => (
+                                                                        <SelectItem
+                                                                            key={
+                                                                                index
+                                                                            }
+                                                                            value={
+                                                                                option
+                                                                            }
+                                                                        >
+                                                                            {
+                                                                                option
+                                                                            }
+                                                                        </SelectItem>
+                                                                    )
+                                                                )}
+                                                        </SelectContent>
+                                                    </Select>
+                                                    {formErrors[
+                                                        question.id
+                                                    ] && (
+                                                        <p className="text-sm text-red-500">
+                                                            {
+                                                                formErrors[
+                                                                    question.id
+                                                                ]
+                                                            }
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            )}
+                                            {question.answer_type ===
+                                                "textarea" && (
+                                                <div>
+                                                    <Textarea
+                                                        value={
+                                                            answers[
                                                                 question.id
-                                                            ]
+                                                            ] || ""
                                                         }
-                                                    </p>
-                                                )}
-                                            </div>
-                                        )}
-                                        {question.answer_type === "date" && (
-                                            <div>
-                                                <Input
-                                                    type="date"
-                                                    value={
-                                                        answers[question.id] ||
-                                                        ""
-                                                    }
-                                                    onChange={(e) =>
-                                                        handleAnswerChange(
-                                                            question.id,
-                                                            e.target.value
-                                                        )
-                                                    }
-                                                    placeholder="Enter your answer"
-                                                />
-                                                {formErrors[question.id] && (
-                                                    <p className="text-sm text-red-500">
-                                                        {
-                                                            formErrors[
+                                                        onChange={(e) =>
+                                                            handleAnswerChange(
+                                                                question.id,
+                                                                e.target.value
+                                                            )
+                                                        }
+                                                        placeholder="Enter your answer"
+                                                    />
+                                                    {formErrors[
+                                                        question.id
+                                                    ] && (
+                                                        <p className="text-sm text-red-500">
+                                                            {
+                                                                formErrors[
+                                                                    question.id
+                                                                ]
+                                                            }
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            )}
+                                            {question.answer_type ===
+                                                "number" && (
+                                                <div>
+                                                    <Input
+                                                        type="number"
+                                                        value={
+                                                            answers[
                                                                 question.id
-                                                            ]
+                                                            ] || ""
                                                         }
-                                                    </p>
-                                                )}
-                                            </div>
-                                        )}
+                                                        onChange={(e) =>
+                                                            handleAnswerChange(
+                                                                question.id,
+                                                                e.target.value
+                                                            )
+                                                        }
+                                                        placeholder="Enter your answer"
+                                                    />
+                                                    {formErrors[
+                                                        question.id
+                                                    ] && (
+                                                        <p className="text-sm text-red-500">
+                                                            {
+                                                                formErrors[
+                                                                    question.id
+                                                                ]
+                                                            }
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            )}
+                                            {question.answer_type ===
+                                                "date" && (
+                                                <div>
+                                                    <Input
+                                                        type="date"
+                                                        value={
+                                                            answers[
+                                                                question.id
+                                                            ] || ""
+                                                        }
+                                                        onChange={(e) =>
+                                                            handleAnswerChange(
+                                                                question.id,
+                                                                e.target.value
+                                                            )
+                                                        }
+                                                        placeholder="Enter your answer"
+                                                    />
+                                                    {formErrors[
+                                                        question.id
+                                                    ] && (
+                                                        <p className="text-sm text-red-500">
+                                                            {
+                                                                formErrors[
+                                                                    question.id
+                                                                ]
+                                                            }
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
+                                ))}
+                                <div className="flex items-center space-x-2 mt-4 mb-4">
+                                    <Checkbox
+                                        id="privacyAgreement"
+                                        checked={agreedToPrivacy}
+                                        onCheckedChange={setAgreedToPrivacy}
+                                    />
+                                    <label
+                                        htmlFor="privacyAgreement"
+                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                    >
+                                        I agree to the privacy policy
+                                    </label>
                                 </div>
-                            ))}
-                            <div className="flex items-center space-x-2 mt-4 mb-4">
-                                <Checkbox
-                                    id="privacyAgreement"
-                                    checked={agreedToPrivacy}
-                                    onCheckedChange={setAgreedToPrivacy}
-                                />
-                                <label
-                                    htmlFor="privacyAgreement"
-                                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                <Button
+                                    type="submit"
+                                    className="w-full"
+                                    disabled={processing || !agreedToPrivacy}
                                 >
-                                    I agree to the privacy policy
-                                </label>
-                            </div>
-                            <Button
-                                type="submit"
-                                className="w-full"
-                                disabled={processing || !agreedToPrivacy}
-                            >
-                                {isLoading ? (
-                                    <>
-                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                        Please wait...
-                                    </>
-                                ) : (
-                                    <>Submit</>
-                                )}
-                            </Button>
-                        </form>
-                    </CardContent>
-                </Card>
-            </div>
+                                    {isLoading ? (
+                                        <>
+                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                            Please wait...
+                                        </>
+                                    ) : (
+                                        <>Submit</>
+                                    )}
+                                </Button>
+                            </form>
+                        </CardContent>
+                    </Card>
+                </div>
+            )}
         </>
     );
 }

@@ -11,14 +11,12 @@ use App\Models\Users\Cashier;
 use App\Models\Users\Doctor;
 use App\Models\Users\Paramedis;
 use App\Models\Users\Warehouse;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
 
 class MedicalPersonnelController extends Controller
 {
-    
     public function index()
     {
         $doctors = collect(Doctor::with('user')->get()->map(function ($doctor) {
@@ -120,10 +118,10 @@ class MedicalPersonnelController extends Controller
     {
         // Mulai transaksi database
         DB::beginTransaction();
-    
+
         // Simpan password asli sebelum di-hash
         $plainPassword = $request->password;
-    
+
         // Buat pengguna baru
         $user = User::create([
             'name' => $request->name,
@@ -134,7 +132,7 @@ class MedicalPersonnelController extends Controller
             'created_at' => now(),
             'updated_at' => now(),
         ]);
-    
+
         // Siapkan data untuk jenis medical personnel
         $medicalPersonnelData = [
             'user_id' => $user->id,
@@ -145,7 +143,7 @@ class MedicalPersonnelController extends Controller
             'date_of_birth' => $request->date_of_birth,
             'phone' => $request->phone,
         ];
-    
+
         // Peta kelas berdasarkan role
         $classMap = [
             'doctor' => Doctor::class,
@@ -154,24 +152,23 @@ class MedicalPersonnelController extends Controller
             'admin' => Admin::class,
             'warehouse' => Warehouse::class,
         ];
-    
+
         // Cek dan simpan data berdasarkan role
-        if (!array_key_exists($request->role, $classMap)) {
+        if (! array_key_exists($request->role, $classMap)) {
             DB::rollBack();
+
             return redirect()->back()->with('error', 'Invalid role provided.');
         }
-    
+
         // Simpan data medical personnel
         $classMap[$request->role]::create($medicalPersonnelData);
-    
+
         // Dispatch Job untuk mengirim email
         SendStaffCredentialsEmail::dispatch($user, $plainPassword);
-    
+
         // Commit transaksi
         DB::commit();
-    
+
         return redirect()->back()->with('message', 'User  added successfully.');
     }
-
-    
 }

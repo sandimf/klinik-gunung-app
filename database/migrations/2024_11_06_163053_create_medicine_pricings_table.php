@@ -19,7 +19,7 @@ return new class extends Migration
             $table->enum('unit_type', ['satuan', 'kardus', 'box'])->default('satuan'); // Jenis unit obat
             $table->timestamps();
         });
-        
+
     }
 
     /**

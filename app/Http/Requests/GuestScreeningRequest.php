@@ -14,7 +14,7 @@ class GuestScreeningRequest extends FormRequest
     public function rules()
     {
         return [
-            'nik' => 'required|numeric|unique:patients,nik',
+            'nik' => 'required|numeric|digits_between:1,16|unique:patients,nik',
             'name' => 'required|string|max:255',
             'place_of_birth' => 'required|string|max:255',
             'date_of_birth' => 'required|date',
@@ -38,4 +38,60 @@ class GuestScreeningRequest extends FormRequest
         ];
     }
 
+    public function messages()
+    {
+        return [
+            'nik.required' => 'NIK wajib diisi.',
+            'nik.numeric' => 'NIK harus berupa angka.',
+            'nik.unique' => 'NIK sudah terdaftar.',
+
+            'name.required' => 'Nama wajib diisi.',
+            'name.string' => 'Nama harus berupa teks.',
+            'name.max' => 'Nama tidak boleh lebih dari 255 karakter.',
+
+            'place_of_birth.required' => 'Tempat lahir wajib diisi.',
+            'place_of_birth.string' => 'Tempat lahir harus berupa teks.',
+            'place_of_birth.max' => 'Tempat lahir tidak boleh lebih dari 255 karakter.',
+
+            'date_of_birth.required' => 'Tanggal lahir wajib diisi.',
+            'date_of_birth.date' => 'Format tanggal lahir tidak valid.',
+
+            'rt_rw.required' => 'RT/RW wajib diisi.',
+            'address.required' => 'Alamat wajib diisi.',
+            'village.required' => 'Kelurahan/Desa wajib diisi.',
+            'district.required' => 'Kecamatan wajib diisi.',
+            'religion.required' => 'Agama wajib diisi.',
+            'marital_status.required' => 'Status perkawinan wajib diisi.',
+            'occupation.required' => 'Pekerjaan wajib diisi.',
+            'nationality.required' => 'Kewarganegaraan wajib diisi.',
+
+            'gender.required' => 'Jenis kelamin wajib diisi.',
+            'gender.max' => 'Jenis kelamin tidak boleh lebih dari 10 karakter.',
+
+            'blood_type.required' => 'Golongan darah wajib diisi.',
+
+            'email.required' => 'Email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'email.max' => 'Email tidak boleh lebih dari 255 karakter.',
+            'email.unique' => 'Email sudah digunakan.',
+
+            'age.required' => 'Umur wajib diisi.',
+            'age.integer' => 'Umur harus berupa angka.',
+
+            'contact.required' => 'Nomor kontak wajib diisi.',
+            'contact.string' => 'Nomor kontak harus berupa teks.',
+            'contact.max' => 'Nomor kontak tidak boleh lebih dari 15 karakter.',
+            'contact.unique' => 'Nomor kontak sudah digunakan.',
+
+            'ktp_images.file' => 'File KTP harus berupa file.',
+            'ktp_images.mimes' => 'Format file KTP harus jpg, jpeg, atau png.',
+            'ktp_images.max' => 'Ukuran file KTP tidak boleh lebih dari 10MB.',
+
+            'answers.required' => 'Jawaban screening wajib diisi.',
+            'answers.array' => 'Format jawaban tidak valid.',
+            'answers.*.questioner_id.required' => 'Pertanyaan wajib diisi.',
+            'answers.*.questioner_id.exists' => 'Pertanyaan tidak valid.',
+            'answers.*.answer.required' => 'Jawaban wajib diisi.',
+        ];
+    }
 }

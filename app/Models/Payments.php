@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Str;
+use App\Models\Medicines\MedicineBatch;
 use App\Models\Users\Cashier;
 use App\Models\Users\Patients;
-use App\Models\Medicines\MedicineBatch;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Payments extends Model
 {
@@ -59,6 +59,7 @@ class Payments extends Model
 
         return $transactionNumber;
     }
+
     public function cashier()
     {
         return $this->belongsTo(Cashier::class);

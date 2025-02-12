@@ -32,9 +32,9 @@ export default function CreateQuestionnaire() {
     const [description, setDescription] = useState("");
 
     function capitalizeWords(str) {
-        return str.replace(/\b\w/g, char => char.toUpperCase());
+        return str.replace(/\b\w/g, (char) => char.toUpperCase());
     }
-    
+
     const { data, setData, post, errors } = useForm({
         question_text: "",
         answer_type: "text",
@@ -68,15 +68,15 @@ export default function CreateQuestionnaire() {
             description,
             onSuccess: () => {
                 setIsLoading(false);
-                toast.success("Berhasil Membuat Kuesioner",{
-                    icon: <CircleCheck className="h-5 w-5 text-green-500"/>
+                toast.success("Berhasil Membuat Kuesioner", {
+                    icon: <CircleCheck className="h-5 w-5 text-green-500" />,
                 });
             },
             onError: (errors) => {
                 setIsLoading(false);
                 Object.values(errors).forEach((error) => {
-                    toast.error("Gagal Membuat Kuesioner",error, {
-                        icon: <X className="h-5 w-5 text-red-500" />
+                    toast.error("Gagal Membuat Kuesioner", error, {
+                        icon: <X className="h-5 w-5 text-red-500" />,
                     });
                 });
             },

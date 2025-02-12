@@ -2,43 +2,43 @@
 
 namespace App\Http\Controllers\Screenings;
 
-use Carbon\Carbon;
-use Inertia\Inertia;
-use App\Models\Users\Patients;
-use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\Screenings\ScreeningOfflineRequest;
 use App\Models\Screenings\ScreeningAnswers;
 use App\Models\Screenings\ScreeningQuestions;
-use App\Http\Requests\Screenings\ScreeningOfflineRequest;
+use App\Models\Users\Patients;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
 
 class ScreeningOfflineController extends Controller
 {
     public function index()
     {
         $userId = Auth::id();
-    
+
         $user = Auth::user();
-    
+
         $patient = Patients::where('user_id', $user->id)->first();
-    
+
         if (! $patient) {
             return redirect()->route('information.index')
                 ->with('message', 'Masukan data diri kamu terlebih dahulu sebelum melakukan screening.');
         }
-    
+
         // Fetch the patient and their related questionnaire answers
         $screening = Patients::with('answers') // Eager load answers
             ->where('user_id', $userId)
             ->orderBy('created_at', 'desc')
             ->first();
-    
+
         // Format created_at jika screening ditemukan
         if ($screening) {
             $screening->formatted_created_at = Carbon::parse($screening->created_at)->translatedFormat('d F Y');
         }
-    
+
         return Inertia::render('Dashboard/Patients/Screenings/Offline/Index', [
             'screening' => $screening,
         ]);

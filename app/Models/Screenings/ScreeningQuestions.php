@@ -16,6 +16,7 @@ class ScreeningQuestions extends Model
     {
         return $this->hasMany(ScreeningAnswers::class, 'question_id');
     }
+
     public function setQuestionTextAttribute($value)
     {
         $this->attributes['question_text'] = ucwords(strtolower($value));

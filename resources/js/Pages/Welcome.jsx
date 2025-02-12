@@ -17,10 +17,7 @@ export default function Welcome() {
                                         Klinik Gunung
                                     </h1>
                                     <p className="max-w-[600px] text-gray-500 md:text-xl dark:text-gray-400">
-                                        Give your team the toolkit to stop
-                                        configuring and start innovating.
-                                        Securely build, deploy, and scale the
-                                        best web experiences.
+                                        Lorem ipsum dolor, sit amet consectetur adipisicing elit. Cupiditate quos quaerat provident neque nam asperiores vero sequi delectus.
                                     </p>
                                 </div>
                                 <div className="flex flex-col gap-2 min-[400px]:flex-row">

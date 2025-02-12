@@ -41,7 +41,8 @@ export default function Component({ social, status, canResetPassword = true }) {
                     <CardHeader>
                         <CardTitle className="text-2xl">Login</CardTitle>
                         <CardDescription>
-                            Enter your email below to login to your account
+                            Masukkan email Anda di bawah ini untuk login ke akun
+                            Anda
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -72,7 +73,7 @@ export default function Component({ social, status, canResetPassword = true }) {
                                             href={route("password.request")}
                                             className="text-sm underline"
                                         >
-                                            Forgot your password?
+                                            Lupa Password?
                                         </Link>
                                     )}
                                 </div>
@@ -135,12 +136,12 @@ export default function Component({ social, status, canResetPassword = true }) {
                             </Button>
                         )}
                         <div className="mt-4 text-sm text-center">
-                            Don&apos;t have an account?{" "}
+                            Belum Memiliki Akun?{" "}
                             <Link
                                 href={route("register")}
                                 className="underline"
                             >
-                                Sign up
+                                Buat Akun
                             </Link>
                         </div>
                     </CardContent>

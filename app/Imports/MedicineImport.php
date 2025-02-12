@@ -3,9 +3,9 @@
 namespace App\Imports;
 
 use App\Models\Medicines\Medicine;
-use Illuminate\Support\Collection;
 use App\Models\Medicines\MedicineBatch;
 use App\Models\Medicines\MedicinePricing;
+use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
 
 class MedicineImport implements ToCollection
@@ -23,24 +23,24 @@ class MedicineImport implements ToCollection
                 ['barcode' => $row[0]], // Kondisi untuk menghindari duplikasi
                 [
                     'medicine_name' => $row[1],
-                    'brand_name'    => $row[2],
-                    'category'      => $row[3],
-                    'dosage'        => $row[4],
-                    'content'       => $row[5],
-                    'quantity'      => $row[6],
+                    'brand_name' => $row[2],
+                    'category' => $row[3],
+                    'dosage' => $row[4],
+                    'content' => $row[5],
+                    'quantity' => $row[6],
                 ]
             );
 
             // 2. Simpan data ke tabel medicine_batches
             MedicineBatch::updateOrCreate(
                 [
-                    'medicine_id'  => $medicine->id,
+                    'medicine_id' => $medicine->id,
                     'batch_number' => $row[7],
                 ],
                 [
-                    'quantity'        => $row[8],
+                    'quantity' => $row[8],
                     'expiration_date' => $row[9],
-                    'supplier'        => $row[10],
+                    'supplier' => $row[10],
                 ]
             );
 
@@ -49,7 +49,7 @@ class MedicineImport implements ToCollection
                 ['medicine_id' => $medicine->id],
                 [
                     'purchase_price' => $row[11],
-                    'otc_price'      => $row[12],
+                    'otc_price' => $row[12],
                 ]
             );
         }

@@ -15,8 +15,7 @@ import { Label } from "@/Components/ui/label";
 import { Eye, EyeOff } from "lucide-react";
 import AuthLayout from "@/Layouts/Auth/AuthLayout";
 
-
-export default function Component({social}) {
+export default function Component({ social }) {
     const { data, setData, post, processing, errors, reset } = useForm({
         name: "",
         email: "",
@@ -51,7 +50,7 @@ export default function Component({social}) {
                 <CardHeader>
                     <CardTitle className="text-2xl">Register</CardTitle>
                     <CardDescription>
-                        Create a new account to get started
+                        Buat akun baru untuk memulai
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -62,7 +61,7 @@ export default function Component({social}) {
                                 id="name"
                                 name="name"
                                 value={data.name}
-                                placeholder="Name"
+                                placeholder="Nama"
                                 onChange={(e) =>
                                     setData("name", e.target.value)
                                 }
@@ -188,25 +187,24 @@ export default function Component({social}) {
                         </Button>
                     </form>
                     {social.google === 1 && (
-                            <Button
-                                variant="outline"
-                                className="w-full mt-4"
-                                onClick={() => {
-                                    window.location.href =
-                                        "/auth/google/redirect";
-                                }}
-                            >
-                                Login with Google
-                            </Button>
-                        )}
+                        <Button
+                            variant="outline"
+                            className="w-full mt-4"
+                            onClick={() => {
+                                window.location.href = "/auth/google/redirect";
+                            }}
+                        >
+                            Login with Google
+                        </Button>
+                    )}
                     <div className="mt-4 text-center text-sm">
-                        Already have an account?{" "}
+                        Sudah punya akun?{" "}
                         <Link href={route("login")} className="underline">
-                            Log in
+                            Masuk
                         </Link>
                     </div>
                 </CardContent>
             </Card>
-            </AuthLayout>
+        </AuthLayout>
     );
 }

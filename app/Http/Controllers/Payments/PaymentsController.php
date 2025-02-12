@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Payments;
 
+use App\Http\Controllers\Controller;
+use App\Models\Medicines\MedicineBatch;
 use App\Models\Payments;
-use Illuminate\Http\Request;
 use App\Models\Users\Cashier;
 use App\Models\Users\Patients;
 use Barryvdh\DomPDF\Facade\Pdf;
-use App\Http\Controllers\Controller;
-use App\Models\Medicines\MedicineBatch;
+use Illuminate\Http\Request;
 
 class PaymentsController extends Controller
 {
@@ -87,6 +87,6 @@ class PaymentsController extends Controller
         ]);
 
         // Mengunduh PDF dengan nama file "nota_pembayaran.pdf"
-        return $pdf->download('nota_pembayaran_' . $payment->no_transaction . '.pdf');
+        return $pdf->download('nota_pembayaran_'.$payment->no_transaction.'.pdf');
     }
 }

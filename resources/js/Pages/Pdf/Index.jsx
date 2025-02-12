@@ -6,17 +6,8 @@ export default function HealthScreeningForm() {
         <>
             <Head title="Health Screening Form" />
             <div className="p-6">
-                <div
-                    id="health-form"
-                    className="bg-white w-[230mm]  p-9"
-                >
-                    {/* Header */}
+                <div id="health-form" className="bg-white w-[230mm]  p-9">
                     <div className="bg-[#25418e] text-white p-6 relative w-full">
-                        {/* <img
-                            src={`${window.location.origin}/images/mountain-bg.png`}
-                            alt="Mountain Background"
-                            className="absolute top-0 left-0 w-full h-full object-cover opacity-20"
-                        /> */}
                         <h1 className="text-4xl font-bold mb-4">
                             KLINIK GUNUNG
                         </h1>

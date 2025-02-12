@@ -49,7 +49,6 @@ export default function Layout({ header, children }) {
             </div>
             <div className="flex items-center space-x-4">
               <ModeToggle/>
-              <NotificationButton />
               <ProfileButton />
             </div>
           </header>
