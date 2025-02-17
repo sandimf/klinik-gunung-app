@@ -216,7 +216,7 @@ class ParamedisReportController extends Controller
         ];
 
         // Mengonversi data menjadi PDF
-        $pdf = PDF::loadView('pdf.activity.paramedis.health', $data);
+        $pdf = Pdf::loadView('pdf.activity.paramedis.health', $data);
 
         // Download PDF dengan nama yang sesuai
         return $pdf->download('health_check_'.$patientName.'.pdf');
@@ -271,7 +271,7 @@ class ParamedisReportController extends Controller
         ];
 
         // Load view dengan data
-        $pdf = PDF::loadView('pdf.activity.paramedis.self', $data);
+        $pdf = Pdf::loadView('pdf.activity.paramedis.self', $data);
 
         // Format nama file PDF
         $paramedisName = str_replace(' ', '_', $paramedis->name); // Ganti spasi dengan underscore
