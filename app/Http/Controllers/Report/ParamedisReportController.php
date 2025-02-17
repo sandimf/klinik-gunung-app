@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Clinic\PhysicalExamination;
 use App\Models\Users\Paramedis;
 use App\Models\Users\Patients;
-use Barryvdh\DomPDF\Facade\pdf;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
