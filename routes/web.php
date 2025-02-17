@@ -214,7 +214,6 @@ Route::prefix('dashboard/admin')->middleware(['auth', 'role:admin'])->group(func
 
     Route::resource('settings/emergency', EmergencyContactController::class)
         ->only(['index', 'update', 'store']);
-
     /**
      * Rute untuk membuat custom questioner untuk screening
      */
