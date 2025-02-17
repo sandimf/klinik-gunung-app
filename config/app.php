@@ -117,17 +117,6 @@ return [
     | Supported drivers: "file", "cache"
     |
     */
-
-    'providers' => [
-        // Provider lainnya...
-        Barryvdh\DomPDF\ServiceProvider::class,
-    ],
-
-    'aliases' => [
-        // Alias lainnya...
-        'Pdf' => Barryvdh\DomPDF\Facade\Pdf::class,
-    ],
-    
     
 
     'maintenance' => [
