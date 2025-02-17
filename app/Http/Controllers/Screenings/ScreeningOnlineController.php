@@ -27,7 +27,7 @@ class ScreeningOnlineController extends Controller
         if (! $patient) {
             // Redirect ke halaman untuk melengkapi data pasien
             return redirect()->route('information.index')
-                ->with('message', 'Silakan lengkapi profil pasien Anda sebelum mengakses Screening online.');
+                ->with('message', 'Masukan data diri kamu terlebih dahulu sebelum mengakses Screening online.');
         }
 
         // Fetch the patient and their related questionnaire answers

@@ -39,7 +39,7 @@ export default function Component({ social, status, canResetPassword = true }) {
             <div className="relative w-full max-w-sm mx-auto">
                 <Card className="w-full">
                     <CardHeader>
-                        <CardTitle className="text-2xl">Login</CardTitle>
+                        <CardTitle className="text-2xl">Masuk</CardTitle>
                         <CardDescription>
                             Masukkan email Anda di bawah ini untuk login ke akun
                             Anda
@@ -120,7 +120,7 @@ export default function Component({ social, status, canResetPassword = true }) {
                                 className="w-full"
                                 disabled={processing}
                             >
-                                {processing ? "Logging in..." : "Login"}
+                                {processing ? "Sedang Masuk..." : "Masuk"}
                             </Button>
                         </form>
                         {social.google === 1 && (

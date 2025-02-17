@@ -19,8 +19,10 @@ export default defineConfig({
             '@ui': path.resolve(__dirname, './resources/js/Components/ui'),
             'ziggy-js': path.resolve(__dirname, './vendor/tightenco/ziggy'),
         },
+        
     },
+
     server: {
-        https: true
-},
+        cors: true,
+      },
 });

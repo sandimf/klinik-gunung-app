@@ -48,7 +48,7 @@ class PatientsPanelController extends Controller
 
         if (! $patient) {
             return redirect()->route('information.index')
-                ->with('message', 'Silakan lengkapi profil pasien Anda sebelum mengakses profile.');
+                ->with('message', 'Masukan data diri kamu terlebih dahulu sebelum mengakses profile.');
         }
 
         return Inertia::render('Profile/Patients');

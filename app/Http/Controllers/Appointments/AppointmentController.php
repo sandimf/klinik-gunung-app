@@ -21,7 +21,7 @@ class AppointmentController extends Controller
         if (! $patient) {
             // Redirect ke halaman untuk melengkapi data pasien
             return redirect()->route('information.index')
-                ->with('message', 'Silakan lengkapi profil pasien Anda sebelum mengakses janji temu.');
+                ->with('message', 'Masukan data diri kamu terlebih dahulu sebelum mengakses janji temu.');
         }
 
         $appointments = Appointments::with('patient')
