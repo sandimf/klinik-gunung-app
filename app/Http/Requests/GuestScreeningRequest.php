@@ -17,7 +17,7 @@ class GuestScreeningRequest extends FormRequest
             'nik' => 'required|numeric|digits_between:1,16|unique:patients,nik',
             'name' => 'required|string|max:255',
             'place_of_birth' => 'required|string|max:255',
-            'date_of_birth' => 'required|date',
+            'date_of_birth' => 'required|string|max:255',
             'rt_rw' => 'required|string|max:255',
             'address' => 'required|string|max:255',
             'village' => 'required|string|max:255',
@@ -54,7 +54,7 @@ class GuestScreeningRequest extends FormRequest
             'place_of_birth.max' => 'Tempat lahir tidak boleh lebih dari 255 karakter.',
 
             'date_of_birth.required' => 'Tanggal lahir wajib diisi.',
-            'date_of_birth.date' => 'Format tanggal lahir tidak valid.',
+            'date_of_birth.string' => 'Format tanggal lahir tidak valid.',
 
             'rt_rw.required' => 'RT/RW wajib diisi.',
             'address.required' => 'Alamat wajib diisi.',
