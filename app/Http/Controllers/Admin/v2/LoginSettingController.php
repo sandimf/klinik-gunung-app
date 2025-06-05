@@ -1,24 +1,15 @@
 <?php
 
-namespace App\Http\Controllers\Dashboard;
+namespace App\Http\Controllers\Admin\v2;
 
-use App\Http\Controllers\Controller;
-use App\Models\Auth\SocialLogin;
-use App\Models\User;
-use App\Repositories\VisitRepository;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Http\Request;
+use App\Models\Auth\SocialLogin;
+use App\Http\Controllers\Controller;
 
-class AdminPanelController extends Controller
+class LoginSettingController extends Controller
 {
-    public function index(User $user, VisitRepository $visitRepository)
-    {
-        return Inertia::render('Dashboard/Admin/Index', [
-            'visitCount' => $visitCount = $visitRepository->visitCount($user),
-        ]);
-    }
-
-    public function AuthSetting()
+    public function index()
     {
         // Ambil data social login dari database (entri pertama)
         $social = SocialLogin::firstOrCreate([], [
@@ -32,13 +23,12 @@ class AdminPanelController extends Controller
         ]);
     }
 
-    public function updateAuth(Request $request)
+    public function update(Request $request)
     {
         $socialLogin = SocialLogin::first(); // Ambil pengaturan pertama
         if ($socialLogin) {
             $socialLogin->update($request->only(['google']));
         }
-
         return redirect()->back()->with('message', 'Social login settings updated successfully!');
     }
 }

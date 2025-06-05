@@ -24,7 +24,7 @@ import { Button } from "@/Components/ui/button";
 import PatientSidebar from "@/Layouts/Dashboard/PatientsSidebarLayout";
 import { toast, Toaster } from "sonner";
 
-export default function Index({ questions, errors, patient }) {
+export default function Index({ questions, patient }) {
     const user = usePage().props.auth.user;
 
     const [answers, setAnswers] = useState({});
@@ -38,7 +38,6 @@ export default function Index({ questions, errors, patient }) {
         gender: patient?.gender || "",
     });
     const [formErrors, setFormErrors] = useState({});
-    // const [agreedToPrivacy, setAgreedToPrivacy] = useState(false);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
     const isReadOnly = Boolean(patient);
@@ -70,17 +69,15 @@ export default function Index({ questions, errors, patient }) {
         if (unansweredQuestions.length > 0) {
             const newErrors = {};
             unansweredQuestions.forEach((question) => {
-                newErrors[question.id] = "This question is required";
+                newErrors[question.id] = "Pertanyaan ini wajib diisi";
             });
             setFormErrors(newErrors);
-            toast.error("Please answer all questions before submitting.");
+            toast.error("Mohon jawab semua pertanyaan sebelum mengirimkannya.");
             return;
         }
-
-        // Adding delay before opening the dialog for submission confirmation
         setTimeout(() => {
             setIsDialogOpen(true);
-        }); // Adjust delay time (in milliseconds) as needed
+        }, 200);
     };
 
     const confirmSubmit = () => {
@@ -107,7 +104,7 @@ export default function Index({ questions, errors, patient }) {
                         const errorMessages = Object.values(errors).flat();
                         errorMessages.forEach((error) => toast.error(error));
                     } else {
-                        toast.error("An error occurred during submission.");
+                        toast.error("Terjadi kesalahan saat pengiriman.");
                     }
                     setIsDialogOpen(false);
                 },
@@ -122,9 +119,7 @@ export default function Index({ questions, errors, patient }) {
                 <Head title="Screening" />
 
                 {questions.length === 1 ? (
-                    <h1 className="text-2xl font-bold">
-                        Kuisioner Kesehatan Dan Kesiapan Pendakian Gunung Semeru
-                    </h1>
+                    <h1 className="text-2xl font-bold">Kuisioner Kesehatan</h1>
                 ) : (
                     <></>
                 )}
@@ -145,7 +140,7 @@ export default function Index({ questions, errors, patient }) {
                             </CardHeader>
                             <CardContent>
                                 {/* NIK */}
-                                <div>
+                                <div className="mb-4">
                                     <Label htmlFor="nik">NIK</Label>
                                     <Input
                                         id="nik"
@@ -164,7 +159,7 @@ export default function Index({ questions, errors, patient }) {
                                 </div>
 
                                 {/* Name */}
-                                <div>
+                                <div className="mb-4">
                                     <Label htmlFor="name">Name</Label>
                                     <Input
                                         id="name"
@@ -183,7 +178,7 @@ export default function Index({ questions, errors, patient }) {
                                 </div>
 
                                 {/* Age */}
-                                <div>
+                                <div className="mb-4">
                                     <Label htmlFor="age">Age</Label>
                                     <Input
                                         id="age"
@@ -202,7 +197,7 @@ export default function Index({ questions, errors, patient }) {
                                 </div>
 
                                 {/* Contact */}
-                                <div>
+                                <div className="mb-4">
                                     <Label htmlFor="contact">Contact</Label>
                                     <Input
                                         id="contact"
@@ -221,7 +216,7 @@ export default function Index({ questions, errors, patient }) {
                                 </div>
 
                                 {/* Email */}
-                                <div>
+                                <div className="mb-4">
                                     <Label htmlFor="email">Email</Label>
                                     <Input
                                         id="email"
@@ -241,33 +236,18 @@ export default function Index({ questions, errors, patient }) {
 
                                 {/* Gender */}
                                 <div>
-                                    <Label htmlFor="gender">Gender</Label>
-                                    <Select
+                                    <Label htmlFor="gender">
+                                        Jenis Kelamin
+                                    </Label>
+                                    <Input
                                         id="gender"
                                         name="gender"
+                                        type="text"
                                         value={patientData.gender}
-                                        onValueChange={(value) =>
-                                            setPatientData((prevData) => ({
-                                                ...prevData,
-                                                gender: value,
-                                            }))
-                                        }
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select gender" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="Male">
-                                                Male
-                                            </SelectItem>
-                                            <SelectItem value="Female">
-                                                Female
-                                            </SelectItem>
-                                            <SelectItem value="other">
-                                                Other
-                                            </SelectItem>
-                                        </SelectContent>
-                                    </Select>
+                                        onChange={handlePatientDataChange}
+                                        placeholder={user.gender}
+                                        readOnly={isReadOnly}
+                                    />
                                     {formErrors.gender && (
                                         <p className="text-sm text-red-500">
                                             {formErrors.gender}
@@ -277,312 +257,396 @@ export default function Index({ questions, errors, patient }) {
                             </CardContent>
                         </Card>
 
-                        {questions.map((question) => (
-                            <Card key={question.id} className="mb-4">
-                                <CardHeader>
-                                    <CardTitle>
-                                        {question.question_text}
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    {/* Render input berdasarkan tipe pertanyaan */}
-                                    {question.answer_type === "text" && (
-                                        <div>
-                                            <Input
-                                                type="text"
-                                                value={
-                                                    answers[question.id] || ""
-                                                }
-                                                onChange={(e) =>
-                                                    handleAnswerChange(
-                                                        question.id,
-                                                        e.target.value
-                                                    )
-                                                }
-                                                placeholder="Jawaban"
-                                            />
-                                            {formErrors[question.id] && (
-                                                <p className="text-sm text-red-500">
-                                                    {formErrors[question.id]}
-                                                </p>
-                                            )}
-                                        </div>
-                                    )}
-                                    {/* Checkbox Input */}
-                                    {question.answer_type === "checkbox" && (
-                                        <div>
-                                            {Array.isArray(question.options) &&
-                                                question.options.map(
-                                                    (option, index) => (
-                                                        <div key={index}>
-                                                            <Checkbox
-                                                                checked={answers[
+                        <Card className="mb-6">
+                            <CardHeader>
+                                <CardTitle className="text-xl font-bold">
+                                    Kuesioner
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                {questions?.map((question) => (
+                                    <div
+                                        key={question.id}
+                                        className="rounded-lg"
+                                    >
+                                        <h3 className="mb-3 text-lg font-semibold">
+                                            {question.question_text}
+                                        </h3>
+                                        <div className="space-y-1">
+                                            {question.answer_type ===
+                                                "text" && (
+                                                <div>
+                                                    <Input
+                                                        type="text"
+                                                        value={
+                                                            answers[
+                                                                question.id
+                                                            ] || ""
+                                                        }
+                                                        onChange={(e) =>
+                                                            handleAnswerChange(
+                                                                question.id,
+                                                                e.target.value
+                                                            )
+                                                        }
+                                                        placeholder="Masukkan jawaban Anda"
+                                                    />
+                                                    {formErrors[
+                                                        question.id
+                                                    ] && (
+                                                        <p className="mt-2 text-sm text-red-500">
+                                                            {
+                                                                formErrors[
                                                                     question.id
-                                                                ]?.includes(
-                                                                    option
-                                                                )}
-                                                                onCheckedChange={(
-                                                                    checked
-                                                                ) => {
-                                                                    const updatedAnswers =
-                                                                        checked
-                                                                            ? [
-                                                                                  ...(answers[
-                                                                                      question
-                                                                                          .id
-                                                                                  ] ||
-                                                                                      []),
-                                                                                  option,
-                                                                              ]
-                                                                            : (
-                                                                                  answers[
-                                                                                      question
-                                                                                          .id
-                                                                                  ] ||
-                                                                                  []
-                                                                              ).filter(
-                                                                                  (
-                                                                                      answer
-                                                                                  ) =>
-                                                                                      answer !==
-                                                                                      option
-                                                                              );
-                                                                    handleAnswerChange(
-                                                                        question.id,
-                                                                        updatedAnswers
-                                                                    );
-                                                                    // Debugging
-                                                                }}
-                                                            />
-                                                            {option}
-                                                        </div>
-                                                    )
-                                                )}
-                                            {formErrors[question.id] && (
-                                                <p className="text-sm text-red-500">
-                                                    {formErrors[question.id]}
-                                                </p>
+                                                                ]
+                                                            }
+                                                        </p>
+                                                    )}
+                                                </div>
                                             )}
-                                        </div>
-                                    )}
-
-                                    {/* Checkbox with Textarea Input */}
-                                    {question.answer_type ===
-                                        "checkbox_textarea" && (
-                                        <div>
-                                            {Array.isArray(question.options) &&
-                                                question.options.map(
-                                                    (option, index) => (
-                                                        <div key={index}>
-                                                            <Checkbox
-                                                                checked={
-                                                                    Array.isArray(
-                                                                        answers[
-                                                                            question
-                                                                                .id
-                                                                        ]
-                                                                            ?.options
-                                                                    ) &&
-                                                                    answers[
-                                                                        question
-                                                                            .id
-                                                                    ]?.options.includes(
-                                                                        option
-                                                                    )
-                                                                }
-                                                                onCheckedChange={(
-                                                                    checked
-                                                                ) => {
-                                                                    const updatedAnswers =
-                                                                        {
-                                                                            ...answers[
-                                                                                question
-                                                                                    .id
-                                                                            ],
-                                                                        };
-                                                                    updatedAnswers.options =
-                                                                        Array.isArray(
-                                                                            updatedAnswers.options
-                                                                        )
-                                                                            ? [
-                                                                                  ...updatedAnswers.options,
-                                                                              ]
-                                                                            : [];
-                                                                    if (
-                                                                        checked
-                                                                    ) {
-                                                                        updatedAnswers.options.push(
-                                                                            option
-                                                                        );
-                                                                    } else {
-                                                                        const indexToRemove =
-                                                                            updatedAnswers.options.indexOf(
-                                                                                option
-                                                                            );
-                                                                        if (
-                                                                            indexToRemove >
-                                                                            -1
-                                                                        ) {
-                                                                            updatedAnswers.options.splice(
-                                                                                indexToRemove,
-                                                                                1
-                                                                            );
-                                                                        }
-                                                                    }
-                                                                    handleAnswerChange(
-                                                                        question.id,
-                                                                        updatedAnswers
-                                                                    );
-                                                                }}
-                                                            />
-                                                            {option}
-                                                        </div>
-                                                    )
-                                                )}
-                                            <Textarea
-                                                value={
-                                                    answers[question.id]
-                                                        ?.textarea || ""
-                                                }
-                                                onChange={(e) => {
-                                                    const updatedAnswers = {
-                                                        ...answers[question.id],
-                                                        textarea:
-                                                            e.target.value,
-                                                    };
-                                                    handleAnswerChange(
-                                                        question.id,
-                                                        updatedAnswers
-                                                    );
-                                                }}
-                                                placeholder="Jelaskan"
-                                            />
-                                            {formErrors[question.id] && (
-                                                <p className="text-sm text-red-500">
-                                                    {formErrors[question.id]}
-                                                </p>
-                                            )}
-                                        </div>
-                                    )}
-
-                                    {/* Select Input */}
-                                    {question.answer_type === "select" && (
-                                        <div>
-                                            <Select
-                                                value={
-                                                    answers[question.id] || ""
-                                                }
-                                                onValueChange={(value) =>
-                                                    handleAnswerChange(
-                                                        question.id,
-                                                        value
-                                                    )
-                                                }
-                                            >
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Select an option" />
-                                                </SelectTrigger>
-                                                <SelectContent>
+                                            {question.answer_type ===
+                                                "checkbox" && (
+                                                <div className="space-y-1">
                                                     {Array.isArray(
                                                         question.options
                                                     ) &&
                                                         question.options.map(
                                                             (option, index) => (
-                                                                <SelectItem
+                                                                <div
                                                                     key={index}
-                                                                    value={
-                                                                        option
-                                                                    }
+                                                                    className="flex items-center space-x-2"
                                                                 >
-                                                                    {option}
-                                                                </SelectItem>
+                                                                    <Checkbox
+                                                                        checked={answers[
+                                                                            question
+                                                                                .id
+                                                                        ]?.includes(
+                                                                            option
+                                                                        )}
+                                                                        onCheckedChange={(
+                                                                            checked
+                                                                        ) => {
+                                                                            const updatedAnswers =
+                                                                                checked
+                                                                                    ? [
+                                                                                          ...(answers[
+                                                                                              question
+                                                                                                  .id
+                                                                                          ] ||
+                                                                                              []),
+                                                                                          option,
+                                                                                      ]
+                                                                                    : (
+                                                                                          answers[
+                                                                                              question
+                                                                                                  .id
+                                                                                          ] ||
+                                                                                          []
+                                                                                      ).filter(
+                                                                                          (
+                                                                                              answer
+                                                                                          ) =>
+                                                                                              answer !==
+                                                                                              option
+                                                                                      );
+                                                                            handleAnswerChange(
+                                                                                question.id,
+                                                                                updatedAnswers
+                                                                            );
+                                                                        }}
+                                                                    />
+                                                                    <span>
+                                                                        {option}
+                                                                    </span>
+                                                                </div>
                                                             )
                                                         )}
-                                                </SelectContent>
-                                            </Select>
-                                            {formErrors[question.id] && (
-                                                <p className="text-sm text-red-500">
-                                                    {formErrors[question.id]}
-                                                </p>
+                                                    {formErrors[
+                                                        question.id
+                                                    ] && (
+                                                        <p className="mt-2 text-sm text-red-500">
+                                                            {
+                                                                formErrors[
+                                                                    question.id
+                                                                ]
+                                                            }
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            )}
+                                            {question.answer_type ===
+                                                "checkbox_textarea" && (
+                                                <div className="space-y-1">
+                                                    {Array.isArray(
+                                                        question.options
+                                                    ) &&
+                                                        question.options.map(
+                                                            (option, index) => (
+                                                                <div
+                                                                    key={index}
+                                                                    className="flex items-center space-x-2"
+                                                                >
+                                                                    <Checkbox
+                                                                        checked={
+                                                                            Array.isArray(
+                                                                                answers[
+                                                                                    question
+                                                                                        .id
+                                                                                ]
+                                                                                    ?.options
+                                                                            ) &&
+                                                                            answers[
+                                                                                question
+                                                                                    .id
+                                                                            ]?.options.includes(
+                                                                                option
+                                                                            )
+                                                                        }
+                                                                        onCheckedChange={(
+                                                                            checked
+                                                                        ) => {
+                                                                            const updatedAnswers =
+                                                                                {
+                                                                                    ...answers[
+                                                                                        question
+                                                                                            .id
+                                                                                    ],
+                                                                                };
+                                                                            updatedAnswers.options =
+                                                                                Array.isArray(
+                                                                                    updatedAnswers.options
+                                                                                )
+                                                                                    ? [
+                                                                                          ...updatedAnswers.options,
+                                                                                      ]
+                                                                                    : [];
+                                                                            if (
+                                                                                checked
+                                                                            ) {
+                                                                                updatedAnswers.options.push(
+                                                                                    option
+                                                                                );
+                                                                            } else {
+                                                                                const indexToRemove =
+                                                                                    updatedAnswers.options.indexOf(
+                                                                                        option
+                                                                                    );
+                                                                                if (
+                                                                                    indexToRemove >
+                                                                                    -1
+                                                                                ) {
+                                                                                    updatedAnswers.options.splice(
+                                                                                        indexToRemove,
+                                                                                        1
+                                                                                    );
+                                                                                }
+                                                                            }
+                                                                            handleAnswerChange(
+                                                                                question.id,
+                                                                                updatedAnswers
+                                                                            );
+                                                                        }}
+                                                                    />
+                                                                    <span>
+                                                                        {option}
+                                                                    </span>
+                                                                </div>
+                                                            )
+                                                        )}
+                                                    <Textarea
+                                                        value={
+                                                            answers[question.id]
+                                                                ?.textarea || ""
+                                                        }
+                                                        onChange={(e) => {
+                                                            const updatedAnswers =
+                                                                {
+                                                                    ...answers[
+                                                                        question
+                                                                            .id
+                                                                    ],
+                                                                    textarea:
+                                                                        e.target
+                                                                            .value,
+                                                                };
+                                                            handleAnswerChange(
+                                                                question.id,
+                                                                updatedAnswers
+                                                            );
+                                                        }}
+                                                        placeholder="Jelaskan"
+                                                    />
+                                                    {formErrors[
+                                                        question.id
+                                                    ] && (
+                                                        <p className="mt-2 text-sm text-red-500">
+                                                            {
+                                                                formErrors[
+                                                                    question.id
+                                                                ]
+                                                            }
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            )}
+                                            {question.answer_type ===
+                                                "select" && (
+                                                <div>
+                                                    <Select
+                                                        value={
+                                                            answers[
+                                                                question.id
+                                                            ] || ""
+                                                        }
+                                                        onValueChange={(
+                                                            value
+                                                        ) =>
+                                                            handleAnswerChange(
+                                                                question.id,
+                                                                value
+                                                            )
+                                                        }
+                                                    >
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder="Select an option" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            {Array.isArray(
+                                                                question.options
+                                                            ) &&
+                                                                question.options.map(
+                                                                    (
+                                                                        option,
+                                                                        index
+                                                                    ) => (
+                                                                        <SelectItem
+                                                                            key={
+                                                                                index
+                                                                            }
+                                                                            value={
+                                                                                option
+                                                                            }
+                                                                        >
+                                                                            {
+                                                                                option
+                                                                            }
+                                                                        </SelectItem>
+                                                                    )
+                                                                )}
+                                                        </SelectContent>
+                                                    </Select>
+                                                    {formErrors[
+                                                        question.id
+                                                    ] && (
+                                                        <p className="mt-2 text-sm text-red-500">
+                                                            {
+                                                                formErrors[
+                                                                    question.id
+                                                                ]
+                                                            }
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            )}
+                                            {question.answer_type ===
+                                                "textarea" && (
+                                                <div>
+                                                    <Textarea
+                                                        value={
+                                                            answers[
+                                                                question.id
+                                                            ] || ""
+                                                        }
+                                                        onChange={(e) =>
+                                                            handleAnswerChange(
+                                                                question.id,
+                                                                e.target.value
+                                                            )
+                                                        }
+                                                        placeholder="Masukkan jawaban Anda"
+                                                    />
+                                                    {formErrors[
+                                                        question.id
+                                                    ] && (
+                                                        <p className="mt-2 text-sm text-red-500">
+                                                            {
+                                                                formErrors[
+                                                                    question.id
+                                                                ]
+                                                            }
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            )}
+                                            {question.answer_type ===
+                                                "number" && (
+                                                <div>
+                                                    <Input
+                                                        type="number"
+                                                        value={
+                                                            answers[
+                                                                question.id
+                                                            ] || ""
+                                                        }
+                                                        onChange={(e) =>
+                                                            handleAnswerChange(
+                                                                question.id,
+                                                                e.target.value
+                                                            )
+                                                        }
+                                                        placeholder="Masukkan jawaban Anda"
+                                                    />
+                                                    {formErrors[
+                                                        question.id
+                                                    ] && (
+                                                        <p className="mt-2 text-sm text-red-500">
+                                                            {
+                                                                formErrors[
+                                                                    question.id
+                                                                ]
+                                                            }
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            )}
+                                            {question.answer_type ===
+                                                "date" && (
+                                                <div>
+                                                    <Input
+                                                        type="date"
+                                                        value={
+                                                            answers[
+                                                                question.id
+                                                            ] || ""
+                                                        }
+                                                        onChange={(e) =>
+                                                            handleAnswerChange(
+                                                                question.id,
+                                                                e.target.value
+                                                            )
+                                                        }
+                                                        placeholder="Masukkan jawaban Anda"
+                                                    />
+                                                    {formErrors[
+                                                        question.id
+                                                    ] && (
+                                                        <p className="mt-2 text-sm text-red-500">
+                                                            {
+                                                                formErrors[
+                                                                    question.id
+                                                                ]
+                                                            }
+                                                        </p>
+                                                    )}
+                                                </div>
                                             )}
                                         </div>
-                                    )}
-
-                                    {/* Textarea Input */}
-                                    {question.answer_type === "textarea" && (
-                                        <div>
-                                            <Textarea
-                                                value={
-                                                    answers[question.id] || ""
-                                                }
-                                                onChange={(e) =>
-                                                    handleAnswerChange(
-                                                        question.id,
-                                                        e.target.value
-                                                    )
-                                                }
-                                                placeholder="Enter your answer"
-                                            />
-                                            {formErrors[question.id] && (
-                                                <p className="text-sm text-red-500">
-                                                    {formErrors[question.id]}
-                                                </p>
-                                            )}
-                                        </div>
-                                    )}
-                                    {question.answer_type === "number" && (
-                                        <div>
-                                            <Input
-                                                type="number"
-                                                value={
-                                                    answers[question.id] || ""
-                                                }
-                                                onChange={(e) =>
-                                                    handleAnswerChange(
-                                                        question.id,
-                                                        e.target.value
-                                                    )
-                                                }
-                                                placeholder="Enter your answer"
-                                            />
-                                            {formErrors[question.id] && (
-                                                <p className="text-sm text-red-500">
-                                                    {formErrors[question.id]}
-                                                </p>
-                                            )}
-                                        </div>
-                                    )}
-                                    {question.answer_type === "date" && (
-                                        <div>
-                                            <Input
-                                                type="date"
-                                                value={
-                                                    answers[question.id] || ""
-                                                }
-                                                onChange={(e) =>
-                                                    handleAnswerChange(
-                                                        question.id,
-                                                        e.target.value
-                                                    )
-                                                }
-                                                placeholder="Enter your answer"
-                                            />
-                                            {formErrors[question.id] && (
-                                                <p className="text-sm text-red-500">
-                                                    {formErrors[question.id]}
-                                                </p>
-                                            )}
-                                        </div>
-                                    )}
-                                </CardContent>
-                            </Card>
-                        ))}
-
-                        <Button
-                            type="submit"
-                            onClick={handleSubmit}
-                        >
-                            Submit
+                                    </div>
+                                ))}
+                            </CardContent>
+                        </Card>
+                        <Button type="submit" onClick={handleSubmit}>
+                            Kirim Screening
                         </Button>
                         <Dialog
                             open={isDialogOpen}
@@ -591,11 +655,10 @@ export default function Index({ questions, errors, patient }) {
                             <DialogContent>
                                 <DialogHeader>
                                     <DialogTitle>
-                                        Konfirmasi Kirim
+                                        Konfirmasi Pengiriman Screening
                                     </DialogTitle>
                                     <DialogDescription>
-                                    Apakah Anda yakin ingin mengirimkan ini
-                                    formulir?
+                                        Apakah Anda yakin dengan jawaban Anda?
                                     </DialogDescription>
                                 </DialogHeader>
                                 <DialogFooter>
@@ -603,10 +666,10 @@ export default function Index({ questions, errors, patient }) {
                                         variant="outline"
                                         onClick={() => setIsDialogOpen(false)}
                                     >
-                                        Cancel
+                                        Tidak
                                     </Button>
                                     <Button onClick={confirmSubmit}>
-                                        Konfirmasi
+                                        Yakin
                                     </Button>
                                 </DialogFooter>
                             </DialogContent>

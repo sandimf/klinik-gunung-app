@@ -60,7 +60,7 @@ class ScreeningOnlineController extends Controller
         if ($patient->screening_status === 'pending') {
             // Jika status 'pending', redirect ke halaman lain (misalnya halaman error)
             return redirect()->route('screening-online.index')
-                ->with('message', 'Screening status Anda masih pending. Silakan selesaikan pembayaran terlebih dahulu.');
+                ->with('message', 'Screening Anda Berhasil & status Anda masih pending. Silakan selesaikan pembayaran terlebih dahulu.');
         }
 
         // Jika status tidak 'pending', lanjutkan dan tampilkan halaman screening
@@ -141,7 +141,7 @@ class ScreeningOnlineController extends Controller
 
         SendScreeningOnline::dispatch($patient);
 
-        return redirect()->back()->with('message', 'Kuesioner Kamu Berhasil Di Simpan');
+        return redirect()->back()->with('message', 'Screening Anda Berhasil Di Simpan');
     }
 
     public function payments()
@@ -180,7 +180,7 @@ class ScreeningOnlineController extends Controller
         ]);
 
         // Pastikan nama file aman
-        $fileName = 'screening_detail_'.$patientName.'.pdf';
+        $fileName = 'screening_detail_' . $patientName . '.pdf';
 
         // Kembalikan file PDF untuk diunduh
         return $pdf->download($fileName);

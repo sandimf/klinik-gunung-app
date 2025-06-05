@@ -14,7 +14,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
 import { Alert, AlertDescription } from "@/Components/ui/alert";
 import { Checkbox } from "@/Components/ui/checkbox";
 import { Textarea } from "@/Components/ui/textarea";
-import { Upload,Loader2 ,X,CircleCheck} from "lucide-react";
+import { Upload, Loader2, X, CircleCheck } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/Components/ui/tabs";
 import { toast, Toaster } from "sonner";
 import WebcamComponent from "./_components/Webcam";
@@ -34,7 +34,7 @@ export default function PatientDataEntry({ questions, apiKey }) {
     const [answers, setAnswers] = useState({});
     const [isLoading, setIsLoading] = useState(false);
 
-    const { data, setData, post, processing, errors,reset } = useForm({
+    const { data, setData, post, processing, errors, reset } = useForm({
         nik: "",
         name: "",
         email: "",
@@ -79,10 +79,10 @@ export default function PatientDataEntry({ questions, apiKey }) {
         if (unansweredQuestions.length > 0) {
             const newErrors = {};
             unansweredQuestions.forEach((question) => {
-                newErrors[question.id] = "This question is required";
+                newErrors[question.id] = "Pertanyaan ini wajib dijawab";
             });
             setFormErrors(newErrors);
-            toast.error("Please answer all questions before submitting.");
+            toast.error("Harap jawab semua pertanyaan sebelum mengirimkan.");
             return;
         }
 
@@ -90,7 +90,7 @@ export default function PatientDataEntry({ questions, apiKey }) {
             questioner_id: questionId,
             answer: answers[questionId],
         }));
-        
+
         setIsLoading(true);
 
         setTimeout(() => {
@@ -102,8 +102,10 @@ export default function PatientDataEntry({ questions, apiKey }) {
                 },
                 {
                     onSuccess: () => {
-                        toast.success("Screening berhasil disimpan!",{
-                            icon: <CircleCheck className="h-5 w-5 text-green-500" />
+                        toast.success("Screening berhasil disimpan!", {
+                            icon: (
+                                <CircleCheck className="w-5 h-5 text-green-500" />
+                            ),
                         });
                         setIsLoading(false); // Matikan loading setelah berhasil
                         reset();
@@ -120,18 +122,20 @@ export default function PatientDataEntry({ questions, apiKey }) {
                         setIsLoading(false); // Matikan loading setelah error
                         if (typeof errors === "string") {
                             toast.error(errors, {
-                                icon: <X className="h-5 w-5 text-red-500" />
+                                icon: <X className="w-5 h-5 text-red-500" />,
                             });
                         } else if (typeof errors === "object") {
                             const errorMessages = Object.values(errors).flat();
                             errorMessages.forEach((error) =>
                                 toast.error(error, {
-                                    icon: <X className="h-5 w-5 text-red-500" />
+                                    icon: (
+                                        <X className="w-5 h-5 text-red-500" />
+                                    ),
                                 })
                             );
                         } else {
                             toast.error("Sepertinya Ada Kesalahan!", {
-                                icon: <X className="h-5 w-5 text-red-500" />
+                                icon: <X className="w-5 h-5 text-red-500" />,
                             });
                         }
                     },
@@ -193,12 +197,10 @@ export default function PatientDataEntry({ questions, apiKey }) {
         }
     };
 
-
-
     return (
         <>
             <Header />
-            <Toaster position="top-center" />
+            <Toaster richColors position="top-center" />
             {questions.length === 0 ? (
                 <div className="text-center">
                     <h1 className="text-2xl font-bold">Ups Maaf</h1>
@@ -208,7 +210,7 @@ export default function PatientDataEntry({ questions, apiKey }) {
                     </p>
                 </div>
             ) : (
-                <div className="container mx-auto p-4">
+                <div className="container p-4 mx-auto">
                     <Card className="mb-6">
                         <Head title="Screening" />
                         <CardHeader>
@@ -222,7 +224,7 @@ export default function PatientDataEntry({ questions, apiKey }) {
                                 onValueChange={setEntryMethod}
                                 className="mb-4"
                             >
-                                <TabsList className="grid w-full grid-cols-3">
+                                <TabsList className="grid grid-cols-3 w-full">
                                     <TabsTrigger value="manual">
                                         Input Manual
                                     </TabsTrigger>
@@ -235,13 +237,13 @@ export default function PatientDataEntry({ questions, apiKey }) {
                                 </TabsList>
                                 <TabsContent value="upload">
                                     <div className="space-y-4">
-                                        <div className="flex items-center justify-center w-full">
+                                        <div className="flex justify-center items-center w-full">
                                             <Label
                                                 htmlFor="dropzone-file"
-                                                className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
+                                                className="flex flex-col justify-center items-center w-full h-64 bg-gray-50 rounded-lg border-2 border-gray-300 border-dashed cursor-pointer dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
                                             >
-                                                <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                                    <Upload className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" />
+                                                <div className="flex flex-col justify-center items-center pt-5 pb-6">
+                                                    <Upload className="mb-4 w-8 h-8 text-gray-500 dark:text-gray-400" />
                                                     <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
                                                         <span className="font-semibold">
                                                             Click to upload
@@ -342,9 +344,9 @@ export default function PatientDataEntry({ questions, apiKey }) {
                                 {questions?.map((question) => (
                                     <div
                                         key={question.id}
-                                        className=" rounded-lg"
+                                        className="rounded-lg"
                                     >
-                                        <h3 className="text-lg font-semibold mb-3">
+                                        <h3 className="mb-3 text-lg font-semibold">
                                             {question.question_text}
                                         </h3>
                                         <div className="space-y-1">
@@ -718,7 +720,7 @@ export default function PatientDataEntry({ questions, apiKey }) {
                                         </div>
                                     </div>
                                 ))}
-                                <div className="flex items-center space-x-2 mt-4 mb-4">
+                                <div className="flex items-center mt-4 mb-4 space-x-2">
                                     <Checkbox
                                         id="privacyAgreement"
                                         checked={agreedToPrivacy}
@@ -738,7 +740,7 @@ export default function PatientDataEntry({ questions, apiKey }) {
                                 >
                                     {isLoading ? (
                                         <>
-                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                            <Loader2 className="mr-2 w-4 h-4 animate-spin" />
                                             Please wait...
                                         </>
                                     ) : (

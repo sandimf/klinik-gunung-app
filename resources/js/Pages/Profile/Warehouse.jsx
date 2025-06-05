@@ -1,20 +1,19 @@
-import { Head } from '@inertiajs/react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card"
-import UpdateProfileInformationForm from './_components/UpdateProfileInformationForm';
-import UpdatePasswordForm from './_components/UpdatePasswordForm';
-import { toast, Toaster } from "sonner"
-import WarehouseSidebar from '@/Layouts/Dashboard/WarehouseSidebarLayout';
+import { Head } from "@inertiajs/react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
+import UpdateProfileInformationForm from "./_components/UpdateProfileInformationForm";
+import UpdatePasswordForm from "./_components/UpdatePasswordForm";
+import { toast, Toaster } from "sonner";
+import WarehouseSidebar from "@/Layouts/Dashboard/WarehouseSidebarLayout";
 export default function Edit({ mustVerifyEmail, status }) {
-
     return (
-        <WarehouseSidebar header={'Profile'}>
-            <div className="container mx-auto py-8">
-                <Toaster position='top-center' />
+        <WarehouseSidebar header={"Profile"}>
+            <div className="container py-8 mx-auto">
+                <Toaster position="top-center" />
                 <Head title="Profile" />
                 <div className="space-y-6">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Profile Information</CardTitle>
+                            <CardTitle>Informasi Profile</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <UpdateProfileInformationForm
@@ -32,7 +31,6 @@ export default function Edit({ mustVerifyEmail, status }) {
                             <UpdatePasswordForm />
                         </CardContent>
                     </Card>
-
                 </div>
             </div>
         </WarehouseSidebar>

@@ -43,7 +43,7 @@
             left: 0;
             width: 100%;
             height: 100px;
-            background-image: url('https://hebbkx1anhila5yf.public.blob.vercel-storage.com/01_KG_SPKP-B9hLQgxdysSU0uyft5onRzVJKqxAd5.png');
+            background-image: url('');
             background-position: bottom;
             background-size: cover;
             opacity: 0.1;
@@ -151,7 +151,7 @@
         .measurements .sublabel {
             margin-bottom: 2rem;
 
-            
+
         }
 
         .footer {

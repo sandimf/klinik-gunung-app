@@ -1,23 +1,25 @@
-import React, { useState } from 'react';
-import { useForm, usePage } from '@inertiajs/react';
-import { Button } from "@/Components/ui/button"
-import { Input } from "@/Components/ui/input"
-import { Label } from "@/Components/ui/label"
-import { Avatar, AvatarFallback, AvatarImage } from "@/Components/ui/avatar"
-import { AlertCircle, Upload, X, CheckCircle2 } from 'lucide-react';
+import React, { useState } from "react";
+import { useForm, usePage } from "@inertiajs/react";
+import { Button } from "@/Components/ui/button";
+import { Input } from "@/Components/ui/input";
+import { Label } from "@/Components/ui/label";
+import { Avatar, AvatarFallback, AvatarImage } from "@/Components/ui/avatar";
+import { AlertCircle, Upload, X, CheckCircle2 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/Components/ui/alert";
 import { toast, Toaster } from "sonner";
-import { ImageCropper } from './ImageCropper';
+import { ImageCropper } from "./ImageCropper";
 
 export default function UpdateProfileInformation({ mustVerifyEmail, status }) {
     const user = usePage().props.auth.user;
-    const [photoPreview, setPhotoPreview] = useState(user?.avatar
-        ? user.avatar.startsWith("http")
-            ? user.avatar
-            : `/storage/${user.avatar}`
-        : "/storage/avatar/avatar.svg" || null);
+    const [photoPreview, setPhotoPreview] = useState(
+        user?.avatar
+            ? user.avatar.startsWith("http")
+                ? user.avatar
+                : `/storage/${user.avatar}`
+            : "/storage/avatar/avatar.svg" || null
+    );
     const [showCropper, setShowCropper] = useState(false);
-    const [cropperImage, setCropperImage] = useState('');
+    const [cropperImage, setCropperImage] = useState("");
 
     const { data, setData, post, errors, processing } = useForm({
         name: user.name,
@@ -27,34 +29,33 @@ export default function UpdateProfileInformation({ mustVerifyEmail, status }) {
 
     const submit = (e) => {
         e.preventDefault();
-      
+
         const formData = new FormData();
-        formData.append('name', data.name);
-        formData.append('email', data.email);
+        formData.append("name", data.name);
+        formData.append("email", data.email);
         if (data.avatar) {
-          formData.append('avatar', data.avatar);  // Lampirkan file avatar
+            formData.append("avatar", data.avatar); // Lampirkan file avatar
         }
-      
+
         post(route("profile.update"), {
-          data: formData,
-          onSuccess: () => {
-            // Toast ini hanya muncul setelah profil berhasil diperbarui
-            toast.success("Profile berhasil diperbarui", {
-              icon: <CheckCircle2 className="h-5 w-5 text-green-500" />,
-            });
-          },
-          onError: (errors) => {
-            const errorMessage = Object.values(errors)[0] || "Terjadi kesalahan.";
-            toast.error(errorMessage, {
-              icon: <X className="h-5 w-5 text-red-500" />,
-            });
-          },
-          preserveScroll: true,
-          forceFormData: true,
+            data: formData,
+            onSuccess: () => {
+                // Toast ini hanya muncul setelah profil berhasil diperbarui
+                toast.success("Profile berhasil diperbarui", {
+                    icon: <CheckCircle2 className="w-5 h-5 text-green-500" />,
+                });
+            },
+            onError: (errors) => {
+                const errorMessage =
+                    Object.values(errors)[0] || "Terjadi kesalahan.";
+                toast.error(errorMessage, {
+                    icon: <X className="w-5 h-5 text-red-500" />,
+                });
+            },
+            preserveScroll: true,
+            forceFormData: true,
         });
     };
-    
-    
 
     const handlePhotoChange = (e) => {
         const file = e.target.files[0];
@@ -65,11 +66,10 @@ export default function UpdateProfileInformation({ mustVerifyEmail, status }) {
     };
 
     const handleCropComplete = (croppedFile) => {
-        setData('avatar', croppedFile);  // Store the File object
-        setPhotoPreview(URL.createObjectURL(croppedFile));  // Preview the cropped image
-        setShowCropper(false);  // Close the cropper
-      };
-      
+        setData("avatar", croppedFile); // Store the File object
+        setPhotoPreview(URL.createObjectURL(croppedFile)); // Preview the cropped image
+        setShowCropper(false); // Close the cropper
+    };
 
     const handleCropCancel = () => {
         setShowCropper(false);
@@ -91,9 +91,15 @@ export default function UpdateProfileInformation({ mustVerifyEmail, status }) {
                         id="avatar"
                         accept="image/*"
                     />
-                    <Button type="button" variant="outline" onClick={() => document.getElementById('avatar').click()}>
+                    <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() =>
+                            document.getElementById("avatar").click()
+                        }
+                    >
                         <Upload className="w-4 h-4 mr-2" />
-                        Change Photo
+                        Ubah Foto Profile
                     </Button>
                 </div>
             </div>
@@ -111,9 +117,11 @@ export default function UpdateProfileInformation({ mustVerifyEmail, status }) {
                 <Input
                     id="name"
                     value={data.name}
-                    onChange={(e) => setData('name', e.target.value)}
+                    onChange={(e) => setData("name", e.target.value)}
                 />
-                {errors.name && <p className="text-sm text-red-600 mt-1">{errors.name}</p>}
+                {errors.name && (
+                    <p className="mt-1 text-sm text-red-600">{errors.name}</p>
+                )}
             </div>
 
             <div>
@@ -122,30 +130,37 @@ export default function UpdateProfileInformation({ mustVerifyEmail, status }) {
                     id="email"
                     type="email"
                     value={data.email}
-                    onChange={(e) => setData('email', e.target.value)}
+                    onChange={(e) => setData("email", e.target.value)}
                 />
-                {errors.email && <p className="text-sm text-red-600 mt-1">{errors.email}</p>}
+                {errors.email && (
+                    <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+                )}
             </div>
 
             {mustVerifyEmail && user.email_verified_at === null && (
                 <Alert variant="destructive">
-                    <AlertCircle className="h-4 w-4" />
+                    <AlertCircle className="w-4 h-4" />
                     <AlertTitle>Unverified Email</AlertTitle>
                     <AlertDescription>
                         Your email address is unverified.
-                        <Button variant="link" className="p-0 h-auto font-normal" onClick={() => route('verification.send')}>
+                        <Button
+                            variant="link"
+                            className="h-auto p-0 font-normal"
+                            onClick={() => route("verification.send")}
+                        >
                             Click here to re-send the verification email.
                         </Button>
                     </AlertDescription>
                 </Alert>
             )}
 
-            <Button type="submit" disabled={processing}>Save</Button>
+            <Button type="submit" disabled={processing}>
+                Simpan
+            </Button>
 
-            {status === 'profile-updated' && (
+            {status === "profile-updated" && (
                 <p className="text-sm text-green-600">Saved.</p>
             )}
         </form>
     );
 }
-

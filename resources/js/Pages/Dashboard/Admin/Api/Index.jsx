@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 import { Button } from "@/Components/ui/button";
 import {
@@ -32,7 +30,7 @@ import { Head, useForm } from "@inertiajs/react";
 import { toast, Toaster } from "sonner";
 
 export default function GeminiApiKey({ apikeys }) {
-    const [apiKeyStatus, setApiKeyStatus] = useState("Not Set");
+    const [setApiKeyStatus] = useState("Not Set");
     const { data, setData, put, processing, errors } = useForm({
         api_key: "",
     });
@@ -40,7 +38,6 @@ export default function GeminiApiKey({ apikeys }) {
     const saveApikey = (e) => {
         e.preventDefault();
 
-        // Melakukan request PUT dengan Inertia.js
         put(route("apikey.update", 1), {
             onSuccess: () => {
                 toast.success("API Key Berhasil Di Perbaharui");
@@ -48,7 +45,7 @@ export default function GeminiApiKey({ apikeys }) {
             },
             onError: (error) => {
                 toast.error(
-                    `Gagal memperbaharui API Key: ${
+                    `Gagal memperbaharui API Key ${
                         error.response?.data?.message || "Terjadi kesalahan!"
                     }`
                 );
@@ -56,35 +53,34 @@ export default function GeminiApiKey({ apikeys }) {
         });
     };
 
-    const handleTestApiKey = () => {
-        setTimeout(() => {
-            toast("Belum bisa digunakan", {
-                icon: <CircleCheck className="h-4 w-4" />,
-            });
-        }, 1000);
-    };
-
     return (
-        <Sidebar>
+        <Sidebar header={"Apikey"}>
             <Head title="Apikey" />
-            <div className="container mx-auto p-6 space-y-6">
-                <h1 className="text-3xl font-bold mb-6">
+            <div className="container p-6 mx-auto space-y-6">
+                <h1 className="mb-6 text-3xl font-bold">
                     Google Gemini AI API Key
                 </h1>
-                <Toaster position="top-center" />
+                <Toaster richColors position="top-center" />
                 <Card>
                     <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <Key className="h-6 w-6" />
+                        <CardTitle className="flex gap-2 items-center">
+                            <Key className="w-6 h-6" />
                             Set Google Gemini AI API Key
                         </CardTitle>
                         <CardDescription>
                             Masukkan kunci API AI Google Gemini Anda untuk
-                            mengaktifkan fitur AI
+                            mengaktifkan fitur Ai ,{" "}
+                            <a
+                                className="text-blue-400"
+                                href="https://aistudio.google.com/apikey"
+                                target="_blank"
+                            >
+                                Dapatkan Kunci Api.
+                            </a>
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <div className="grid w-full items-center gap-4">
+                        <div className="grid gap-4 items-center w-full">
                             <div className="flex flex-col space-y-1.5">
                                 <Label htmlFor="apiKey">API Key</Label>
                                 <Input
@@ -96,6 +92,14 @@ export default function GeminiApiKey({ apikeys }) {
                                     }
                                     type="text"
                                 />
+                                {errors.apiKey && (
+                                    <p
+                                        className="text-sm text-red-500"
+                                        role="alert"
+                                    >
+                                        {errors.apiKey}
+                                    </p>
+                                )}
                             </div>
                         </div>
                     </CardContent>
@@ -112,8 +116,8 @@ export default function GeminiApiKey({ apikeys }) {
 
                 <Card>
                     <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <CheckCircle className="h-6 w-6" />
+                        <CardTitle className="flex gap-2 items-center">
+                            <CheckCircle className="w-6 h-6" />
                             API Key Status
                         </CardTitle>
                         <CardDescription>
@@ -129,7 +133,6 @@ export default function GeminiApiKey({ apikeys }) {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {/* Pastikan apikeys adalah objek dan tidak null */}
                                 {apikeys ? (
                                     <TableRow key={apikeys.id}>
                                         <TableCell>
@@ -164,8 +167,8 @@ export default function GeminiApiKey({ apikeys }) {
 
                 <Card>
                     <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <AlertTriangle className="h-6 w-6" />
+                        <CardTitle className="flex gap-2 items-center">
+                            <AlertTriangle className="w-6 h-6" />
                             Informasi Penting
                         </CardTitle>
                         <CardDescription>
@@ -174,7 +177,7 @@ export default function GeminiApiKey({ apikeys }) {
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <ul className="list-disc pl-5 space-y-2">
+                        <ul className="pl-5 space-y-2 list-disc">
                             <li>
                                 Jaga kerahasiaan dan keamanan kunci API Anda.
                             </li>

@@ -26,13 +26,13 @@ export default function Report({
         <Sidebar header={"Laporan"}>
             <Head title="Laporan Paramedis" />
             <div className="p-6">
-                <div className="flex justify-between items-center mb-6 no-print">
+                <div className="flex items-center justify-between mb-6 no-print">
                     <h1 className="text-2xl font-bold">
                         Laporan Pemeriksaan, {user.name}.
                     </h1>
                     <a href={route("pdf.self.paramedis")}>
                         <Button variant="outline">
-                            <Printer className="mr-2 h-4 w-4" /> Download PDF
+                            <Printer className="w-4 h-4 mr-2" /> Download PDF
                         </Button>
                     </a>
                 </div>
@@ -40,7 +40,7 @@ export default function Report({
                 <div className="space-y-6 no-print">
                     <div className="grid grid-cols-3 gap-4">
                         <Card>
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
                                 <CardTitle className="text-sm font-medium">
                                     Total Pasien Diperiksa
                                 </CardTitle>
@@ -52,7 +52,7 @@ export default function Report({
                             </CardContent>
                         </Card>
                         <Card>
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
                                 <CardTitle className="text-sm font-medium">
                                     Jumlah Pasien Sehat
                                 </CardTitle>
@@ -64,7 +64,7 @@ export default function Report({
                             </CardContent>
                         </Card>
                         <Card>
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
                                 <CardTitle className="text-sm font-medium">
                                     Jumlah Pasien Membutuhkan Dokter
                                 </CardTitle>
@@ -76,7 +76,7 @@ export default function Report({
                             </CardContent>
                         </Card>
                         <Card>
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
                                 <CardTitle className="text-sm font-medium">
                                     Jumlah Pasien Membutuhkan Pendamping
                                 </CardTitle>
@@ -125,7 +125,7 @@ export default function Report({
                                         <a
                                             href={route(
                                                 "pdf.healthcheck.paramedis",
-                                                patient.id
+                                                patient.uuid
                                             )}
                                         >
                                             <Button>

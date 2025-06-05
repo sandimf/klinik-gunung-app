@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\AI;
+namespace App\Http\Controllers\Admin\v2;
 
-use App\Http\Controllers\Controller;
+use Inertia\Inertia;
 use App\Models\Ai\Apikey;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\ApikeyRequest;
 
 class ApikeyController extends Controller
 {
@@ -19,13 +20,8 @@ class ApikeyController extends Controller
         ]);
     }
 
-    public function update(Request $request)
+    public function update(ApikeyRequest $request)
     {
-        // Validasi input API Key jika diperlukan
-        $request->validate([
-            'api_key' => 'required|string|max:255',
-        ]);
-
         // Mencari entri pertama API Key
         $apiKey = Apikey::first();
 

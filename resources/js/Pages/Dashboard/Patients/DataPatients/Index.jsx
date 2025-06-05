@@ -6,7 +6,13 @@ import { Label } from "@/Components/ui/label";
 import { Button } from "@/Components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/Components/ui/alert";
-import { Upload, CheckCircle2, CircleCheck, InfoIcon, Loader2 } from "lucide-react";
+import {
+    Upload,
+    CheckCircle2,
+    CircleCheck,
+    InfoIcon,
+    Loader2,
+} from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/Components/ui/tabs";
 import { toast, Toaster } from "sonner";
 import { Checkbox } from "@/Components/ui/checkbox";
@@ -23,8 +29,7 @@ import {
 import WebcamComponent from "./_components/webcam";
 import Sidebar from "@/Layouts/Dashboard/PatientsSidebarLayout";
 
-export default function PatientDataEntry({ patient,apiKey}) {
-
+export default function PatientDataEntry({ patient, apiKey }) {
     const user = usePage().props.auth.user;
 
     const genAI = new GoogleGenerativeAI(apiKey || "default_api_key");
@@ -42,7 +47,7 @@ export default function PatientDataEntry({ patient,apiKey}) {
     const { data, setData, post, processing, errors, error } = useForm({
         nik: patient?.nik || "",
         name: patient?.name || "",
-        email: patient?.email || "",
+        email: user.email,
         age: patient?.age || "",
         gender: patient?.gender || "",
         contact: patient?.contact || "",
@@ -81,13 +86,13 @@ export default function PatientDataEntry({ patient,apiKey}) {
                     setIsLoading(false); // Nonaktifkan loading setelah berhasil
                     toast.success(`Berhasil`, {
                         icon: (
-                            <CheckCircle2 className="h-5 w-5 text-green-500" />
+                            <CheckCircle2 className="w-5 h-5 text-green-500" />
                         ),
                     });
                 },
                 onError: () => {
-                    setIsLoading(false); // Nonaktifkan loading jika terjadi error
-                    toast.error("Ada kesalahan");
+                    setIsLoading(false);
+                    toast.error("Ada kesalahan!");
                 },
             });
         }, 2000); // Delay selama 2 detik
@@ -210,14 +215,14 @@ export default function PatientDataEntry({ patient,apiKey}) {
     useEffect(() => {
         if (flash.message) {
             toast(flash.message, {
-                icon: <CircleCheck className="h-5 w-5 text-green-500" />,
+                icon: <CircleCheck className="w-5 h-5 text-green-500" />,
             });
         }
     }, [flash.message]);
 
     return (
         <Sidebar header={"Patient Information"}>
-            <Toaster position="top-center" />
+            <Toaster richColors position="top-center" />
             <Card>
                 <Head title="Patient Information" />
                 <CardHeader>
@@ -227,7 +232,7 @@ export default function PatientDataEntry({ patient,apiKey}) {
                 </CardHeader>
                 <CardContent>
                     <Alert className="mb-4">
-                        <InfoIcon className="h-4 w-4" />
+                        <InfoIcon className="w-4 h-4" />
                         <AlertTitle>Informasi</AlertTitle>
                         <AlertDescription>
                             Kamu hanya bisa mengakses fitur hanya jika sudah
@@ -240,7 +245,7 @@ export default function PatientDataEntry({ patient,apiKey}) {
                         onValueChange={setEntryMethod}
                         className="mb-4"
                     >
-                        <TabsList className="grid w-full grid-cols-3">
+                        <TabsList className="grid grid-cols-3 w-full">
                             <TabsTrigger value="manual">
                                 Input Manual
                             </TabsTrigger>
@@ -249,13 +254,13 @@ export default function PatientDataEntry({ patient,apiKey}) {
                         </TabsList>
                         <TabsContent value="upload">
                             <div className="space-y-4">
-                                <div className="flex items-center justify-center w-full">
+                                <div className="flex justify-center items-center w-full">
                                     <Label
                                         htmlFor="dropzone-file"
-                                        className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
+                                        className="flex flex-col justify-center items-center w-full h-64 bg-gray-50 rounded-lg border-2 border-gray-300 border-dashed cursor-pointer dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
                                     >
-                                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                            <Upload className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" />
+                                        <div className="flex flex-col justify-center items-center pt-5 pb-6">
+                                            <Upload className="mb-4 w-8 h-8 text-gray-500 dark:text-gray-400" />
                                             <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
                                                 <span className="font-semibold">
                                                     Click to upload
@@ -332,7 +337,7 @@ export default function PatientDataEntry({ patient,apiKey}) {
                     </Tabs>
 
                     <form onSubmit={handleSubmit} className="space-y-4">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                             <div>
                                 <Label htmlFor="nik">NIK</Label>
                                 <Input
@@ -345,7 +350,9 @@ export default function PatientDataEntry({ patient,apiKey}) {
                                     readOnly={isReadOnly}
                                 />
                                 {errors.nik && (
-                                    <p className="text-red-600">{errors.nik}</p>
+                                    <p className="text-sm text-red-600">
+                                        {errors.nik}
+                                    </p>
                                 )}
                             </div>
                             <div>
@@ -360,7 +367,7 @@ export default function PatientDataEntry({ patient,apiKey}) {
                                     readOnly={isReadOnly}
                                 />
                                 {errors.name && (
-                                    <p className="text-red-600">
+                                    <p className="text-sm text-red-600">
                                         {errors.name}
                                     </p>
                                 )}
@@ -382,6 +389,11 @@ export default function PatientDataEntry({ patient,apiKey}) {
                                     }
                                     readOnly={isReadOnly}
                                 />
+                                {errors.place_of_birth && (
+                                    <p className="text-sm text-red-600">
+                                        {errors.place_of_birth}
+                                    </p>
+                                )}
                             </div>
                             <div>
                                 <Label htmlFor="date_of_birth">
@@ -395,7 +407,12 @@ export default function PatientDataEntry({ patient,apiKey}) {
                                         setData("date_of_birth", e.target.value)
                                     }
                                     readOnly={isReadOnly}
-                                />
+                                />{" "}
+                                {errors.date_of_birth && (
+                                    <p className="text-sm text-red-600">
+                                        {errors.date_of_birth}
+                                    </p>
+                                )}
                             </div>
                             <div>
                                 <Label htmlFor="gender">Jenis Kelamin</Label>
@@ -405,7 +422,7 @@ export default function PatientDataEntry({ patient,apiKey}) {
                                         setData("gender", value)
                                     }
                                 >
-                                    <SelectTrigger className="w-full border rounded p-2">
+                                    <SelectTrigger className="p-2 w-full rounded border">
                                         <SelectValue placeholder="Pilih Jenis Kelamin" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -426,7 +443,7 @@ export default function PatientDataEntry({ patient,apiKey}) {
                                     </SelectContent>
                                 </Select>
                                 {errors.gender && (
-                                    <p className="text-red-600">
+                                    <p className="text-sm text-red-600">
                                         {errors.gender}
                                     </p>
                                 )}
@@ -442,6 +459,11 @@ export default function PatientDataEntry({ patient,apiKey}) {
                                     }
                                     readOnly={isReadOnly}
                                 />
+                                {errors.address && (
+                                    <p className="text-sm text-red-600">
+                                        {errors.address}
+                                    </p>
+                                )}
                             </div>
                             <div>
                                 <Label htmlFor="rt_rw">RT/RW</Label>
@@ -454,6 +476,11 @@ export default function PatientDataEntry({ patient,apiKey}) {
                                     }
                                     readOnly={isReadOnly}
                                 />
+                                {errors.rt_rw && (
+                                    <p className="text-sm text-red-600">
+                                        {errors.rt_rw}
+                                    </p>
+                                )}
                             </div>
                             <div>
                                 <Label htmlFor="village">Desa</Label>
@@ -466,6 +493,11 @@ export default function PatientDataEntry({ patient,apiKey}) {
                                     }
                                     readOnly={isReadOnly}
                                 />
+                                {errors.village && (
+                                    <p className="text-sm text-red-600">
+                                        {errors.village}
+                                    </p>
+                                )}
                             </div>
                             <div>
                                 <Label htmlFor="district">Kecamatan</Label>
@@ -478,6 +510,11 @@ export default function PatientDataEntry({ patient,apiKey}) {
                                     }
                                     readOnly={isReadOnly}
                                 />
+                                {errors.district && (
+                                    <p className="text-sm text-red-600">
+                                        {errors.district}
+                                    </p>
+                                )}
                             </div>
                             <div>
                                 <Label htmlFor="religion">Agama</Label>
@@ -490,6 +527,11 @@ export default function PatientDataEntry({ patient,apiKey}) {
                                     }
                                     readOnly={isReadOnly}
                                 />
+                                {errors.religion && (
+                                    <p className="text-sm text-red-600">
+                                        {errors.religion}
+                                    </p>
+                                )}
                             </div>
                             <div>
                                 <Label htmlFor="marital_status">
@@ -501,7 +543,7 @@ export default function PatientDataEntry({ patient,apiKey}) {
                                         setData("marital_status", value)
                                     }
                                 >
-                                    <SelectTrigger className="w-full border rounded p-2">
+                                    <SelectTrigger className="p-2 w-full rounded border">
                                         <SelectValue placeholder="Status Perkawinan" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -517,7 +559,7 @@ export default function PatientDataEntry({ patient,apiKey}) {
                                     </SelectContent>
                                 </Select>
                                 {errors.marital_status && (
-                                    <p className="text-red-600">
+                                    <p className="text-sm text-red-600">
                                         {errors.marital_status}
                                     </p>
                                 )}
@@ -534,6 +576,11 @@ export default function PatientDataEntry({ patient,apiKey}) {
                                     }
                                     readOnly={isReadOnly}
                                 />
+                                {errors.occupation && (
+                                    <p className="text-sm text-red-600">
+                                        {errors.occupation}
+                                    </p>
+                                )}
                             </div>
                             <div>
                                 <Label htmlFor="nationality">
@@ -548,6 +595,11 @@ export default function PatientDataEntry({ patient,apiKey}) {
                                     }
                                     readOnly={isReadOnly}
                                 />
+                                {errors.nationality && (
+                                    <p className="text-sm text-red-600">
+                                        {errors.nationality}
+                                    </p>
+                                )}
                             </div>
                             <div>
                                 <Label htmlFor="valid_until">
@@ -562,6 +614,11 @@ export default function PatientDataEntry({ patient,apiKey}) {
                                     }
                                     readOnly={isReadOnly}
                                 />
+                                {errors.valid_until && (
+                                    <p className="text-sm text-red-600">
+                                        {errors.valid_until}
+                                    </p>
+                                )}
                             </div>
                             <div>
                                 <Label htmlFor="blood_type">
@@ -576,6 +633,11 @@ export default function PatientDataEntry({ patient,apiKey}) {
                                     }
                                     readOnly={isReadOnly}
                                 />
+                                {errors.blood_type && (
+                                    <p className="text-sm text-red-600">
+                                        {errors.blood_type}
+                                    </p>
+                                )}
                             </div>
                             <div>
                                 <Label htmlFor="age">Umur</Label>
@@ -588,6 +650,11 @@ export default function PatientDataEntry({ patient,apiKey}) {
                                     }
                                     readOnly={isReadOnly}
                                 />
+                                {errors.age && (
+                                    <p className="text-sm text-red-600">
+                                        {errors.age}
+                                    </p>
+                                )}
                             </div>
                             <div>
                                 <Label htmlFor="email">Email</Label>
@@ -599,10 +666,10 @@ export default function PatientDataEntry({ patient,apiKey}) {
                                     onChange={(e) =>
                                         setData("email", e.target.value)
                                     }
-                                    readOnly={isReadOnly}
+                                    readOnly
                                 />
                                 {errors.email && (
-                                    <p className="text-red-600">
+                                    <p className="text-sm text-red-600">
                                         {errors.email}
                                     </p>
                                 )}
@@ -619,13 +686,13 @@ export default function PatientDataEntry({ patient,apiKey}) {
                                     readOnly={isReadOnly}
                                 />
                                 {errors.contact && (
-                                    <p className="text-red-600">
+                                    <p className="text-sm text-red-600">
                                         {errors.contact}
                                     </p>
                                 )}
                             </div>
 
-                            <div className="flex items-center space-x-2 mt-4">
+                            <div className="flex items-center mt-4 space-x-2">
                                 <Checkbox
                                     id="privacyAgreement"
                                     checked={agreedToPrivacy}
@@ -647,7 +714,7 @@ export default function PatientDataEntry({ patient,apiKey}) {
                             >
                                 {isLoading ? (
                                     <>
-                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        <Loader2 className="mr-2 w-4 h-4 animate-spin" />
                                         Please wait...
                                     </>
                                 ) : (

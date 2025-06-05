@@ -48,9 +48,9 @@ class ManagerPanelController extends Controller
         $totalOverallIncome = $totalIncome + $totalProductPrice;
 
         // Format semua angka sebagai IDR (Rp)
-        $formattedTotalIncome = 'Rp '.number_format($totalIncome, 0, ',', '.');
-        $formattedTotalProduct = 'Rp '.number_format($totalProductPrice, 0, ',', '.');
-        $formattedTotalOverall = 'Rp '.number_format($totalOverallIncome, 0, ',', '.');
+        $formattedTotalIncome = 'Rp ' . number_format($totalIncome, 0, ',', '.');
+        $formattedTotalProduct = 'Rp ' . number_format($totalProductPrice, 0, ',', '.');
+        $formattedTotalOverall = 'Rp ' . number_format($totalOverallIncome, 0, ',', '.');
 
         // Hitung jumlah transaksi yang berhasil
         $successfulTransactions = $paymentsAll->count();
@@ -58,8 +58,8 @@ class ManagerPanelController extends Controller
         // Dapatkan tanggal pembayaran terbaru
         $lastPaymentDate = $paymentsAll->isNotEmpty()
             ? Carbon::parse($paymentsAll->first()->created_at)
-                ->timezone('Asia/Jakarta')
-                ->translatedFormat('j F Y')
+            ->timezone('Asia/Jakarta')
+            ->translatedFormat('j F Y')
             : null;
 
         // Format data pembayaran untuk tampilan
@@ -224,7 +224,7 @@ class ManagerPanelController extends Controller
                 'id' => $payment->patient->id,
                 'name' => $payment->patient->name,
                 'gender' => $payment->patient->gender,
-                'amount_paid' => 'Rp '.number_format($payment->amount_paid, 0, ',', '.'), // Format amount_paid as IDR
+                'amount_paid' => 'Rp ' . number_format($payment->amount_paid, 0, ',', '.'), // Format amount_paid as IDR
                 'payment_method' => $payment->payment_method,
                 'payment_by' => $payment->cashier->name ?? 'Tidak Diketahui', // Nama Cashier
             ];
@@ -234,7 +234,7 @@ class ManagerPanelController extends Controller
         return Inertia::render('Dashboard/Manager/TransactionActivity/Index', [
             'patients' => $patients,
             'totalCashier' => $totalCashier,
-            'totalPayment' => 'Rp '.$totalPayment, // Format total payment as IDR with "Rp" prefix
+            'totalPayment' => 'Rp ' . $totalPayment, // Format total payment as IDR with "Rp" prefix
             'totalTransactions' => $totalTransactions,
             'paymentMethodsCount' => $paymentMethodsCount, // Add payment method count to the response
         ]);
@@ -305,6 +305,6 @@ class ManagerPanelController extends Controller
         $pdf = PDF::loadView('pdf.activity.paramedis.health', $data);
 
         // Download PDF dengan nama yang sesuai
-        return $pdf->download('health_check_'.$patientName.'.pdf');
+        return $pdf->download('health_check_' . $patientName . '.pdf');
     }
 }

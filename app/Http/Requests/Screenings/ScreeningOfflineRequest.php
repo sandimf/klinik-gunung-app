@@ -29,7 +29,7 @@ class ScreeningOfflineRequest extends FormRequest
             'nik' => [
                 'required',
                 'string',
-                'max:20',
+                'max:16',
                 Rule::unique('patients', 'nik')->ignore($userId, 'user_id'), // Abaikan jika pasien sudah terhubung dengan pengguna
             ],
             'name' => 'required|string|max:255',
@@ -52,8 +52,4 @@ class ScreeningOfflineRequest extends FormRequest
             'answers.*.answer' => 'required',
         ];
     }
-
-    /**
-     * Customize the error messages for validation.
-     */
 }

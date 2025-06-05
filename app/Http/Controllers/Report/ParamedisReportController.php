@@ -196,11 +196,12 @@ class ParamedisReportController extends Controller
         return $pdf->download("activity_report_{$filter}_{$formattedStartDate}_{$formattedEndDate}.pdf");
     }
 
-    public function generatePDFHealthCheck($id)
+    // Menghasilkan pdf untuk setiap pasien
+    public function generatePDFHealthCheck($uuid)
     {
         // Ambil data screening pasien beserta jawaban dan pemeriksaan fisik
         $screening = Patients::with(['answers.question', 'physicalExaminations.paramedis']) // Ambil data paramedis juga
-            ->where('id', $id)
+            ->where('uuid', $uuid)
             ->firstOrFail(); // Pastikan pasien ditemukan
 
         // Ambil nama pasien untuk penamaan file PDF
@@ -216,14 +217,13 @@ class ParamedisReportController extends Controller
         ];
 
         // Mengonversi data menjadi PDF
-        $pdf = Pdf::loadView('pdf.activity.paramedis.health', $data);
+        $pdf = Pdf::loadView('pdf.screenings.health_check', $data);
 
         // Download PDF dengan nama yang sesuai
-        return $pdf->download('health_check_'.$patientName.'.pdf');
+        return $pdf->download('hasil_pemeriksaan_' . $patientName . '.pdf');
     }
 
     // generate pdf  pemeriksaan yang dilakukan paramedis
-
     public function generatePDFself()
     {
         $userId = Auth::id();
@@ -246,10 +246,10 @@ class ParamedisReportController extends Controller
 
         // Hitung jumlah pasien yang sakit
         $healthCounts = $examinations->groupBy('health_status')->map->count();
-        $sickPatientsCount = $healthCounts->get('butuh_dokter', 0);
-        $needPatientsCount = $healthCounts->get('butuh_pendamping', 0);
-        $healthyPatientsCount = $healthCounts->get('healthy', 0);
-
+        // Use array access instead of get() method since $healthCounts is an array
+        $sickPatientsCount = $healthCounts['butuh_dokter'] ?? 0;
+        $needPatientsCount = $healthCounts['butuh_pendamping'] ?? 0;
+        $healthyPatientsCount = $healthCounts['healthy'] ?? 0;
         // Ambil nama-nama pasien
         $patients = $examinations->map(function ($examination) {
             return [

@@ -16,6 +16,7 @@ import { Toaster, toast } from "sonner";
 import { CheckCircle2, X } from "lucide-react";
 import MedicalHeader from "./_components/table-header";
 import useFlashToast from "@/hooks/flash";
+import { Badge } from "@/Components/ui/badge";
 
 export default function Appointments({ appointments: initialAppointments }) {
     const [appointments, setAppointments] = useState(initialAppointments);
@@ -48,7 +49,7 @@ export default function Appointments({ appointments: initialAppointments }) {
                 onSuccess: () => {
                     toast.success("Appointment cancelled successfully!", {
                         icon: (
-                            <CheckCircle2 className="h-5 w-5 text-green-500" />
+                            <CheckCircle2 className="w-5 h-5 text-green-500" />
                         ),
                         duration: 3000,
                     });
@@ -65,7 +66,7 @@ export default function Appointments({ appointments: initialAppointments }) {
                     toast.error(
                         "Failed to cancel appointment. Please try again.",
                         {
-                            icon: <X className="h-5 w-5 text-red-500" />,
+                            icon: <X className="w-5 h-5 text-red-500" />,
                             duration: 3000,
                         }
                     );
@@ -100,7 +101,14 @@ export default function Appointments({ appointments: initialAppointments }) {
                             <TableCell>
                                 {appointment.appointment_time}
                             </TableCell>
-                            <TableCell>{appointment.status}</TableCell>
+                            <TableCell>
+                                <Badge>
+                                    {appointment.status === "Cancelled"
+                                        ? "Dibatalkan"
+                                        : appointment.status}
+                                </Badge>
+                            </TableCell>
+
                             <TableCell>
                                 {appointment.status !== "Cancelled" &&
                                 appointment.status !== "Completed" ? (
@@ -114,7 +122,7 @@ export default function Appointments({ appointments: initialAppointments }) {
                                         Batalkan
                                     </Button>
                                 ) : (
-                                    <span>-</span> // Tampilkan "-" jika status adalah "Cancelled" atau "Completed"
+                                    <span>-</span>
                                 )}
                             </TableCell>
                         </TableRow>

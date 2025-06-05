@@ -36,9 +36,6 @@ class SyncPatientsToAirtable implements ShouldQueue
             return;
         }
 
-        // Log jumlah pasien yang ditemukan
-        Log::info('Found '.$patients->count().' patients to sync.');
-
         // Format data untuk Airtable API
         $records = [];
         foreach ($patients as $patient) {

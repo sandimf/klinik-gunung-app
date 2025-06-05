@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\Questioner;
+namespace App\Http\Controllers\Admin\v2\Questioner;
 
+use Inertia\Inertia;
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Screenings\ScreeningQuestions;
-use Illuminate\Http\Request;
-use Inertia\Inertia;
 
-class QuestionerController extends Controller
+class QuestionerForScreeningController extends Controller
 {
     public function index()
     {
@@ -32,25 +32,25 @@ class QuestionerController extends Controller
         $request->validate([
             'question_text' => 'required|string|max:255',
             'answer_type' => 'required|string|in:text,number,date,textarea,select,checkbox,checkbox_textarea',
-            'options' => 'nullable|array', // Pilihan untuk jawaban (jika tipe jawaban membutuhkan)
-            'condition_value' => 'nullable|string', // Nilai kondisi yang memicu pemeriksaan dokter
-            'requires_doctor' => 'required|boolean', // Apakah jawaban memerlukan pemeriksaan dokter
+            'options' => 'nullable|array',
+            'condition_value' => 'nullable|string',
+            'requires_doctor' => 'required|boolean',
         ]);
 
         // Format semua string menjadi huruf besar di awal kata (Title Case)
         $formattedQuestionText = ucwords(strtolower($request->question_text));
         $formattedConditionValue = $request->condition_value ? ucwords(strtolower($request->condition_value)) : null;
         $formattedOptions = $request->options
-            ? array_map(fn ($option) => ucwords(strtolower($option)), $request->options)
+            ? array_map(fn($option) => ucwords(strtolower($option)), $request->options)
             : null;
 
         // Buat pertanyaan baru
         $question = ScreeningQuestions::create([
             'question_text' => $formattedQuestionText,
             'answer_type' => $request->answer_type,
-            'options' => $formattedOptions, // Simpan opsi dalam format JSON
-            'condition_value' => $formattedConditionValue, // Format Title Case untuk kondisi
-            'requires_doctor' => $request->requires_doctor, // Apakah kondisi ini membutuhkan dokter
+            'options' => $formattedOptions,
+            'condition_value' => $formattedConditionValue,
+            'requires_doctor' => $request->requires_doctor,
         ]);
 
         // Redirect kembali dengan pesan sukses

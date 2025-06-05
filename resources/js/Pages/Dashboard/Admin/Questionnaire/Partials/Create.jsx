@@ -69,14 +69,14 @@ export default function CreateQuestionnaire() {
             onSuccess: () => {
                 setIsLoading(false);
                 toast.success("Berhasil Membuat Kuesioner", {
-                    icon: <CircleCheck className="h-5 w-5 text-green-500" />,
+                    icon: <CircleCheck className="w-5 h-5 text-green-500" />,
                 });
             },
             onError: (errors) => {
                 setIsLoading(false);
                 Object.values(errors).forEach((error) => {
                     toast.error("Gagal Membuat Kuesioner", error, {
-                        icon: <X className="h-5 w-5 text-red-500" />,
+                        icon: <X className="w-5 h-5 text-red-500" />,
                     });
                 });
             },
@@ -106,12 +106,12 @@ export default function CreateQuestionnaire() {
                                 placeholder="Pertanyaan Kuesioner"
                             />
                             {errors.question_text && (
-                                <Alert variant="destructive">
-                                    <AlertCircle className="h-4 w-4" />
-                                    <AlertDescription>
-                                        {errors.question_text}
-                                    </AlertDescription>
-                                </Alert>
+                                <p
+                                    className="text-sm text-red-500"
+                                    role="alert"
+                                >
+                                    {errors.question_text}
+                                </p>
                             )}
                         </div>
 
@@ -147,12 +147,12 @@ export default function CreateQuestionnaire() {
                                 </SelectContent>
                             </Select>
                             {errors.answer_type && (
-                                <Alert variant="destructive">
-                                    <AlertCircle className="h-4 w-4" />
-                                    <AlertDescription>
-                                        {errors.answer_type}
-                                    </AlertDescription>
-                                </Alert>
+                                <p
+                                    className="text-sm text-red-500"
+                                    role="alert"
+                                >
+                                    {errors.answer_type}
+                                </p>
                             )}
                         </div>
 
@@ -174,7 +174,7 @@ export default function CreateQuestionnaire() {
                                         onClick={handleAddOption}
                                         size="icon"
                                     >
-                                        <Plus className="h-4 w-4" />
+                                        <Plus className="w-4 h-4" />
                                     </Button>
                                 </div>
                                 <ul className="space-y-2">
@@ -194,7 +194,7 @@ export default function CreateQuestionnaire() {
                                                 variant="destructive"
                                                 size="icon"
                                             >
-                                                <Trash2 className="h-4 w-4" />
+                                                <Trash2 className="w-4 h-4" />
                                             </Button>
                                         </li>
                                     ))}
@@ -232,7 +232,7 @@ export default function CreateQuestionnaire() {
                                         />
                                         {errors.condition_value && (
                                             <Alert variant="destructive">
-                                                <AlertCircle className="h-4 w-4" />
+                                                <AlertCircle className="w-4 h-4" />
                                                 <AlertDescription>
                                                     {errors.condition_value}
                                                 </AlertDescription>

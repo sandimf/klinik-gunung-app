@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 import { Button } from "@/Components/ui/button";
 import { Input } from "@/Components/ui/input";
@@ -35,9 +33,13 @@ export default function PhysicalExaminationEdit({ examination }) {
         const { name, value } = e.target;
         setFormData((prev) => ({
             ...prev,
-            [name]: name === "heart_rate" || name === "respiratory_rate" || name === "body_temperature" || name === "oxygen_saturation"
-                ? Math.max(0, value) // Validasi agar nilai tidak negatif
-                : value,
+            [name]:
+                name === "heart_rate" ||
+                name === "respiratory_rate" ||
+                name === "body_temperature" ||
+                name === "oxygen_saturation"
+                    ? Math.max(0, value)
+                    : value,
         }));
     };
 
@@ -59,14 +61,16 @@ export default function PhysicalExaminationEdit({ examination }) {
 
     return (
         <ParamedisSidebar>
-            <Card className="max-w-4xl mx-auto">
+            <Card className="mx-auto max-w-4xl">
                 <CardHeader>
                     <CardTitle>Edit Physical Examination</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="space-y-2">
-                            <Label htmlFor="blood_pressure">Blood Pressure</Label>
+                            <Label htmlFor="blood_pressure">
+                                Blood Pressure
+                            </Label>
                             <Input
                                 id="blood_pressure"
                                 name="blood_pressure"
@@ -87,7 +91,9 @@ export default function PhysicalExaminationEdit({ examination }) {
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="oxygen_saturation">Oxygen Saturation</Label>
+                            <Label htmlFor="oxygen_saturation">
+                                Oxygen Saturation
+                            </Label>
                             <Input
                                 type="number"
                                 id="oxygen_saturation"
@@ -98,7 +104,9 @@ export default function PhysicalExaminationEdit({ examination }) {
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="respiratory_rate">Respiratory Rate</Label>
+                            <Label htmlFor="respiratory_rate">
+                                Respiratory Rate
+                            </Label>
                             <Input
                                 type="number"
                                 id="respiratory_rate"
@@ -109,7 +117,9 @@ export default function PhysicalExaminationEdit({ examination }) {
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="body_temperature">Body Temperature</Label>
+                            <Label htmlFor="body_temperature">
+                                Body Temperature
+                            </Label>
                             <Input
                                 type="number"
                                 id="body_temperature"
@@ -121,7 +131,9 @@ export default function PhysicalExaminationEdit({ examination }) {
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="physical_assessment">Physical Assessment</Label>
+                            <Label htmlFor="physical_assessment">
+                                Physical Assessment
+                            </Label>
                             <Textarea
                                 id="physical_assessment"
                                 name="physical_assessment"
@@ -142,7 +154,9 @@ export default function PhysicalExaminationEdit({ examination }) {
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="medical_advice">Medical Advice</Label>
+                            <Label htmlFor="medical_advice">
+                                Medical Advice
+                            </Label>
                             <Textarea
                                 id="medical_advice"
                                 name="medical_advice"
@@ -161,13 +175,21 @@ export default function PhysicalExaminationEdit({ examination }) {
                                     <SelectValue placeholder="Select health status" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="healthy">Healthy</SelectItem>
-                                    <SelectItem value="butuh_dokter">Butuh Dokter</SelectItem>
-                                    <SelectItem value="butuh_pendamping">Butuh Pendamping</SelectItem>
+                                    <SelectItem value="healthy">
+                                        Healthy
+                                    </SelectItem>
+                                    <SelectItem value="butuh_dokter">
+                                        Butuh Dokter
+                                    </SelectItem>
+                                    <SelectItem value="butuh_pendamping">
+                                        Butuh Pendamping
+                                    </SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
-                        <Button type="submit">Update Physical Examination</Button>
+                        <Button type="submit">
+                            Update Physical Examination
+                        </Button>
                     </form>
                 </CardContent>
                 <Toaster />

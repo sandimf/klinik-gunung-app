@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Head, usePage, Link } from "@inertiajs/react";
 import ParamedisSidebar from "@/Layouts/Dashboard/ParamedisSidebarLayout";
 import { Input } from "@/Components/ui/input";
@@ -27,10 +27,10 @@ import {
 } from "@/Components/ui/pagination";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
 import { Button } from "@/Components/ui/button";
-import { Stethoscope, ArrowRight,CircleCheck, Book } from "lucide-react";
+import { Stethoscope, ArrowRight, CircleCheck, Book } from "lucide-react";
 import ScreeningDialog from "./Partials/PhysicalExamination";
 import { Badge } from "@/Components/ui/badge";
-import {toast, Toaster} from "sonner"
+import { toast, Toaster } from "sonner";
 
 const ScreeningOfflineIndex = ({ screenings = [] }) => {
     const { errors } = usePage().props;
@@ -67,7 +67,7 @@ const ScreeningOfflineIndex = ({ screenings = [] }) => {
     useEffect(() => {
         if (flash.message) {
             toast(flash.message, {
-                icon: <CircleCheck className="h-5 w-5 text-green-500"/>
+                icon: <CircleCheck className="w-5 h-5 text-green-500" />,
             });
         }
     }, [flash.message]);
@@ -75,14 +75,14 @@ const ScreeningOfflineIndex = ({ screenings = [] }) => {
     return (
         <ParamedisSidebar header={"Daftar Screening"}>
             <Head title="Screening Offline" />
-            <Toaster position='top-center' />
+            <Toaster position="top-center" />
 
             <Card>
                 <CardHeader>
                     <CardTitle>Daftar Screening</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <div className="flex flex-col md:flex-row gap-4 mb-4">
+                    <div className="flex flex-col gap-4 mb-4 md:flex-row">
                         <Input
                             placeholder="Cari nama pasien..."
                             value={searchTerm}
@@ -109,14 +109,14 @@ const ScreeningOfflineIndex = ({ screenings = [] }) => {
                                     <TableCell>
                                         <Link
                                             href={route("paramedis.detail", {
-                                                id: screening.id,
+                                                uuid: screening.uuid,
                                             })}
                                         >
                                             <Button
                                                 variant="outline"
                                                 className="mb-4"
                                             >
-                                                <Book className="mr-2 h-4 w-4" />{" "}
+                                                <Book className="mr-2 w-4 h-4" />{" "}
                                                 Kuesioner
                                             </Button>
                                         </Link>
@@ -133,7 +133,7 @@ const ScreeningOfflineIndex = ({ screenings = [] }) => {
                                                     handleExamine(screening)
                                                 }
                                             >
-                                                <Stethoscope className="h-4 w-4 mr-2" />
+                                                <Stethoscope className="mr-2 w-4 h-4" />
                                                 Health Check
                                             </Button>
                                         )}

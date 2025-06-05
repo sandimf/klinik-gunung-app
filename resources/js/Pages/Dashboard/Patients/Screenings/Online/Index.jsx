@@ -22,13 +22,13 @@ export default function ScreeningOnline({ screening }) {
     useFlashToast();
 
     return (
-        <SideBar header="Screening Now">
+        <SideBar header="Screening Online">
             <Head title="Screening Status" />
             <Toaster position="top-center" />
-            <div className="container mx-auto py-6 px-4 max-w-full">
+            <div className="container max-w-full px-4 py-6 mx-auto">
                 {isPaymentCompleted && (
                     <Alert className="mb-6">
-                        <CheckCircle className="h-4 w-4" />
+                        <CheckCircle className="w-4 h-4" />
                         <AlertTitle>
                             Screening Completed Successfully
                         </AlertTitle>
@@ -41,7 +41,7 @@ export default function ScreeningOnline({ screening }) {
 
                 {isPaymentChecking && (
                     <Alert className="mb-6" variant="info">
-                        <Loader2 className="h-4 w-4 animate-spin" />
+                        <Loader2 className="w-4 h-4 animate-spin" />
                         <AlertTitle>
                             Informasi Pembayaran Sudah Terkirim.
                         </AlertTitle>
@@ -55,7 +55,7 @@ export default function ScreeningOnline({ screening }) {
                 {/* Jika pasien belum membayaran tampilkan alert */}
                 {isPaymentPending && (
                     <Alert className="mb-6" variant="warning">
-                        <AlertCircle className="h-4 w-4" />
+                        <AlertCircle className="w-4 h-4" />
                         <AlertTitle>Payment Required</AlertTitle>
                         <AlertDescription>
                             Lakukan pembayaran untuk mendapatkan qrcode.

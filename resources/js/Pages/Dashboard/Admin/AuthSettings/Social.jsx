@@ -28,7 +28,7 @@ export default function SocialMediaLogin({ initialData }) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        put(route("auth.social.update"), {
+        put(route("auth-settings.update", 1), {
             onSuccess: () => {
                 toast.success("Pengaturan login sosial berhasil diperbarui");
             },
@@ -44,15 +44,15 @@ export default function SocialMediaLogin({ initialData }) {
     return (
         <Sidebar header={"Social Login"}>
             <Head title="Social Login" />
-            <div className="container mx-auto p-6 space-y-6">
-                <h1 className="text-3xl font-bold mb-6">
+            <div className="container p-6 mx-auto space-y-6">
+                <h1 className="mb-6 text-3xl font-bold">
                     Pengaturan Masuk Media Sosial
                 </h1>
                 <Toaster position="top-center" />
                 <Card>
                     <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <Settings className="h-6 w-6" />
+                        <CardTitle className="flex gap-2 items-center">
+                            <Settings className="w-6 h-6" />
                             Kelola Opsi Masuk Media Sosial
                         </CardTitle>
                         <CardDescription>
@@ -64,17 +64,17 @@ export default function SocialMediaLogin({ initialData }) {
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead>Provider</TableHead>
+                                    <TableHead>Penyedia</TableHead>
                                     <TableHead>Status</TableHead>
-                                    <TableHead>Actions</TableHead>
+                                    <TableHead>Aksi</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 <TableRow>
                                     <TableCell className="font-medium">
-                                        <div className="flex items-center gap-2">
+                                        <div className="flex gap-2 items-center">
                                             <svg
-                                                className="h-5 w-5"
+                                                className="w-5 h-5"
                                                 viewBox="-3 0 262 262"
                                                 xmlns="http://www.w3.org/2000/svg"
                                                 preserveAspectRatio="xMidYMid"
@@ -124,8 +124,8 @@ export default function SocialMediaLogin({ initialData }) {
                                 </TableRow>
                                 <TableRow>
                                     <TableCell className="font-medium">
-                                        <div className="flex items-center gap-2">
-                                            <Facebook className="h-5 w-5 text-blue-600" />
+                                        <div className="flex gap-2 items-center">
+                                            <Facebook className="w-5 h-5 text-blue-600" />
                                             Facebook
                                         </div>
                                     </TableCell>
@@ -142,13 +142,12 @@ export default function SocialMediaLogin({ initialData }) {
                                                 : "Disabled"}
                                         </span>
                                     </TableCell>
-                                    <TableCell>
-                                    </TableCell>
+                                    <TableCell></TableCell>
                                 </TableRow>
                                 <TableRow>
                                     <TableCell className="font-medium">
-                                        <div className="flex items-center gap-2">
-                                            <Instagram className="h-5 w-5 text-pink-600" />
+                                        <div className="flex gap-2 items-center">
+                                            <Instagram className="w-5 h-5 text-pink-600" />
                                             Instagram
                                         </div>
                                     </TableCell>
@@ -165,8 +164,7 @@ export default function SocialMediaLogin({ initialData }) {
                                                 : "Disabled"}
                                         </span>
                                     </TableCell>
-                                    <TableCell>
-                                    </TableCell>
+                                    <TableCell></TableCell>
                                 </TableRow>
                             </TableBody>
                         </Table>
@@ -177,7 +175,7 @@ export default function SocialMediaLogin({ initialData }) {
                             disabled={processing}
                             onClick={handleSubmit}
                         >
-                            <Save className="mr-2 h-4 w-4" />
+                            <Save className="mr-2 w-4 h-4" />
                             Submit
                         </Button>
                     </CardFooter>

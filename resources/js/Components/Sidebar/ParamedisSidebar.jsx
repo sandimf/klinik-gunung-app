@@ -1,16 +1,12 @@
-"use client";
-
 import React, { useState } from "react";
 import {
     Command,
     Activity,
     Home,
-    Bandage,
     Settings2,
     Users,
     ChevronRight,
     History,
-    AlignCenter,
 } from "lucide-react";
 import { NavUser } from "@/Components/Nav/NavUser";
 import { TeamSwitcher } from "@/Components/Nav/TeamSwitcher";
@@ -60,7 +56,7 @@ export function AppSidebar({ ...sidebarProps }) {
                 icon: Home,
             },
             {
-                title: "Pemeriksaan Fisik",
+                title: "Aktifitas Pelayanan",
                 url: route("dashboard"),
                 icon: Users,
                 items: [
@@ -75,26 +71,26 @@ export function AppSidebar({ ...sidebarProps }) {
                 ],
             },
             {
-              title: "Aktivitas",
-              url: route("dashboard"),
-              icon: Activity,
-              items: [
-                  {
-                      title: "Aktivitas Saya",
-                      url: route("report.index"),
-                  },
-                  {
-                      title: "Aktivitas Semua Pemeriksaan",
-                      url: route("activity.healthcheck"),
-                  },
-              ],
-          },
+                title: "Aktivitas",
+                url: route("dashboard"),
+                icon: Activity,
+                items: [
+                    {
+                        title: "Aktivitas Saya",
+                        url: route("report.index"),
+                    },
+                    {
+                        title: "Aktivitas Semua Pemeriksaan",
+                        url: route("activity.healthcheck"),
+                    },
+                ],
+            },
             {
                 title: "Riwayat Pemeriksaan",
                 url: route("paramedis.history"),
                 icon: History,
             },
-            
+
             {
                 title: "Settings",
                 url: route("paramedis.profile"),

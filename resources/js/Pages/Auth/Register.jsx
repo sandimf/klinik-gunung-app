@@ -48,7 +48,7 @@ export default function Component({ social }) {
             <Head title="Register" />
             <Card className="mx-auto w-full max-w-sm">
                 <CardHeader>
-                    <CardTitle className="text-2xl">Register</CardTitle>
+                    <CardTitle className="text-2xl">Buat Akun</CardTitle>
                     <CardDescription>
                         Buat akun baru untuk memulai
                     </CardDescription>
@@ -108,7 +108,7 @@ export default function Component({ social }) {
                                     type="button"
                                     variant="ghost"
                                     size="icon"
-                                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                                    className="absolute top-0 right-0 px-3 py-2 h-full hover:bg-transparent"
                                     onClick={togglePasswordVisibility}
                                     aria-label={
                                         showPassword
@@ -117,9 +117,9 @@ export default function Component({ social }) {
                                     }
                                 >
                                     {showPassword ? (
-                                        <EyeOff className="h-4 w-4" />
+                                        <EyeOff className="w-4 h-4" />
                                     ) : (
-                                        <Eye className="h-4 w-4" />
+                                        <Eye className="w-4 h-4" />
                                     )}
                                 </Button>
                             </div>
@@ -131,7 +131,7 @@ export default function Component({ social }) {
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="password_confirmation">
-                                Confirm Password
+                                Konfirmasi Password
                             </Label>
                             <div className="relative">
                                 <Input
@@ -155,7 +155,7 @@ export default function Component({ social }) {
                                     type="button"
                                     variant="ghost"
                                     size="icon"
-                                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                                    className="absolute top-0 right-0 px-3 py-2 h-full hover:bg-transparent"
                                     onClick={
                                         togglePasswordConfirmationVisibility
                                     }
@@ -166,9 +166,9 @@ export default function Component({ social }) {
                                     }
                                 >
                                     {showPasswordConfirmation ? (
-                                        <EyeOff className="h-4 w-4" />
+                                        <EyeOff className="w-4 h-4" />
                                     ) : (
-                                        <Eye className="h-4 w-4" />
+                                        <Eye className="w-4 h-4" />
                                     )}
                                 </Button>
                             </div>
@@ -183,13 +183,13 @@ export default function Component({ social }) {
                             className="w-full"
                             disabled={processing}
                         >
-                            {processing ? "Registering..." : "Register"}
+                            {processing ? "Membuat Akun..." : "Buat Akun"}
                         </Button>
                     </form>
                     {social.google === 1 && (
                         <Button
                             variant="outline"
-                            className="w-full mt-4"
+                            className="mt-4 w-full"
                             onClick={() => {
                                 window.location.href = "/auth/google/redirect";
                             }}
@@ -197,7 +197,7 @@ export default function Component({ social }) {
                             Login with Google
                         </Button>
                     )}
-                    <div className="mt-4 text-center text-sm">
+                    <div className="mt-4 text-sm text-center">
                         Sudah punya akun?{" "}
                         <Link href={route("login")} className="underline">
                             Masuk

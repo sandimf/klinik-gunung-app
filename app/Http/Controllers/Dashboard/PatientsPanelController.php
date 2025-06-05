@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Dashboard;
 
-use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Models\Users\Patients;
-use App\Repositories\VisitRepository;
-use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use App\Models\Users\Patients;
+use App\Http\Controllers\Controller;
+use App\Models\EmergecyContactModel;
+use Illuminate\Support\Facades\Auth;
+use App\Repositories\VisitRepository;
+use App\Models\Emergency\EmergencyContact;
 
 class PatientsPanelController extends Controller
 {
@@ -31,6 +33,9 @@ class PatientsPanelController extends Controller
         // Check if the user has a patient profile
         $patient = Patients::where('user_id', $this->user->id)->first();
 
+        $emergencyContact = EmergecyContactModel::first();
+
+
         if (! $patient) {
             return redirect()->route('information.index');
         }
@@ -38,7 +43,7 @@ class PatientsPanelController extends Controller
         // Render the patient's dashboard view with the visit count
         return Inertia::render('Dashboard/Patients/Index', [
             'visitCount' => $visitRepository->visitCount($this->user),
-
+            'emergency' => $emergencyContact,
         ]);
     }
 

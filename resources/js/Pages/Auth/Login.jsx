@@ -36,7 +36,7 @@ export default function Component({ social, status, canResetPassword = true }) {
     return (
         <AuthLayout>
             <Head title="Login" />
-            <div className="relative w-full max-w-sm mx-auto">
+            <div className="relative mx-auto w-full max-w-sm">
                 <Card className="w-full">
                     <CardHeader>
                         <CardTitle className="text-2xl">Masuk</CardTitle>
@@ -66,7 +66,7 @@ export default function Component({ social, status, canResetPassword = true }) {
                                 )}
                             </div>
                             <div className="space-y-2">
-                                <div className="flex items-center justify-between">
+                                <div className="flex justify-between items-center">
                                     <Label htmlFor="password">Password</Label>
                                     {canResetPassword && (
                                         <Link
@@ -94,7 +94,7 @@ export default function Component({ social, status, canResetPassword = true }) {
                                         type="button"
                                         variant="ghost"
                                         size="icon"
-                                        className="absolute top-0 right-0 h-full px-3 py-2 hover:bg-transparent"
+                                        className="absolute top-0 right-0 px-3 py-2 h-full hover:bg-transparent"
                                         onClick={togglePasswordVisibility}
                                         aria-label={
                                             showPassword
@@ -126,7 +126,7 @@ export default function Component({ social, status, canResetPassword = true }) {
                         {social.google === 1 && (
                             <Button
                                 variant="outline"
-                                className="w-full mt-4"
+                                className="mt-4 w-full"
                                 onClick={() => {
                                     window.location.href =
                                         "/auth/google/redirect";
@@ -146,7 +146,7 @@ export default function Component({ social, status, canResetPassword = true }) {
                         </div>
                     </CardContent>
                 </Card>
-                <div className="absolute bottom-0 right-0 text-xs text-gray-500 -mb-6">
+                <div className="absolute right-0 bottom-0 -mb-6 text-xs text-gray-500">
                     v0.1
                 </div>
             </div>

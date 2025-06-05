@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Head, usePage, Link } from "@inertiajs/react";
+import { Head, usePage } from "@inertiajs/react";
 import ParamedisSidebar from "@/Layouts/Dashboard/ParamedisSidebarLayout";
 import { Input } from "@/Components/ui/input";
 import {
@@ -26,10 +26,11 @@ import {
     PaginationPrevious,
 } from "@/Components/ui/pagination";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
-import { Button } from "@/Components/ui/button";
-import { Edit, Eye } from 'lucide-react';
 import ScreeningDialog from "../Offline/Partials/PhysicalExamination";
 import { Badge } from "@/Components/ui/badge";
+import { Link } from "@inertiajs/react";
+import { Book } from "lucide-react";
+import { Button } from "@/Components/ui/button";
 
 const ScreeningOfflineIndex = ({ screenings = [] }) => {
     const { errors } = usePage().props;
@@ -41,10 +42,16 @@ const ScreeningOfflineIndex = ({ screenings = [] }) => {
     const itemsPerPage = 10;
 
     const filteredScreenings = screenings.filter((screening) => {
-        const nameMatch = screening.name.toLowerCase().includes(searchTerm.toLowerCase());
-        const typeMatch = selectedType === "all" || 
-            (selectedType === "online" && screening.answers[0]?.isOnline === 1) ||
-            (selectedType === "offline" && (screening.answers[0]?.isOnline === 0 || screening.answers[0]?.isOnline === undefined));
+        const nameMatch = screening.name
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase());
+        const typeMatch =
+            selectedType === "all" ||
+            (selectedType === "online" &&
+                screening.answers[0]?.isOnline === 1) ||
+            (selectedType === "offline" &&
+                (screening.answers[0]?.isOnline === 0 ||
+                    screening.answers[0]?.isOnline === undefined));
         return nameMatch && typeMatch;
     });
 
@@ -62,7 +69,10 @@ const ScreeningOfflineIndex = ({ screenings = [] }) => {
     const capitalizeWords = (str) => {
         return str
             .split(" ")
-            .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+            .map(
+                (word) =>
+                    word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+            )
             .join(" ");
     };
 
@@ -74,7 +84,7 @@ const ScreeningOfflineIndex = ({ screenings = [] }) => {
                     <CardTitle>Riwayat Pemeriksaan</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <div className="flex flex-col md:flex-row gap-4 mb-4">
+                    <div className="flex flex-col gap-4 mb-4 md:flex-row">
                         <Input
                             placeholder="Cari nama pasien..."
                             value={searchTerm}
@@ -102,21 +112,61 @@ const ScreeningOfflineIndex = ({ screenings = [] }) => {
                                 <TableHead>Nomor Antrian</TableHead>
                                 <TableHead>Nama Pasien</TableHead>
                                 <TableHead>Screening</TableHead>
-                                <TableHead>Status</TableHead>
+                                <TableHead>Status Pemeriksaan</TableHead>
+                                <TableHead>Status Kesehatan</TableHead>
+                                <TableHead>Kuesioner</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {paginatedScreenings.map((screening, index) => (
                                 <TableRow key={`${screening.id}-${index}`}>
                                     <TableCell>
-                                        {screening.answers[0]?.queue || 'N/A'}
+                                        {screening.answers[0]?.queue || "N/A"}
                                     </TableCell>
-                                    <TableCell className="font-bold">{capitalizeWords(screening.name)}</TableCell>
-                                    <TableCell>
-                                        {screening.answers[0]?.isOnline === 1 ? 'Online' : 'Offline'}
+                                    <TableCell className="font-bold">
+                                        {capitalizeWords(screening.name)}
                                     </TableCell>
                                     <TableCell>
-                                        <Badge>{screening.screening_status === 'Completed' ? 'Selesai' : screening.screening_status}</Badge>
+                                        {screening.answers[0]?.isOnline === 1
+                                            ? "Online"
+                                            : "Offline"}
+                                    </TableCell>
+                                    <TableCell>
+                                        <Badge>
+                                            {screening.screening_status ===
+                                            "Completed"
+                                                ? "Selesai"
+                                                : screening.screening_status}
+                                        </Badge>
+                                    </TableCell>
+                                    <TableCell>
+                                        <Badge>
+                                            {screening.health_status ===
+                                            "Healthy"
+                                                ? "Sehat"
+                                                : screening.health_status ===
+                                                  "Butuh_dokter"
+                                                ? "Membutuhkan Dokter"
+                                                : screening.health_status ===
+                                                  "Butuh_pendamping"
+                                                ? "Membutuhkan Pendamping"
+                                                : "Status Tidak Diketahui"}
+                                        </Badge>
+                                    </TableCell>
+                                    <TableCell>
+                                        <Link
+                                            href={route("history.healthcheck", {
+                                                uuid: screening.uuid,
+                                            })}
+                                        >
+                                            <Button
+                                                variant="outline"
+                                                className="mb-4"
+                                            >
+                                                <Book className="mr-2 w-4 h-4" />{" "}
+                                                Kuesioner
+                                            </Button>
+                                        </Link>
                                     </TableCell>
                                 </TableRow>
                             ))}
@@ -172,4 +222,3 @@ const ScreeningOfflineIndex = ({ screenings = [] }) => {
 };
 
 export default ScreeningOfflineIndex;
-

@@ -21,7 +21,7 @@ const CreateMedicineDialog = ({ isOpen, setIsOpen, onSuccess }) => {
         e.preventDefault();
         post(route("product.store.cashier"), {
             onSuccess: () => {
-                setIsOpen(false); 
+                setIsOpen(false);
             },
         });
     };
@@ -31,13 +31,13 @@ const CreateMedicineDialog = ({ isOpen, setIsOpen, onSuccess }) => {
             <DialogTrigger asChild>
                 <Button className="hidden">Tambah Produk</Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[500px] h-[40vh] flex flex-col">
+            <DialogContent className="sm:max-w-[500px] h-[50vh] flex flex-col">
                 <DialogHeader>
                     <DialogTitle>Tambah Produk Baru</DialogTitle>
                 </DialogHeader>
                 <ScrollArea className="flex-grow">
-                    <form onSubmit={handleSubmit} className="space-y-6 p-6">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <form onSubmit={handleSubmit} className="p-6 space-y-6">
+                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                             <div className="space-y-2">
                                 <Label htmlFor="name">Nama Produk</Label>
                                 <Input
@@ -49,7 +49,7 @@ const CreateMedicineDialog = ({ isOpen, setIsOpen, onSuccess }) => {
                                     placeholder="Masukkan Nama Produk"
                                 />
                                 {errors.name && (
-                                    <p className="text-red-500 text-sm">
+                                    <p className="text-sm text-red-500">
                                         {errors.name}
                                     </p>
                                 )}
@@ -65,7 +65,7 @@ const CreateMedicineDialog = ({ isOpen, setIsOpen, onSuccess }) => {
                                     placeholder="Masukkan Stock"
                                 />
                                 {errors.stock && (
-                                    <p className="text-red-500 text-sm">
+                                    <p className="text-sm text-red-500">
                                         {errors.stock}
                                     </p>
                                 )}
@@ -81,7 +81,7 @@ const CreateMedicineDialog = ({ isOpen, setIsOpen, onSuccess }) => {
                                     placeholder="Masukkan Harga"
                                 />
                                 {errors.price && (
-                                    <p className="text-red-500 text-sm">
+                                    <p className="text-sm text-red-500">
                                         {errors.price}
                                     </p>
                                 )}
@@ -92,7 +92,7 @@ const CreateMedicineDialog = ({ isOpen, setIsOpen, onSuccess }) => {
                             disabled={processing}
                             className="w-full"
                         >
-                            {processing ? "Menambahkan..." : "Tambah Obat"}
+                            {processing ? "Menambahkan..." : "Tambah Produk"}
                         </Button>
                     </form>
                 </ScrollArea>

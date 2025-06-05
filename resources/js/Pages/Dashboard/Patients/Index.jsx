@@ -6,14 +6,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
 import { CalendarDays, Activity, Pill, Phone, CircleCheck } from "lucide-react";
 import { toast, Toaster } from "sonner";
 
-export default function Dashboard({ screening, visitCount }) {
+export default function Dashboard({ screening, visitCount, emergency }) {
     const user = usePage().props.auth.user;
 
     const { flash } = usePage().props;
     useEffect(() => {
         if (flash.message) {
             toast(flash.message, {
-                icon: <CircleCheck className="h-5 w-5 text-green-500" />,
+                icon: <CircleCheck className="w-5 h-5 text-green-500" />,
             });
         }
     }, [flash.message]);
@@ -22,8 +22,8 @@ export default function Dashboard({ screening, visitCount }) {
         <Sidebar header={"Welcome"}>
             <Head title="Dashboard" />
             <Toaster position="top-center" />
-            <div className="w-full overflow-x-auto pb-2">
-                <h1 className="text-2xl font-bold tracking-tight mb-4">
+            <div className="overflow-x-auto pb-2 w-full">
+                <h1 className="mb-4 text-2xl font-bold tracking-tight">
                     Selamat Datang di Klinik Gunung,{user.name}{" "}
                 </h1>
 
@@ -42,11 +42,11 @@ export default function Dashboard({ screening, visitCount }) {
                     <TabsContent value="overview" className="space-y-4">
                         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                             <Card>
-                                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardHeader className="flex flex-row justify-between items-center pb-2 space-y-0">
                                     <CardTitle className="text-sm font-medium">
                                         Screening
                                     </CardTitle>
-                                    <CalendarDays className="h-4 w-4 text-muted-foreground" />
+                                    <CalendarDays className="w-4 h-4 text-muted-foreground" />
                                 </CardHeader>
                                 <CardContent>
                                     {screening ? (
@@ -74,11 +74,11 @@ export default function Dashboard({ screening, visitCount }) {
                                 </CardContent>
                             </Card>
                             <Card>
-                                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardHeader className="flex flex-row justify-between items-center pb-2 space-y-0">
                                     <CardTitle className="text-sm font-medium">
                                         Kujungan Terkini
                                     </CardTitle>
-                                    <Activity className="h-4 w-4 text-muted-foreground" />
+                                    <Activity className="w-4 h-4 text-muted-foreground" />
                                 </CardHeader>
                                 <CardContent>
                                     <div className="text-2xl font-bold">
@@ -90,33 +90,44 @@ export default function Dashboard({ screening, visitCount }) {
                                 </CardContent>
                             </Card>
                             <Card>
-                                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardHeader className="flex flex-row justify-between items-center pb-2 space-y-0">
                                     <CardTitle className="text-sm font-medium">
-                                        Prescriptions
+                                        Lorem, ipsum dolor.
                                     </CardTitle>
-                                    <Pill className="h-4 w-4 text-muted-foreground" />
+                                    <Pill className="w-4 h-4 text-muted-foreground" />
                                 </CardHeader>
                                 <CardContent>
-                                    <div className="text-2xl font-bold">2</div>
+                                    <div className="text-2xl font-bold">
+                                        Lorem, ipsum.
+                                    </div>
                                     <p className="text-xs text-muted-foreground">
-                                        Active prescriptions
+                                        Lorem ipsum dolor sit amet consectetur
+                                        adipisicing.
                                     </p>
                                 </CardContent>
                             </Card>
                             <Card>
-                                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardHeader className="flex flex-row justify-between items-center pb-2 space-y-0">
                                     <CardTitle className="text-sm font-medium">
                                         Emergency Contact
                                     </CardTitle>
-                                    <Phone className="h-4 w-4 text-muted-foreground" />
+                                    <Phone className="w-4 h-4 text-muted-foreground" />
                                 </CardHeader>
                                 <CardContent>
-                                    <div className="text-2xl font-bold">
-                                        Jane Doe
-                                    </div>
-                                    <p className="text-xs text-muted-foreground">
-                                        +62 123-456-7890
-                                    </p>
+                                    {emergency ? (
+                                        <>
+                                            <div className="text-2xl font-bold">
+                                                {emergency.contact}
+                                            </div>
+                                            <p className="mt-2 text-xs text-muted-foreground">
+                                                {emergency.name}
+                                            </p>
+                                        </>
+                                    ) : (
+                                        <p className="text-xs text-muted-foreground">
+                                            -
+                                        </p>
+                                    )}
                                 </CardContent>
                             </Card>
                         </div>

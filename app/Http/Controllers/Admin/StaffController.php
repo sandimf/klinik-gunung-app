@@ -1,26 +1,29 @@
 <?php
 
-namespace App\Http\Controllers\Clinic;
+namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Clinic\MedicalPersonnelRequest;
-use App\Jobs\SendStaffCredentialsEmail;
 use App\Models\User;
+use Inertia\Inertia;
 use App\Models\Users\Admin;
-use App\Models\Users\Cashier;
 use App\Models\Users\Doctor;
+use App\Models\Users\Cashier;
+use App\Models\Users\Manager;
 use App\Models\Users\Paramedis;
 use App\Models\Users\Warehouse;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\StaffRequest;
 use Illuminate\Support\Facades\Hash;
-use Inertia\Inertia;
+use App\Jobs\SendStaffCredentialsEmail;
+use App\Http\Requests\Clinic\MedicalPersonnelRequest;
 
-class MedicalPersonnelController extends Controller
+class StaffController extends Controller
 {
     public function index()
     {
         $doctors = collect(Doctor::with('user')->get()->map(function ($doctor) {
             return [
+                'uuid' => $doctor->uuid,
                 'id' => $doctor->id,
                 'nik' => $doctor->nik,
                 'role' => $doctor->role,
@@ -37,6 +40,7 @@ class MedicalPersonnelController extends Controller
 
         $cashiers = collect(Cashier::with('user')->get()->map(function ($cashier) {
             return [
+                'uuid' => $cashier->uuid,
                 'id' => $cashier->id,
                 'nik' => $cashier->nik,
                 'role' => $cashier->role,
@@ -53,6 +57,7 @@ class MedicalPersonnelController extends Controller
 
         $paramedis = collect(Paramedis::with('user')->get()->map(function ($paramedi) {
             return [
+                'uuid' => $paramedi->uuid,
                 'id' => $paramedi->id,
                 'nik' => $paramedi->nik,
                 'role' => $paramedi->role,
@@ -69,6 +74,7 @@ class MedicalPersonnelController extends Controller
 
         $admins = collect(Admin::with('user')->get()->map(function ($admin) {
             return [
+                'uuid' => $admin->uuid,
                 'id' => $admin->id,
                 'nik' => $admin->nik,
                 'role' => $admin->role,
@@ -84,6 +90,7 @@ class MedicalPersonnelController extends Controller
         }));
         $warehouse = collect(Warehouse::with('user')->get()->map(function ($warehouse) {
             return [
+                'uuid' => $warehouse->uuid,
                 'id' => $warehouse->id,
                 'nik' => $warehouse->nik,
                 'role' => $warehouse->role,
@@ -97,6 +104,7 @@ class MedicalPersonnelController extends Controller
                 'updated_at' => $warehouse->updated_at,
             ];
         }));
+
 
         // Merge the collections of doctors, cashiers, paramedis, and admins
         $users = $doctors->merge($cashiers)->merge($paramedis)->merge($admins)->merge($warehouse);
@@ -114,7 +122,7 @@ class MedicalPersonnelController extends Controller
     }
 
     // Membuat tenaga medis baru
-    public function store(MedicalPersonnelRequest $request)
+    public function store(StaffRequest $request)
     {
         // Mulai transaksi database
         DB::beginTransaction();
@@ -151,6 +159,7 @@ class MedicalPersonnelController extends Controller
             'cashier' => Cashier::class,
             'admin' => Admin::class,
             'warehouse' => Warehouse::class,
+            'manager' => Manager::class,
         ];
 
         // Cek dan simpan data berdasarkan role

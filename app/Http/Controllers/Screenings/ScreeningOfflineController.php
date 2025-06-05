@@ -100,8 +100,7 @@ class ScreeningOfflineController extends Controller
             }
         });
 
-        return redirect(route('screening.index'))->with('message', 'Kuesioner Kamu Berhasil Di Simpan');
-
+        return redirect(route('screening.index'))->with('message', 'Screening Anda Berhasil Di Simpan');
     }
 
     public function show($uuid)
@@ -136,6 +135,6 @@ class ScreeningOfflineController extends Controller
         ]);
 
         // Download PDF dengan nama sesuai nama pasien
-        return $pdf->download('screening_detail_'.$patientName.'.pdf');
+        return $pdf->download('screening_detail_' . $patientName . '.pdf');
     }
 }

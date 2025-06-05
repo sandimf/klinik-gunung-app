@@ -68,7 +68,7 @@ class AppointmentController extends Controller
 
         // Berikan respon sukses
         return redirect()->route('appointments.index')
-            ->with('success', 'Appointment created successfully!');
+            ->with('success', 'Janji temu berhasil dibuat!');
     }
 
     public function update(Request $request, $id)
