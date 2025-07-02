@@ -21,7 +21,7 @@ import { Button } from "@/Components/ui/button";
 import SideBar from "@/Layouts/Dashboard/ParamedisSidebarLayout";
 import { Head } from "@inertiajs/react";
 import { ArrowLeft, FileText, Calendar, User, Phone, Info } from 'lucide-react';
-import { EditAnswerDialog } from "./_components/edit-answer";
+import { EditAnswerDialog } from "../_components/edit-answer";
 import { Toaster } from "sonner";
 
 export default function ScreeningDetails({ patient, questionsAndAnswers, queue }) {
@@ -82,7 +82,7 @@ export default function ScreeningDetails({ patient, questionsAndAnswers, queue }
         <SideBar header={`Detail kuesioner ${capitalizeWords(patient.name)}`}>
             <Head title={`Detail kuesioner ${capitalizeWords(patient.name)}`} />
             <Toaster position="top-center" />
-            <Link href={route("paramedis.screening")}>
+            <Link href={route("paramedis.screenings")}>
                 <Button variant="outline" className="mb-4">
                     <ArrowLeft className="mr-2 h-4 w-4" /> Kembali
                 </Button>

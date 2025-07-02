@@ -16,9 +16,6 @@ return new class extends Migration
             $table->string('bio')->nullable();
             $table->string('username')->unique();
             $table->string('slug')->unique()->nullable();
-            $table->text('content')->nullable();
-            $table->string('image')->nullable();
-            $table->enum('status', ['pending', 'approve', 'reject'])->default('pending'); // Perbaikan di sin
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });

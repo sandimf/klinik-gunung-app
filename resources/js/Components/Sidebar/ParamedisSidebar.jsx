@@ -56,19 +56,24 @@ export function AppSidebar({ ...sidebarProps }) {
                 icon: Home,
             },
             {
-                title: "Aktifitas Pelayanan",
-                url: route("dashboard"),
+                title: "Screening",
+                url: route("paramedis.screenings"),
                 icon: Users,
-                items: [
-                    {
-                        title: "Screening",
-                        url: route("paramedis.screening"),
-                    },
-                    {
-                        title: "Screening Online",
-                        url: route("screening-online.paramedis"),
-                    },
-                ],
+                // items: [
+                //     {
+                //         title: "Screening",
+                //         url: route("paramedis.screenings"),
+                //     },
+                //     {
+                //         title: "Screening Online",
+                //         url: route("screening-online.paramedis"),
+                //     },
+                // ],
+            },
+            {
+                title: "Riwayat Screening",
+                url: route("paramedis.history"),
+                icon: History,
             },
             {
                 title: "Aktivitas",
@@ -85,14 +90,10 @@ export function AppSidebar({ ...sidebarProps }) {
                     },
                 ],
             },
-            {
-                title: "Riwayat Pemeriksaan",
-                url: route("paramedis.history"),
-                icon: History,
-            },
+
 
             {
-                title: "Settings",
+                title: "Pengaturan",
                 url: route("paramedis.profile"),
                 icon: Settings2,
             },

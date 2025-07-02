@@ -87,6 +87,6 @@ class PaymentsController extends Controller
         ]);
 
         // Mengunduh PDF dengan nama file "nota_pembayaran.pdf"
-        return $pdf->download('nota_pembayaran_'.$payment->no_transaction.'.pdf');
+        return $pdf->download('nota_pembayaran_' . $payment->no_transaction . '.pdf');
     }
 }

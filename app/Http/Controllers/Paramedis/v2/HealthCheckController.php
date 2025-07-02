@@ -98,7 +98,7 @@ class HealthCheckController extends Controller
         });
 
         // Mengirim data ke halaman Inertia
-        return Inertia::render('Dashboard/Paramedis/Screenings/Offline/Details/Index', [
+        return Inertia::render('Dashboard/Paramedis/Screenings/Details/Index', [
             'patient' => $patient,
             'questionsAndAnswers' => $questionsAndAnswers,
             'queue' => $patient->answers->max('queue'),

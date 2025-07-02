@@ -228,7 +228,7 @@ export default function CreateQuestionnaire() {
                                                     e.target.value
                                                 )
                                             }
-                                            placeholder="ex: ya"
+                                            placeholder="Contoh: ya"
                                         />
                                         {errors.condition_value && (
                                             <Alert variant="destructive">

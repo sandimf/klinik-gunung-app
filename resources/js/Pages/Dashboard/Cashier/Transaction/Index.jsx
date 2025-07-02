@@ -20,6 +20,13 @@ import { Toaster } from "sonner"
 import useFlashToast from "@/hooks/flash"
 import { RadioGroup, RadioGroupItem } from "@/Components/ui/radio-group"
 import { Label } from "@/Components/ui/label"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter
+} from "@/Components/ui/dialog"
 
 export default function MedicalRecord({ products }) {
   const [searchTerm, setSearchTerm] = useState("")
@@ -32,6 +39,8 @@ export default function MedicalRecord({ products }) {
     payment_proof: null,
     total_amount: 0,
   })
+  const [confirmOpen, setConfirmOpen] = useState(false)
+  const [checkoutEvent, setCheckoutEvent] = useState(null)
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value)
@@ -89,7 +98,7 @@ export default function MedicalRecord({ products }) {
   }
 
   const handleCheckout = (e) => {
-    e.preventDefault()
+    if (e) e.preventDefault();
 
     if (cart.length === 0) {
       toast({
@@ -146,6 +155,33 @@ export default function MedicalRecord({ products }) {
   }, [products, searchTerm])
 
   useFlashToast()
+
+  useEffect(() => {
+    if (errors && Object.keys(errors).length > 0) {
+      Object.entries(errors).forEach(([field, message]) => {
+        if (message) {
+          toast({
+            title: "Error",
+            description: message,
+            variant: "destructive",
+          })
+        }
+      })
+    }
+  }, [errors])
+
+  useEffect(() => {
+    if (
+      (paymentMethod === "qris" || paymentMethod === "transfer") &&
+      !paymentProof
+    ) {
+      toast({
+        title: "Perhatian",
+        description: "Harap unggah bukti pembayaran untuk metode QRIS atau transfer.",
+        variant: "destructive",
+      })
+    }
+  }, [paymentMethod])
 
   return (
     <CashierSidebar>
@@ -261,7 +297,15 @@ export default function MedicalRecord({ products }) {
                         {paymentProof && <p className="text-sm text-green-600">File terunggah: {paymentProof.name}</p>}
                       </div>
                     )}
-                    <Button size="lg" className="mt-4 w-full" onClick={handleCheckout} disabled={processing}>
+                    <Button
+                      size="lg"
+                      className="mt-4 w-full"
+                      onClick={(e) => {
+                        setCheckoutEvent(e);
+                        setConfirmOpen(true);
+                      }}
+                      disabled={processing}
+                    >
                       {processing ? "Processing..." : "Checkout"}
                     </Button>
                     {errors.items && <p className="text-red-500 mt-2">{errors.items}</p>}
@@ -272,6 +316,32 @@ export default function MedicalRecord({ products }) {
           </div>
         </div>
       </div>
+      <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Konfirmasi Checkout</DialogTitle>
+          </DialogHeader>
+          <div>Apakah Anda yakin ingin melakukan checkout?</div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setConfirmOpen(false)}
+              disabled={processing}
+            >
+              Batal
+            </Button>
+            <Button
+              onClick={(e) => {
+                setConfirmOpen(false);
+                handleCheckout(checkoutEvent || e);
+              }}
+              disabled={processing}
+            >
+              Yakin
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </CashierSidebar>
   )
 }

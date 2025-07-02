@@ -28,7 +28,7 @@ export function StartAppointment({ appointmentId, patientName, isOpen, onClose }
         reset(); // Reset form setelah berhasil
         onClose(); // Tutup modal
         toast.success('Appointment confirmed successfully!', {
-          icon: <CheckCircle2 className="h-5 w-5 text-green-500" />,
+          icon: <CheckCircle2  />,
         });
       },
       onError: (errors) => {

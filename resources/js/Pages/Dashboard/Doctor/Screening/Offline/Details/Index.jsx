@@ -24,7 +24,7 @@ export default function ScreeningDetails({ patient, questionsAndAnswers, queue }
         <SideBar header={`Detail kuesioner ${capitalizeWords(patient.name)}`}>
             <Head title={`Detail kuesioner ${capitalizeWords(patient.name)}`} />
 
-            <Link href={route('paramedis.screening')}>
+            <Link href={route('paramedis.screenings')}>
                 <Button
                     variant="outline"
                     className="mb-4"

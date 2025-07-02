@@ -33,7 +33,7 @@ export default function HistoryOffline({ screening }) {
                     <Alert className="mb-6">
                         <CheckCircle className="w-4 h-4 text-green-500" />
                         <AlertTitle>
-                            Screening Completed Successfully
+                            Screening Berhasil Dilakukan
                         </AlertTitle>
                         <AlertDescription>
                             {user.name}, Screening Anda Sudah Di Periksa.

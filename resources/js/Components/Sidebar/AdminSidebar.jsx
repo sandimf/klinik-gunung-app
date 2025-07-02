@@ -10,6 +10,15 @@ import {
     Ghost,
     Key,
     Contact,
+    LayoutDashboard,
+    Users,
+    Calendar,
+    FileText,
+    Stethoscope,
+    UserCog,
+    Pill,
+    FileStack,
+    Settings,
 } from "lucide-react";
 import { NavUser } from "@/Components/Nav/NavUser";
 import { TeamSwitcher } from "@/Components/Nav/TeamSwitcher";
@@ -34,10 +43,28 @@ import {
     CollapsibleContent,
     CollapsibleTrigger,
 } from "@/Components/ui/collapsible";
+import { cn } from '@/lib/utils';
+import {
+    TooltipProvider,
+} from '@/Components/ui/tooltip';
+
+const navLinks = [
+    { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { href: '/admin/pasien', label: 'Pasien', icon: Users },
+    { href: '/admin/janji-temu', label: 'Janji Temu', icon: Calendar },
+    { href: '/admin/rekam-medis', label: 'Rekam Medis', icon: FileText },
+    { href: '/admin/dokter', label: 'Dokter', icon: Stethoscope },
+    { href: '/admin/staf', label: 'Staf', icon: UserCog },
+    { href: '/admin/inventaris', label: 'Inventaris', icon: Pill },
+    { href: '/admin/tagihan', label: 'Tagihan', icon: FileStack },
+    { href: '/admin/pengaturan', label: 'Pengaturan', icon: Settings },
+];
 
 export function AppSidebar({ ...sidebarProps }) {
     const { url, props } = usePage();
     const auth = props.auth;
+
+    const [collapsed, setCollapsed] = useState(false);
 
     const isRouteActive = (routeUrl) => {
         return url.startsWith(routeUrl);
@@ -59,7 +86,7 @@ export function AppSidebar({ ...sidebarProps }) {
                 icon: Home,
             },
             {
-                title: "Kuesioner",
+                title: "Kuesioner Screening",
                 url: route("questioner.create"),
                 icon: NotebookPen,
                 items: [
@@ -75,19 +102,23 @@ export function AppSidebar({ ...sidebarProps }) {
             },
             {
                 title: "Staff",
-                url: route("dashboard"),
+                url: route("staff.index"),
                 icon: UserPlus,
-                items: [
-                    {
-                        title: "Daftar Staff",
-                        url: route("staff.index"),
-                    },
-                ],
             },
             {
-                title: "Scan",
+                title: "Pindai QrCode",
                 url: route("admin.scan"),
                 icon: Scan,
+            },
+            {
+                title: "Kontak Darurat",
+                url: route("emergecy-contact.index"),
+                icon: Contact,
+            },
+            {
+                title: "Ai Apikey",
+                url: route("apikey.index"),
+                icon: Key,
             },
             {
                 title: "Auth",
@@ -101,17 +132,7 @@ export function AppSidebar({ ...sidebarProps }) {
                 ],
             },
             {
-                title: "Apikey",
-                url: route("apikey.index"),
-                icon: Key,
-            },
-            {
-                title: "Emergency Contact",
-                url: route("emergecy-contact.index"),
-                icon: Contact,
-            },
-            {
-                title: "Settings",
+                title: "Pengaturan",
                 url: route("admin.profile"),
                 icon: Settings2,
                 items: [
@@ -134,97 +155,97 @@ export function AppSidebar({ ...sidebarProps }) {
         );
     };
 
+    const toggleSidebar = () => {
+        setCollapsed(!collapsed);
+    };
+
+    const linkClasses = (isActive, isCollapsed) =>
+        cn(
+            'flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary',
+            isActive && 'bg-muted text-primary',
+            isCollapsed && 'justify-center'
+        );
+
+    const iconClasses = 'h-5 w-5';
+    const labelClasses = (isCollapsed) => cn('truncate', isCollapsed && 'hidden');
+
     return (
-        <Sidebar collapsible="icon " {...sidebarProps}>
-            <SidebarHeader>
-                <TeamSwitcher teams={data.teams} />
-            </SidebarHeader>
-            <SidebarContent>
-                <SidebarGroup>
-                    <SidebarGroupLabel>Menu</SidebarGroupLabel>
-                    <SidebarMenu>
-                        {data.navMain.map((item) => (
-                            <SidebarMenuItem key={item.title}>
-                                <Collapsible
-                                    open={openItems.includes(item.title)}
-                                    onOpenChange={() => toggleItem(item.title)}
-                                    className="group/collapsible"
-                                >
-                                    <CollapsibleTrigger asChild>
-                                        {item.items ? (
-                                            <SidebarMenuButton
-                                                tooltip={item.title}
-                                                isActive={isRouteActive(
-                                                    item.url
-                                                )}
-                                            >
-                                                {item.icon && (
-                                                    <item.icon className="size-4" />
-                                                )}
-                                                <span>{item.title}</span>
-                                                <ChevronRight className="ml-auto size-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                                            </SidebarMenuButton>
-                                        ) : (
-                                            <SidebarMenuButton
-                                                tooltip={item.title}
-                                                isActive={isRouteActive(
-                                                    item.url
-                                                )}
-                                                asChild
-                                            >
-                                                <Link
-                                                    href={item.url}
-                                                    className="flex items-center w-full"
+        <TooltipProvider delayDuration={0}>
+            <Sidebar collapsed={collapsed} {...sidebarProps}>
+                <SidebarHeader>
+                    <TeamSwitcher teams={data.teams} />
+                </SidebarHeader>
+                <SidebarContent>
+                    <SidebarGroup>
+                        <SidebarGroupLabel>Menu</SidebarGroupLabel>
+                        <SidebarMenu>
+                            {data.navMain.map((item) => (
+                                <SidebarMenuItem key={item.title}>
+                                    {item.items ? (
+                                        <Collapsible
+                                            open={openItems.includes(item.title)}
+                                            onOpenChange={() => toggleItem(item.title)}
+                                            className="group/collapsible"
+                                        >
+                                            <CollapsibleTrigger asChild>
+                                                <SidebarMenuButton
+                                                    tooltip={item.title}
+                                                    isActive={isRouteActive(item.url)}
                                                 >
                                                     {item.icon && (
                                                         <item.icon className="size-4" />
                                                     )}
                                                     <span>{item.title}</span>
-                                                </Link>
-                                            </SidebarMenuButton>
-                                        )}
-                                    </CollapsibleTrigger>
-                                    {item.items && (
-                                        <CollapsibleContent>
-                                            <SidebarMenuSub>
-                                                {item.items.map((subItem) => (
-                                                    <SidebarMenuSubItem
-                                                        key={subItem.title}
-                                                    >
-                                                        <SidebarMenuSubButton
-                                                            isActive={isRouteActive(
-                                                                subItem.url
-                                                            )}
-                                                            asChild
-                                                        >
-                                                            <Link
-                                                                href={
-                                                                    subItem.url
-                                                                }
-                                                                className="flex items-center w-full"
+                                                    <ChevronRight className="ml-auto size-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                                                </SidebarMenuButton>
+                                            </CollapsibleTrigger>
+                                            <CollapsibleContent>
+                                                <SidebarMenuSub>
+                                                    {item.items.map((subItem) => (
+                                                        <SidebarMenuSubItem key={subItem.title}>
+                                                            <SidebarMenuSubButton
+                                                                isActive={isRouteActive(subItem.url)}
+                                                                asChild
                                                             >
-                                                                <span>
-                                                                    {
-                                                                        subItem.title
-                                                                    }
-                                                                </span>
-                                                            </Link>
-                                                        </SidebarMenuSubButton>
-                                                    </SidebarMenuSubItem>
-                                                ))}
-                                            </SidebarMenuSub>
-                                        </CollapsibleContent>
+                                                                <Link
+                                                                    href={subItem.url}
+                                                                    className="flex items-center w-full"
+                                                                >
+                                                                    <span>{subItem.title}</span>
+                                                                </Link>
+                                                            </SidebarMenuSubButton>
+                                                        </SidebarMenuSubItem>
+                                                    ))}
+                                                </SidebarMenuSub>
+                                            </CollapsibleContent>
+                                        </Collapsible>
+                                    ) : (
+                                        <SidebarMenuButton
+                                            tooltip={item.title}
+                                            isActive={isRouteActive(item.url)}
+                                            asChild
+                                        >
+                                            <Link
+                                                href={item.url}
+                                                className="flex items-center w-full"
+                                            >
+                                                {item.icon && (
+                                                    <item.icon className="size-4" />
+                                                )}
+                                                <span>{item.title}</span>
+                                            </Link>
+                                        </SidebarMenuButton>
                                     )}
-                                </Collapsible>
-                            </SidebarMenuItem>
-                        ))}
-                    </SidebarMenu>
-                </SidebarGroup>
-            </SidebarContent>
-            <SidebarFooter>
-                <NavUser user={data.user} />
-            </SidebarFooter>
-            <SidebarRail />
-        </Sidebar>
+                                </SidebarMenuItem>
+                            ))}
+                        </SidebarMenu>
+                    </SidebarGroup>
+                </SidebarContent>
+                <SidebarFooter>
+                    <NavUser user={data.user} />
+                </SidebarFooter>
+                <SidebarRail onClick={toggleSidebar} />
+            </Sidebar>
+        </TooltipProvider>
     );
 }

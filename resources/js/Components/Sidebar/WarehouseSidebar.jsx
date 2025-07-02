@@ -1,12 +1,5 @@
 import React, { useState } from "react";
-import {
-    Command,
-    Home,
-    Settings2,
-    Users,
-    ChevronRight,
-    Pill,
-} from "lucide-react";
+import { Command, Home, Settings2, ChevronRight, Pill } from "lucide-react";
 import { NavUser } from "@/Components/Nav/NavUser";
 import { TeamSwitcher } from "@/Components/Nav/TeamSwitcher";
 import {
@@ -60,7 +53,7 @@ export function AppSidebar({ ...sidebarProps }) {
                 icon: Pill,
             },
             {
-                title: "Settings",
+                title: "Pengaturan",
                 url: route("warehouse.profile"),
                 icon: Settings2,
             },

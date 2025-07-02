@@ -7,52 +7,38 @@ import { Button } from "@/Components/ui/button"
 import { ScrollArea } from "@/Components/ui/scroll-area"
 import Navigation from "./Partials/Navigation"
 import { Head } from "@inertiajs/react"
+import React from 'react'
 
-const posts = [
-  {
-    id: 1,
-    username: "Ruchi_shah",
-    avatar: "/placeholder.svg?height=40&width=40",
-    content: "Failures are stepping stones to success. Embrace them, learn from them, and keep moving forward",
-    timeAgo: "49m",
-    likes: "1 like"
-  },
-  {
-    id: 2,
-    username: "Payal_shah",
-    avatar: "/placeholder.svg?height=40&width=40",
-    content: "Yes",
-    timeAgo: "44m",
-    likes: "1 like"
-  },
-  {
-    id: 3,
-    username: "Krunal modi",
-    avatar: "/placeholder.svg?height=40&width=40",
-    content: "Hey @zuck where is my verified?",
-    timeAgo: "50m",
-    replies: "2 replies"
-  },
-  {
-    id: 4,
-    username: "zuck",
-    avatar: "/placeholder.svg?height=40&width=40",
-    content: "Just a sec...😂",
-    timeAgo: "50m",
-    isVerified: true
-  },
-  {
-    id: 5,
-    username: "figma",
-    avatar: "/placeholder.svg?height=40&width=40",
-    content: "Hello new (old) friends ✌️",
-    timeAgo: "6m",
-    replies: "32k replies",
-    isVerified: true
-  }
-]
+const CommunityCard = ({ post }) => {
+    return (
+        <div className="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg mb-4">
+            <div className="p-6">
+                <div className="flex items-center mb-4">
+                    <img className="h-10 w-10 rounded-full object-cover" src={post.community.user.profile_photo_url || `https://ui-avatars.com/api/?name=${post.community.user.name}&color=7F9CF5&background=EBF4FF`} alt={post.community.user.name} />
+                    <div className="ml-4">
+                        <div className="text-lg font-semibold text-gray-900 dark:text-gray-100">{post.community.user.name}</div>
+                        <div className="text-sm text-gray-500 dark:text-gray-400">@{post.community.username}</div>
+                    </div>
+                </div>
+                <p className="text-gray-700 dark:text-gray-300 mb-4">
+                    {post.content}
+                </p>
+                {post.image && (
+                    <div className="mb-4">
+                        <img src={`/storage/${post.image}`} alt="Post image" className="rounded-lg w-full object-cover" />
+                    </div>
+                )}
+                <div className="text-sm text-gray-500 dark:text-gray-400">
+                    Posted on {new Date(post.created_at).toLocaleDateString()}
+                </div>
+            </div>
+        </div>
+    );
+};
 
-export default function SocialFeed() {
+export default function Index({ auth, posts }) {
+  const hasCommunityAccount = auth.user.community_account;
+
   return (
     <div className="max-w-lg mx-auto bg-background min-h-screen">
       <Head title="Community" />
@@ -64,17 +50,8 @@ export default function SocialFeed() {
       {/* Posts Feed */}
       <ScrollArea className="h-[calc(100vh-8rem)]">
         <div className="space-y-4 p-4">
-          {posts.map((post) => (
-            <ThreadPost
-              key={post.id}
-              avatar={post.avatar}
-              name={post.username}
-              time={post.timeAgo}
-              content={post.content}
-              verified={post.isVerified}
-              replies={post.replies}
-              likes={post.likes}
-            />
+          {posts.data.map((post) => (
+            <CommunityCard key={post.id} post={post} />
           ))}
         </div>
       </ScrollArea>

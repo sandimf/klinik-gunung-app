@@ -46,7 +46,7 @@ export default function ProfilePage({user,isOwner}) {
 
                 {isOwner && (
                     <div className="flex gap-4 mb-4">
-                        <Link href={route('profile.index')}>
+                        <Link href={route('accounts.index')}>
                         <Button className="flex-1" variant="outline">
                             Edit Profile
                         </Button>

@@ -1,0 +1,143 @@
+<?php
+
+namespace App\Services\Screening;
+
+use App\Exceptions\NikAlreadyExistsException;
+use App\Jobs\SendAccountCreationEmail;
+use App\Models\Screenings\ScreeningAnswers;
+use App\Models\User;
+use App\Models\Users\Patients;
+use App\Models\Users\PatientsOnline;
+use Carbon\Carbon;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
+
+class GuestScreeningSubmissionService
+{
+    /**
+     * @throws NikAlreadyExistsException
+     * @throws \Throwable
+     */
+    public function handle(array $validatedData, ?UploadedFile $ktpImage): void
+    {
+        Log::info('Mulai handle screening guest', $validatedData);
+
+        DB::transaction(function () use ($validatedData, $ktpImage) {
+            $data = $this->formatPersonalData($validatedData);
+
+            Log::info('Setelah formatPersonalData', $data);
+
+            $this->ensureNikIsUnique($data['nik']);
+
+            Log::info('NIK unik', ['nik' => $data['nik']]);
+
+            if ($ktpImage) {
+                $data['ktp_images'] = $ktpImage->store('ktp_images', 'public');
+            }
+
+            ['user' => $user, 'password' => $plainPassword] = $this->findOrCreateUser($data['email'], $data['name']);
+            Log::info('User ditemukan/dibuat', ['user_id' => $user->id]);
+
+            $patient = $this->createPatientProfiles($user, $data);
+            Log::info('Patient dibuat', ['patient_id' => $patient->id]);
+
+            $this->saveScreeningAnswers($patient, $validatedData['answers']);
+            Log::info('Screening answers disimpan', ['patient_id' => $patient->id]);
+        });
+    }
+
+    /**
+     * @throws NikAlreadyExistsException
+     */
+    private function ensureNikIsUnique(string $nik): void
+    {
+        if (Patients::where('nik', $nik)->exists() || PatientsOnline::where('nik', $nik)->exists()) {
+            throw new NikAlreadyExistsException("NIK sudah terdaftar di sistem kami.");
+        }
+    }
+
+    private function formatPersonalData(array $data): array
+    {
+        $fieldsToFormat = [
+            'name', 'place_of_birth', 'district', 'village', 'address',
+            'occupation', 'religion', 'nationality', 'gender', 'marital_status',
+        ];
+
+        foreach ($fieldsToFormat as $field) {
+            if (isset($data[$field]) && is_string($data[$field])) {
+                $data[$field] = ucwords(strtolower($data[$field]));
+            }
+        }
+        return $data;
+    }
+
+    private function findOrCreateUser(string $email, string $name): array
+    {
+        $user = User::where('email', $email)->first();
+        if ($user) {
+            return ['user' => $user, 'password' => null];
+        }
+
+        $password = Str::random(10);
+        $user = User::create([
+            'name' => $name,
+            'email' => $email,
+            'password' => Hash::make($password),
+        ]);
+
+        return ['user' => $user, 'password' => $password];
+    }
+
+    private function createPatientProfiles(User $user, array $data): Patients
+    {
+        $patientData = array_merge($data, [
+            'user_id' => $user->id,
+            'screening_status' => 'pending', 'health_status' => 'pending',
+            'health_check_status' => 'pending', 'payment_status' => 'pending',
+        ]);
+
+        PatientsOnline::create($patientData);
+        return Patients::create($patientData);
+    }
+
+    private function saveScreeningAnswers(Patients $patient, array $answers): void
+    {
+        $lastQueueToday = DB::table('screening_offline_answers')->whereDate('created_at', Carbon::today())->max('queue') ?? 0;
+
+        foreach ($answers as $index => $answer) {
+            $answerText = $this->parseComplexAnswer($answer['answer']);
+
+            ScreeningAnswers::create([
+                'question_id' => $answer['questioner_id'],
+                'patient_id' => $patient->id,
+                'answer_text' => $answerText,
+                'queue' => $lastQueueToday + $index + 1,
+            ]);
+        }
+    }
+
+    private function parseComplexAnswer($answerData): string
+    {
+        if (!is_array($answerData) || empty($answerData)) {
+            return (string) ($answerData ?? '');
+        }
+
+        $parts = [];
+        // Handle struktur { options: [...], textarea: '...' }
+        if (isset($answerData['options']) && is_array($answerData['options'])) {
+            $parts[] = implode(', ', $answerData['options']);
+        }
+        if (isset($answerData['textarea']) && !empty($answerData['textarea'])) {
+            $parts[] = $answerData['textarea'];
+        }
+
+        if (empty($parts)) {
+            return implode(', ', array_filter($answerData));
+        }
+
+        return implode(', ', array_filter($parts));
+    }
+} 

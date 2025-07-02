@@ -22,13 +22,13 @@ return new class extends Migration
             $table->string('date_of_birth');
             $table->string('rt_rw')->nullable(false);
             $table->string('address');
-            $table->string('village'); // Kelurahan/Desa
-            $table->string('district'); // Kecamatan
-            $table->string('religion'); // Agama
-            $table->string('marital_status'); // Status Perkawinan
-            $table->string('occupation'); // Pekerjaan
-            $table->string('nationality')->default('WNI'); // Kewarganegaraan
-            $table->enum('gender', ['male', 'female', 'other'])->default('other');
+            $table->string('village');
+            $table->string('district');
+            $table->string('religion');
+            $table->string('marital_status');
+            $table->string('occupation');
+            $table->string('nationality')->default('WNI');
+            $table->enum('gender', ['laki-laki', 'perempuan', 'lainnya'])->default('lainnya');
             $table->string('email')->unique();
             $table->string('blood_type')->nullable();
             $table->integer('age')->nullable();
@@ -38,6 +38,8 @@ return new class extends Migration
             $table->enum('health_status', ['pending', 'healthy', 'sick', 'under treatment', 'butuh_dokter', 'butuh_pendamping'])->nullable();
             $table->enum('health_check_status', ['pending', 'completed'])->nullable();
             $table->enum('payment_status', ['completed', 'pending', 'cancelled'])->nullable();
+            $table->integer('queue')->nullable();
+            $table->date('screening_date')->nullable();
             $table->timestamps();
         });
     }

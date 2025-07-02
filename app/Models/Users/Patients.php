@@ -44,16 +44,27 @@ class Patients extends Model
         'health_status',
         'health_check_status',
         'payment_status',
+        'screening_date',
+        'queue',
     ];
+
+    public function setEmailAttribute($value)
+    {
+        $this->attributes['email'] = strtolower($value);
+    }
 
     public function attributesToArray()
     {
         $attributes = parent::attributesToArray();
 
-        // Mengubah semua atribut string menjadi Title Case
-        return array_map(function ($value) {
-            return is_string($value) ? ucwords(strtolower($value)) : $value;
-        }, $attributes);
+        // Mengubah semua atribut string menjadi Title Case, kecuali email
+        foreach ($attributes as $key => $value) {
+            if (is_string($value) && $key !== 'email') {
+                $attributes[$key] = ucwords(strtolower($value));
+            }
+        }
+
+        return $attributes;
     }
 
     public function user()

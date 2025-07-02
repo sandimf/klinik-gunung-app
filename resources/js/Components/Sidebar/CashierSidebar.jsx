@@ -63,20 +63,9 @@ export function AppSidebar({ ...sidebarProps }) {
                 url: route("cashier.dashboard"),
                 icon: Home,
             },
-            {
-                title: "Aktifitas Pelayanan",
-                url: route("dashboard"),
-                icon: CreditCard,
-                items: [
-                    {
-                        title: "Jenis Pelayanan",
-                        url: route("acitivity-cashier.index"),
-                    },
-                ],
-            },
 
             {
-                title: "Pembayaran",
+                title: "Aktivitas Pelayanan",
                 url: route("dashboard"),
                 icon: CreditCard,
                 items: [
@@ -87,6 +76,10 @@ export function AppSidebar({ ...sidebarProps }) {
                     {
                         title: "Screening Online",
                         url: route("cashier.screening-online"),
+                    },
+                    {
+                        title: "Pendamping",
+                        url: route("companion.screening"),
                     },
                 ],
             },
@@ -155,7 +148,7 @@ export function AppSidebar({ ...sidebarProps }) {
                 icon: ChartPie,
             },
             {
-                title: "Settings",
+                title: "Pengaturan",
                 url: route("cashier.profile"),
                 icon: Settings2,
             },

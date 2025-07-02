@@ -26,7 +26,7 @@ import {
     PaginationPrevious,
 } from "@/Components/ui/pagination";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
-import ScreeningDialog from "../Offline/Partials/PhysicalExamination";
+import ScreeningDialog from "../_components/PhysicalExamination";
 import { Badge } from "@/Components/ui/badge";
 import { Link } from "@inertiajs/react";
 import { Book } from "lucide-react";
@@ -77,11 +77,11 @@ const ScreeningOfflineIndex = ({ screenings = [] }) => {
     };
 
     return (
-        <ParamedisSidebar header={"Riwayat Pemeriksaan"}>
-            <Head title="Riwayat Pemeriksaan" />
+        <ParamedisSidebar header={"Riwayat Screening"}>
+            <Head title="Riwayat Screening" />
             <Card>
                 <CardHeader>
-                    <CardTitle>Riwayat Pemeriksaan</CardTitle>
+                    <CardTitle>Riwayat Screening</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="flex flex-col gap-4 mb-4 md:flex-row">
@@ -111,7 +111,7 @@ const ScreeningOfflineIndex = ({ screenings = [] }) => {
                             <TableRow>
                                 <TableHead>Nomor Antrian</TableHead>
                                 <TableHead>Nama Pasien</TableHead>
-                                <TableHead>Screening</TableHead>
+                                <TableHead>Jenis Screening</TableHead>
                                 <TableHead>Status Pemeriksaan</TableHead>
                                 <TableHead>Status Kesehatan</TableHead>
                                 <TableHead>Kuesioner</TableHead>
@@ -128,8 +128,8 @@ const ScreeningOfflineIndex = ({ screenings = [] }) => {
                                     </TableCell>
                                     <TableCell>
                                         {screening.answers[0]?.isOnline === 1
-                                            ? "Online"
-                                            : "Offline"}
+                                            ? "ScreeningOnline"
+                                            : "Screening Offline"}
                                     </TableCell>
                                     <TableCell>
                                         <Badge>

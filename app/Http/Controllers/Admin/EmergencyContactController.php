@@ -13,7 +13,7 @@ class EmergencyContactController extends Controller
     {
         $emergencyContacts = EmergecyContactModel::all();
 
-        return Inertia::render('Dashboard/Admin/EmergencyContact', [
+        return Inertia::render('Dashboard/Admin/EmergencyContact/Index', [
             'emergencyContacts' => $emergencyContacts,
         ]);
     }

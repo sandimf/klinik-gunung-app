@@ -13,9 +13,19 @@ import {
     TableCell,
     TableCaption,
 } from "@/Components/ui/table";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogFooter
+} from "@/Components/ui/dialog";
+import { Button } from "@/Components/ui/button";
 
 export default function Product({ transactions }) {
     const [searchTerm, setSearchTerm] = useState("");
+    const [openDialog, setOpenDialog] = useState(false);
+    const [previewImage, setPreviewImage] = useState(null);
 
     const filteredTransaction = transactions.data.filter((transaction) =>
         Object.values(transaction).some((value) =>
@@ -44,6 +54,7 @@ export default function Product({ transactions }) {
                 <TableCaption>Data Stok Obat</TableCaption>
                 <TableHeader>
                     <TableRow>
+                        <TableHead>No</TableHead>
                         <TableHead>Nomor Transaksi</TableHead>
                         <TableHead>Produk Di Beli</TableHead>
                         <TableHead>Metode Pembayaran</TableHead>
@@ -52,8 +63,9 @@ export default function Product({ transactions }) {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {filteredTransaction.map((transaction) => (
+                    {filteredTransaction.map((transaction, idx) => (
                         <TableRow key={transaction.id}>
+                            <TableCell>{idx + 1}</TableCell>
                             <TableCell className="font-medium">
                                 {transaction.no_transaction}
                             </TableCell>
@@ -68,7 +80,19 @@ export default function Product({ transactions }) {
                                 {transaction.payment_method}
                             </TableCell>
                             <TableCell className="font-medium">
-                                {transaction.payment_proof || "-"}
+                                {transaction.payment_proof ? (
+                                    <button
+                                        className="text-blue-600 underline"
+                                        onClick={() => {
+                                            setPreviewImage(transaction.payment_proof);
+                                            setOpenDialog(true);
+                                        }}
+                                    >
+                                        Lihat Bukti
+                                    </button>
+                                ) : (
+                                    "-"
+                                )}
                             </TableCell>
                             <TableCell>
                                 {formatCurrency(
@@ -80,6 +104,39 @@ export default function Product({ transactions }) {
                     ))}
                 </TableBody>
             </Table>
+
+            {/* Dialog Preview Bukti Pembayaran */}
+            <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Bukti Pembayaran</DialogTitle>
+                    </DialogHeader>
+                    <div className="flex flex-col items-center gap-4">
+                        {previewImage && (
+                            <>
+                                <img
+                                    src={`/storage/${previewImage}`}
+                                    alt="Bukti Pembayaran"
+                                    className="max-w-full max-h-[60vh] rounded"
+                                />
+                                <a
+                                    href={`/storage/${previewImage}`}
+                                    download
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    <Button variant="outline">
+                                        Download Bukti Pembayaran
+                                    </Button>
+                                </a>
+                            </>
+                        )}
+                    </div>
+                    <DialogFooter>
+                        <Button onClick={() => setOpenDialog(false)}>Tutup</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </CashierSidebar>
     );
 }

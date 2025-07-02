@@ -29,9 +29,9 @@ class ApikeyRequest extends FormRequest
     public function messages(): array
     {
         return [
-            "api_key.required" => "API Key is required",
-            "api_key.string" => "API Key must be a string",
-            "api_key.max" => "API Key must not be greater than 255 characters",
+            "api_key.required" => "Wajib diisi",
+            "api_key.string" => "API KEY harus berupa string",
+            "api_key.max" => "API KEY tidak boleh lebih dari 255 karakter",
         ];
     }
 }

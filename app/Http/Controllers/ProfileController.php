@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Services\AccountDeletionService;
+use App\Services\ProfileService;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -13,6 +15,11 @@ use Inertia\Response;
 
 class ProfileController extends Controller
 {
+    public function __construct(
+        protected ProfileService $profileService,
+        protected AccountDeletionService $accountDeletionService
+    ) {}
+
     /**
      * Display the user's profile form.
      */
@@ -27,27 +34,22 @@ class ProfileController extends Controller
     /**
      * Update the user's profile information.
      */
-    public function update(ProfileUpdateRequest $request)
+    public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $validatedData = $request->validated();
-
-        // Jika ada file avatar dalam request
-        if ($request->hasFile('avatar')) {
-            $path = $request->file('avatar')->store('avatars', 'public');
-            $validatedData['avatar'] = $path;
+        try {
+            $this->profileService->updateUser(
+                $request->user(),
+                $request->validated(),
+                $request->hasFile('avatar') ? $request->file('avatar') : null
+            );
+        } catch (\Exception $e) {
+            // Jika terjadi error di service, kita bisa menangkapnya di sini
+            // dan memberikan feedback yang sesuai ke user.
+            report($e); // Melaporkan exception ke sistem logging Laravel
+            return back()->with('error', 'Gagal memperbarui profil. Silakan coba lagi.');
         }
 
-        // Update data user
-        $request->user()->fill($validatedData);
-
-        // Reset verifikasi email jika email berubah
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
-        }
-
-        $request->user()->save();
-
-        return back()->with('success', 'Profile Berhasil Di Perbaharui');
+        return back()->with('success', 'Profile Berhasil Diperbarui');
     }
 
     /**
@@ -63,11 +65,11 @@ class ProfileController extends Controller
 
         Auth::logout();
 
-        $user->delete();
+        $this->accountDeletionService->deleteUserAccount($user);
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return Redirect::to('/');
+        return Redirect::to('/')->with('success', 'Akun Anda telah dijadwalkan untuk dihapus.');
     }
 }

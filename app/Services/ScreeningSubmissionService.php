@@ -1,0 +1,64 @@
+<?php
+
+namespace App\Services;
+
+use App\Jobs\NotifyClinicStaffOfNewScreening;
+use App\Models\Screenings\ScreeningAnswers;
+use App\Models\Users\Patients;
+use App\Models\User;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+
+class ScreeningSubmissionService
+{
+    public function handle(User $user, array $data): void
+    {
+        DB::transaction(function () use ($user, $data) {
+            // 1. LOGIKA KOMPLEKS: Generate nomor antrian harian yang aman (atomic).
+            // Ini mencegah dua user mendapatkan nomor antrian yang sama jika submit bersamaan.
+            $today = Carbon::today();
+            $lastQueue = DB::table('patients')
+                ->whereDate('screening_date', $today)
+                ->lockForUpdate() // Mengunci baris untuk mencegah race condition
+                ->max('queue') ?? 0;
+            
+            $newQueueNumber = $lastQueue + 1;
+
+            $patient = Patients::firstOrNew(['nik' => $data['nik']]);
+            
+            $patient->fill([
+                'user_id' => $user->id,
+                'name' => $data['name'],
+                'age' => $data['age'],
+                'gender' => $data['gender'],
+                'contact' => $data['contact'],
+                'email' => $data['email'],
+                'screening_status' => 'pending',
+                'health_status' => 'pending',
+                'health_check_status' => 'pending',
+                'payment_status' => 'pending',
+                'queue' => $newQueueNumber, // Menyimpan nomor antrian baru
+                'screening_date' => $today, // Menyimpan tanggal screening
+            ]);
+            $patient->save();
+
+            // Hapus jawaban lama jika ada, untuk memastikan data bersih
+            $patient->answers()->delete();
+
+            foreach ($data['answers'] as $answer) {
+                $answer_text = is_array($answer['answer']) ? implode(', ', $answer['answer']) : $answer['answer'];
+
+                ScreeningAnswers::create([
+                    'question_id' => $answer['questioner_id'],
+                    'patient_id' => $patient->id,
+                    'answer_text' => $answer_text,
+                    'queue' => $newQueueNumber,
+                ]);
+            }
+
+            // 2. LOGIKA KOMPLEKS: Integrasi dengan proses lain via background Job.
+            // Memberi notifikasi pada staf klinik tanpa memperlambat response user.
+            NotifyClinicStaffOfNewScreening::dispatch($patient)->onQueue('high');
+        });
+    }
+} 

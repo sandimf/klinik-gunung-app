@@ -62,55 +62,63 @@ const ScreeningOfflineIndex = ({ screenings = [], medicines }) => {
                             <TableRow>
                                 <TableHead>Nomor Antrian</TableHead>
                                 <TableHead>Nama Pasien</TableHead>
-                                <TableHead>NIK</TableHead>
-                                <TableHead>Email</TableHead>
+                                {/* <TableHead>Email</TableHead> */}
                                 <TableHead>Aksi</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {paginatedScreenings.map((screening) => (
-                                <TableRow key={screening.id}>
-                                    <TableCell>{screening.answers[0]?.queue}</TableCell>
-                                    <TableCell>{screening.name}</TableCell>
-                                    <TableCell>{screening.nik}</TableCell>
-                                    <TableCell>{screening.email}</TableCell>
-                                    <TableCell>
-                                        <Button onClick={() => handlePayment(screening)}>
-                                            <CreditCard className="h-4 w-4 mr-2" />
-                                            Bayar
-                                        </Button>
+                            {paginatedScreenings.length === 0 ? (
+                                <TableRow>
+                                    <TableCell colSpan={5} className="text-center text-gray-500">
+                                        Belum ada data
                                     </TableCell>
                                 </TableRow>
-                            ))}
+                            ) : (
+                                paginatedScreenings.map((screening) => (
+                                    <TableRow key={screening.id}>
+                                        <TableCell>{screening.answers[0]?.queue}</TableCell>
+                                        <TableCell>{screening.name}</TableCell>
+                                        {/* <TableCell>{screening.email}</TableCell> */}
+                                        <TableCell>
+                                            <Button onClick={() => handlePayment(screening)}>
+                                                <CreditCard className="h-4 w-4 mr-2" />
+                                                Bayar
+                                            </Button>
+                                        </TableCell>
+                                    </TableRow>
+                                ))
+                            )}
                         </TableBody>
                     </Table>
 
-                    <Pagination className="mt-4">
-                        <PaginationContent>
-                            <PaginationItem>
-                                <PaginationPrevious
-                                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                                    disabled={currentPage === 1}
-                                />
-                            </PaginationItem>
-                            {[...Array(totalPages)].map((_, i) => (
-                                <PaginationItem key={i}>
-                                    <PaginationLink
-                                        onClick={() => setCurrentPage(i + 1)}
-                                        isActive={currentPage === i + 1}
-                                    >
-                                        {i + 1}
-                                    </PaginationLink>
+                    {filteredScreenings.length > 0 && (
+                        <Pagination className="mt-4">
+                            <PaginationContent>
+                                <PaginationItem>
+                                    <PaginationPrevious
+                                        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                                        disabled={currentPage === 1}
+                                    />
                                 </PaginationItem>
-                            ))}
-                            <PaginationItem>
-                                <PaginationNext
-                                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                                    disabled={currentPage === totalPages}
-                                />
-                            </PaginationItem>
-                        </PaginationContent>
-                    </Pagination>
+                                {[...Array(totalPages)].map((_, i) => (
+                                    <PaginationItem key={i}>
+                                        <PaginationLink
+                                            onClick={() => setCurrentPage(i + 1)}
+                                            isActive={currentPage === i + 1}
+                                        >
+                                            {i + 1}
+                                        </PaginationLink>
+                                    </PaginationItem>
+                                ))}
+                                <PaginationItem>
+                                    <PaginationNext
+                                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                                        disabled={currentPage === totalPages}
+                                    />
+                                </PaginationItem>
+                            </PaginationContent>
+                        </Pagination>
+                    )}
 
                 <PaymentDialog
                 isOpen={isDialogOpen}

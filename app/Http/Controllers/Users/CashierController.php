@@ -28,9 +28,10 @@ class CashierController extends Controller
      */
     public function showScreeningOffline()
     {
-        // Muat screening yang statusnya pending dan memiliki jawaban
+        // Muat screening yang statusnya pending, memiliki jawaban, dan sehat
         $screenings = Patients::with(['answers.question'])
             ->where('payment_status', 'pending')
+            ->where('health_status', 'healthy')
             ->whereHas('answers', function ($query) {
                 $query->whereNotNull('answer_text');
             })

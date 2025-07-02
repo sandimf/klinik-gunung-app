@@ -89,7 +89,7 @@ export default function Dashboard({ screening, visitCount, emergency }) {
                                     </p>
                                 </CardContent>
                             </Card>
-                            <Card>
+                            {/* <Card>
                                 <CardHeader className="flex flex-row justify-between items-center pb-2 space-y-0">
                                     <CardTitle className="text-sm font-medium">
                                         Lorem, ipsum dolor.
@@ -105,7 +105,7 @@ export default function Dashboard({ screening, visitCount, emergency }) {
                                         adipisicing.
                                     </p>
                                 </CardContent>
-                            </Card>
+                            </Card> */}
                             <Card>
                                 <CardHeader className="flex flex-row justify-between items-center pb-2 space-y-0">
                                     <CardTitle className="text-sm font-medium">

@@ -3,13 +3,6 @@ import { Head, usePage, Link } from "@inertiajs/react";
 import ParamedisSidebar from "@/Layouts/Dashboard/ParamedisSidebarLayout";
 import { Input } from "@/Components/ui/input";
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/Components/ui/select";
-import {
     Table,
     TableBody,
     TableCell,
@@ -28,7 +21,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
 import { Button } from "@/Components/ui/button";
 import { Stethoscope, ArrowRight, CircleCheck, Book } from "lucide-react";
-import ScreeningDialog from "./Partials/PhysicalExamination";
+import ScreeningDialog from "../_components/PhysicalExamination";
 import { Badge } from "@/Components/ui/badge";
 import { toast, Toaster } from "sonner";
 

@@ -10,7 +10,7 @@ const useFlashToast = () => {
         // Menampilkan pesan sukses
         if (flash.message) {
             toast(flash.message, {
-                icon: <CircleCheck className="h-5 w-5 text-green-500" />,
+                icon: <CircleCheck className="w-5 h-5 text-green-500" />,
                 type: "success", // Tipe success
             });
         }

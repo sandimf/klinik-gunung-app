@@ -68,24 +68,13 @@ const ScreeningOfflineIndex = ({ screenings = [] }) => {
                     <CardTitle>Daftar Screening Online</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <div className="flex flex-col md:flex-row gap-4 mb-4">
+                    <div className="flex flex-col gap-4 mb-4 md:flex-row">
                         <Input
                             placeholder="Cari nama pasien..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className="max-w-sm"
                         />
-                        <Select
-                            value={selectedType}
-                            onValueChange={setSelectedType}
-                        >
-                            <SelectTrigger className="max-w-[180px]">
-                                <SelectValue placeholder="Pilih tipe screening" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="completed">Semua</SelectItem>
-                            </SelectContent>
-                        </Select>
                     </div>
 
                     <Table>
@@ -117,7 +106,7 @@ const ScreeningOfflineIndex = ({ screenings = [] }) => {
                                                 variant="outline"
                                                 className="mb-4"
                                             >
-                                                <ArrowRight className="mr-2 h-4 w-4" />{" "}
+                                                <ArrowRight className="mr-2 w-4 h-4" />{" "}
                                                 Kuesioner
                                             </Button>
                                         </Link>
@@ -134,7 +123,7 @@ const ScreeningOfflineIndex = ({ screenings = [] }) => {
                                                     handleExamine(screening)
                                                 }
                                             >
-                                                <Stethoscope className="h-4 w-4 mr-2" />
+                                                <Stethoscope className="mr-2 w-4 h-4" />
                                                 Health Check
                                             </Button>
                                         )}

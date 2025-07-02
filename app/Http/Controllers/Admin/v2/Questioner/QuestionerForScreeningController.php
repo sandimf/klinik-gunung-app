@@ -53,7 +53,6 @@ class QuestionerForScreeningController extends Controller
             'requires_doctor' => $request->requires_doctor,
         ]);
 
-        // Redirect kembali dengan pesan sukses
         return redirect()->route('questioner.index')->with('message', 'Pertanyaan berhasil dibuat');
     }
 

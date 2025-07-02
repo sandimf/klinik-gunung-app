@@ -14,7 +14,7 @@ use App\Http\Controllers\Users\ManagerController;
 use App\Http\Controllers\Product\ProductController;
 use App\Http\Controllers\Users\ParamedisController;
 use App\Http\Controllers\Users\WarehouseController;
-use App\Http\Controllers\Screenings\GuestController;
+use App\Http\Controllers\Screening\GuestScreeningController;
 use App\Http\Controllers\Data\PatientsDataController;
 use App\Http\Controllers\Payments\PaymentsController;
 use App\Http\Controllers\Medicines\MedicineController;
@@ -35,9 +35,9 @@ use App\Http\Controllers\Appointments\AppointmentController;
 use App\Http\Controllers\Community\ProfileAccountController;
 use App\Http\Controllers\Consultation\ConsultationController;
 use App\Http\Controllers\Clinic\PhysicalExaminationController;
-use App\Http\Controllers\Screenings\ScreeningOnlineController;
+use App\Http\Controllers\Screening\RemoteScreeningController;
 use App\Http\Controllers\Questioner\QuestionerOnlineController;
-use App\Http\Controllers\Screenings\ScreeningOfflineController;
+use App\Http\Controllers\Screening\InClinicScreeningController;
 use App\Http\Controllers\Appointments\AppointmentDoctorController;
 use App\Http\Controllers\Clinic\PhysicalExaminationOnlineController;
 use App\Http\Controllers\Admin\v2\AdminPanelController as V2AdminPanelController;
@@ -49,27 +49,24 @@ use App\Http\Controllers\Cashier\v2\ActivityCashierController;
 use App\Http\Controllers\Paramedis\v2\HealthCheckController;
 use App\Http\Controllers\Paramedis\v2\HistoryHealthCheckController;
 use App\Http\Controllers\Paramedis\v2\MedicalServiceController;
-
+use App\Http\Controllers\Cashier\v2\CompanionController;
 Route::get('/', function () {
     return Inertia::render('Welcome');
 });
 
-// Guest Screening Offline
-Route::resource('screening-now', GuestController::class)
+Route::resource('screening-now', GuestScreeningController::class)
     ->only(['index', 'store']);
 
-// Login With Social Account
 Route::get('auth/{provider}/redirect', [ProviderController::class, 'redirect']);
 Route::get('auth/{provider}/callback', [ProviderController::class, 'callback']);
 
-// Dashboard Patients
 Route::prefix('dashboard')->middleware(['auth', 'role:patients'])->group(function () {
     // Dashboard Page
     Route::get('/', [PatientsPanelController::class, 'index'])->name('dashboard');
     // Profile Edit Page
     Route::get('profile', [PatientsPanelController::class, 'profile'])->name('patients.profile');
     // Screening Offline
-    Route::resource('screening', ScreeningOfflineController::class)
+    Route::resource('screening', InClinicScreeningController::class)
         ->only(['index', 'store', 'update', 'create', 'show'])
         ->middleware(['auth', 'role:patients']);
     // Data Pasien
@@ -79,7 +76,7 @@ Route::prefix('dashboard')->middleware(['auth', 'role:patients'])->group(functio
     Route::resource('appointments', AppointmentController::class)
         ->only(['index', 'store', 'update']);
     // Screening Online
-    Route::resource('screening-online', ScreeningOnlineController::class)
+    Route::resource('screening-online', RemoteScreeningController::class)
         ->only(['index', 'create', 'store']);
     // Pembayaran Screening Online
     Route::get('/payment/{screeningId}', [PaymentsOnlineController::class, 'create'])->name('payment.create');
@@ -87,11 +84,10 @@ Route::prefix('dashboard')->middleware(['auth', 'role:patients'])->group(functio
     // Hasil Screening
     Route::get('result-screening/{id}', [QrcodeController::class, 'show'])->name('result-screening.show');
     // Generate/Download Screening Result
-    Route::get('generate-pdf/{id}/download', [ScreeningOfflineController::class, 'generatePDF'])->name('generate.screening.pdf');
-    Route::get('generate-pdf/{id}/download/screening-online', [ScreeningOnlineController::class, 'generatePDF'])->name('screening-online.pdf');
+    Route::get('generate-pdf/{id}/download', [InClinicScreeningController::class, 'generatePDF'])->name('generate.screening.pdf');
+    Route::get('generate-pdf/{id}/download/screening-online', [RemoteScreeningController::class, 'generatePDF'])->name('screening-online.pdf');
 });
 
-// Dashboard Doctor
 Route::prefix('dashboard/doctor')->middleware(['auth', 'role:doctor'])->group(function () {
     // Dashboard
     Route::get('/', [DoctorController::class, 'index'])->name('doctor.dashboard');
@@ -110,21 +106,20 @@ Route::prefix('dashboard/doctor')->middleware(['auth', 'role:doctor'])->group(fu
         ->only(['index', 'create']);
 });
 
-// Dashboard Paramedis
 Route::prefix('dashboard/paramedis')->middleware(['auth', 'role:paramedis'])->group(function () {
     Route::get('/', [ParamedisController::class, 'index'])->name('paramedis.dashboard');
 
     Route::get('profile', [ParamedisController::class, 'profile'])->name('paramedis.profile');
 
     // Menampilkan Screening Offline
-    Route::get('screening', [ParamedisController::class, 'showScreeningOffline'])->name('paramedis.screening');
+
 
     Route::get('screening/detail/{uuid}', [HealthCheckController::class, 'show'])->name('paramedis.detail');
 
     // Route detail history screening (questioner)
     Route::get('screening/history/detail/{uuid}', [HistoryHealthCheckController::class, 'show'])->name('history.healthcheck');
     // Menampilkan Screening Online
-    Route::get('screening-online/detail/{id}', [ParamedisController::class, 'showScreeningOnlineDetail'])->name('paramedis.detail.online');
+    Route::get('screening-online/detail/{id}', [ParamedisController::class, 'showScreeningOnlineDetail'])->name('paramedis.screenings.online.detail');
     Route::get('screening-online', [ParamedisController::class, 'showScreeningOnline'])->name('screening-online.paramedis');
 
     // Menampilkan Riwayat
@@ -148,9 +143,10 @@ Route::prefix('dashboard/paramedis')->middleware(['auth', 'role:paramedis'])->gr
     // Route Jenis Pelayanan
     Route::resource('services', MedicalServiceController::class)
         ->only(['index', 'store', 'show', 'update']);
+
+    Route::get('screenings', [ParamedisController::class, 'showScreenings'])->name('paramedis.screenings');
 });
 
-// Dashboard cashier
 Route::prefix('dashboard/cashier')->middleware(['auth', 'role:cashier'])->group(function () {
     // Dashboard
     Route::get('/', [CashierController::class, 'index'])->name('cashier.dashboard');
@@ -175,10 +171,11 @@ Route::prefix('dashboard/cashier')->middleware(['auth', 'role:cashier'])->group(
 
     Route::get('office/pdf', [OfficeController::class, 'generatePdf'])->name('cashier.pdf.office');
 
+    Route::get('companion', [CompanionController::class, 'index'])->name('companion.screening');
+
     Route::get('history', [CashierController::class, 'historyPaymentsOffline'])->name('history.cashier');
     Route::get('history-online', [CashierController::class, 'historyPaymentsOnline'])->name('history-online.cashier');
     Route::get('screening-online', [CashierController::class, 'showScreeningOnline'])->name('cashier.screening-online');
-
     Route::get('screening-online/payments/{id}', [CashierController::class, 'showPayment'])->name('cashier.payments-online');
 
     Route::post('/payments/{id}/confirm', [PaymentsOnlineController::class, 'confirmPayment'])
@@ -208,7 +205,6 @@ Route::prefix('dashboard/cashier')->middleware(['auth', 'role:cashier'])->group(
     Route::get('activity-cashier', [ActivityCashierController::class, 'index'])->name('acitivity-cashier.index');
 });
 
-// Dashboard Admin
 Route::prefix('dashboard/admin')->middleware(['auth', 'role:admin'])->group(function () {
 
     // Route Admin Panel
@@ -250,9 +246,10 @@ Route::prefix('dashboard/admin')->middleware(['auth', 'role:admin'])->group(func
     // emergecy contac
     Route::resource('emergecy-contact', EmergencyContactController::class)
         ->only(['index', 'update']);
+
+    Route::patch('staff/{user}/password', [StaffController::class, 'updatePassword'])->name('staff.updatePassword');
 });
 
-// Dashboard manager
 Route::prefix('dashboard/manager')->middleware(['auth', 'role:manager'])->group(function () {
     // Dashboard
     Route::get('/', [ManagerController::class, 'index'])->name('manager.dashboard');
@@ -279,7 +276,6 @@ Route::prefix('dashboard/manager')->middleware(['auth', 'role:manager'])->group(
     Route::get('report/health-check/{uuid}', [ParamedisReportController::class, 'generatePDFHealthCheck'])->name('pdf.healthcheck.manager');
 });
 
-// Dashboard Gudang/Warehouse
 Route::prefix('dashboard/warehouse')->middleware(['auth', 'role:warehouse'])->group(function () {
     // Dashboard
     Route::get('/', [WarehouseController::class, 'index'])->name('warehouse.dashboard');

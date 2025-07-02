@@ -5,10 +5,11 @@ import { Input } from "@/Components/ui/input";
 import { Label } from "@/Components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/Components/ui/select";
 import { Checkbox } from "@/Components/ui/checkbox";
-import { AlertCircle, Edit, Plus, Trash2 } from "lucide-react";
+import { AlertCircle, Edit, Plus, Trash2,CircleCheck } from "lucide-react";
 import { Alert, AlertDescription } from "@/Components/ui/alert";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/Components/ui/dialog";
 import { toast, Toaster } from "sonner";
+
 
 const EditQuestionModal = ({ question, onSave }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -30,7 +31,9 @@ const EditQuestionModal = ({ question, onSave }) => {
   const confirmEdit = () => {
     put(route("questioner-online.update", data.id), {
       onSuccess: () => {
-        toast.success("Pertanyaan berhasil diperbarui");
+        toast.success("Pertanyaan berhasil diperbarui", {
+          icon: <CircleCheck className="w-5 h-5 text-green-500" />
+        });
         setIsOpen(false);
         setShowConfirmation(false);
         reset();

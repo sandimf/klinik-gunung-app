@@ -200,12 +200,12 @@ export default function PatientDataEntry({ questions, apiKey }) {
     return (
         <>
             <Header />
-            <Toaster richColors position="top-center" />
+            <Toaster  position="top-center" />
             {questions.length === 0 ? (
                 <div className="text-center">
-                    <h1 className="text-2xl font-bold">Ups Maaf</h1>
+                    <h1 className="text-2xl font-bold">Ups Maaf 😔</h1>
                     <p className="text-lg font-semibold text-gray-500">
-                        Belum bisa melakukan screening. Tidak ada kuesioner yang
+                        Belum bisa melakukan Screening. Tidak ada kuesioner yang
                         tersedia saat ini.
                     </p>
                 </div>
@@ -215,7 +215,7 @@ export default function PatientDataEntry({ questions, apiKey }) {
                         <Head title="Screening" />
                         <CardHeader>
                             <CardTitle className="text-2xl font-bold">
-                                Screening Now
+                                Informasi Pendaki
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
@@ -246,13 +246,15 @@ export default function PatientDataEntry({ questions, apiKey }) {
                                                     <Upload className="mb-4 w-8 h-8 text-gray-500 dark:text-gray-400" />
                                                     <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
                                                         <span className="font-semibold">
-                                                            Click to upload
+                                                            Klik untuk Unggah
                                                         </span>{" "}
-                                                        or drag and drop
+                                                        atau seret dan lepas
+                                                        gambar di sini.
                                                     </p>
                                                     <p className="text-xs text-gray-500 dark:text-gray-400">
-                                                        SVG, PNG, JPG or GIF
-                                                        (MAX. 800x400px)
+                                                        Format: SVG, PNG, JPG,
+                                                        atau GIF (Maks.
+                                                        800x400px)
                                                     </p>
                                                 </div>
                                                 <Input
@@ -309,8 +311,8 @@ export default function PatientDataEntry({ questions, apiKey }) {
                                             className="w-full"
                                         >
                                             {isCameraActive
-                                                ? "Stop Camera"
-                                                : "Start Camera"}
+                                                ? "Hentikan Kamera"
+                                                : "Mulai Kamera"}
                                         </Button>
                                         {analysisError && (
                                             <Alert variant="destructive">
@@ -335,8 +337,8 @@ export default function PatientDataEntry({ questions, apiKey }) {
 
                     <Card className="mb-6">
                         <CardHeader>
-                            <CardTitle className="text-xl font-bold">
-                                Kuesioner
+                            <CardTitle className="text-2xl font-bold">
+                                Screening
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
@@ -366,7 +368,7 @@ export default function PatientDataEntry({ questions, apiKey }) {
                                                                 e.target.value
                                                             )
                                                         }
-                                                        placeholder="Enter your answer"
+                                                        placeholder="Masukkan Jawaban Anda"
                                                     />
                                                     {formErrors[
                                                         question.id
@@ -640,7 +642,7 @@ export default function PatientDataEntry({ questions, apiKey }) {
                                                                 e.target.value
                                                             )
                                                         }
-                                                        placeholder="Enter your answer"
+                                                        placeholder="Masukkan Jawaban Anda"
                                                     />
                                                     {formErrors[
                                                         question.id
@@ -671,7 +673,7 @@ export default function PatientDataEntry({ questions, apiKey }) {
                                                                 e.target.value
                                                             )
                                                         }
-                                                        placeholder="Enter your answer"
+                                                        placeholder="Masukkan Jawaban Anda"
                                                     />
                                                     {formErrors[
                                                         question.id
@@ -702,7 +704,7 @@ export default function PatientDataEntry({ questions, apiKey }) {
                                                                 e.target.value
                                                             )
                                                         }
-                                                        placeholder="Enter your answer"
+                                                        placeholder="Masukkan Jawaban Anda"
                                                     />
                                                     {formErrors[
                                                         question.id
@@ -730,7 +732,7 @@ export default function PatientDataEntry({ questions, apiKey }) {
                                         htmlFor="privacyAgreement"
                                         className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                                     >
-                                        I agree to the privacy policy
+                                        Saya menyetujui Kebijakan Privasi.
                                     </label>
                                 </div>
                                 <Button

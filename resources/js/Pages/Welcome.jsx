@@ -5,25 +5,28 @@ import { Head } from "@inertiajs/react";
 export default function Welcome() {
     return (
         <div className="flex flex-col min-h-[100dvh]">
-            <Head title="Home" />
+            <Head title="Welcome" />
             <Header />
             <main className="flex-1">
-                <section className="w-full py-12 md:py-24 lg:py-32">
-                    <div className="flex flex-col items-center justify-center space-y-4 text-center">
-                        <div className="flex flex-col items-center justify-center space-y-4 text-center">
-                            <div className="flex flex-col items-center justify-center space-y-4 text-center">
-                                <div className="flex flex-col items-center justify-center space-y-4 text-center">
+                <section className="py-12 w-full md:py-24 lg:py-32">
+                    <div className="flex flex-col justify-center items-center space-y-4 text-center">
+                        <div className="flex flex-col justify-center items-center space-y-4 text-center">
+                            <div className="flex flex-col justify-center items-center space-y-4 text-center">
+                                <div className="flex flex-col justify-center items-center space-y-4 text-center">
                                     <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
                                         Klinik Gunung
                                     </h1>
                                     <p className="max-w-[600px] text-gray-500 md:text-xl dark:text-gray-400">
-                                        Lorem ipsum dolor, sit amet consectetur adipisicing elit. Cupiditate quos quaerat provident neque nam asperiores vero sequi delectus.
+                                        Lorem ipsum dolor, sit amet consectetur
+                                        adipisicing elit. Cupiditate quos
+                                        quaerat provident neque nam asperiores
+                                        vero sequi delectus.
                                     </p>
                                 </div>
                                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
                                     <Link
                                         href={route("screening-now.index")}
-                                        className="inline-flex h-10 items-center justify-center rounded-md bg-gray-900 px-8 text-sm font-medium text-gray-50 shadow transition-colors hover:bg-gray-900/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/90 dark:focus-visible:ring-gray-300"
+                                        className="inline-flex justify-center items-center px-8 h-10 text-sm font-medium text-gray-50 bg-gray-900 rounded-md shadow transition-colors hover:bg-gray-900/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/90 dark:focus-visible:ring-gray-300"
                                         prefetch={false}
                                     >
                                         Screening Now
@@ -34,11 +37,11 @@ export default function Welcome() {
                     </div>
                 </section>
             </main>
-            <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t">
+            <footer className="flex flex-col gap-2 items-center px-4 py-6 w-full border-t sm:flex-row shrink-0 md:px-6">
                 <p className="text-xs text-gray-500 dark:text-gray-400">
                     &copy; 2025 Acme Inc. All rights reserved.
                 </p>
-                <nav className="sm:ml-auto flex gap-4 sm:gap-6">
+                <nav className="flex gap-4 sm:ml-auto sm:gap-6">
                     <Link
                         href="#"
                         className="text-xs hover:underline underline-offset-4"

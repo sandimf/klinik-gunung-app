@@ -134,7 +134,7 @@ export default function Index({ questions, patient }) {
                 ) : (
                     <form onSubmit={handleSubmit}>
                         {/* Patient Information Inputs */}
-                        <Card className="mb-4">
+                        <Card hidden className="mb-4">
                             <CardHeader>
                                 <CardTitle>Informasi Pendaki</CardTitle>
                             </CardHeader>
@@ -142,7 +142,7 @@ export default function Index({ questions, patient }) {
                                 {/* NIK */}
                                 <div className="mb-4">
                                     <Label htmlFor="nik">NIK</Label>
-                                    <Input
+                                    <Input 
                                         id="nik"
                                         name="nik"
                                         type="text"
@@ -179,7 +179,7 @@ export default function Index({ questions, patient }) {
 
                                 {/* Age */}
                                 <div className="mb-4">
-                                    <Label htmlFor="age">Age</Label>
+                                    <Label htmlFor="age">Umur</Label>
                                     <Input
                                         id="age"
                                         name="age"

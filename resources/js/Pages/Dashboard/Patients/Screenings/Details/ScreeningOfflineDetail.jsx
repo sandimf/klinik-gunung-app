@@ -4,7 +4,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { User, Calendar, Phone, HelpCircle, FileText, Info } from 'lucide-react'
 import Sidebar from "@/Layouts/Dashboard/PatientsSidebarLayout"
 import { Head } from "@inertiajs/react"
-
+import ButtonBack from "@/Components/button-back"
 export default function ScreeningDetails({ screening }) {
   const screeningDetails = [
     { label: "Nama", value: screening.name, icon: <User className="h-4 w-4" /> },
@@ -25,7 +25,7 @@ export default function ScreeningDetails({ screening }) {
             <TabsTrigger value="personal-info">Informasi Pribadi</TabsTrigger>
             <TabsTrigger value="questionnaire">Kuesioner</TabsTrigger>
           </TabsList>
-          
+
           <TabsContent value="personal-info">
             <Card>
               <CardHeader>
@@ -52,7 +52,7 @@ export default function ScreeningDetails({ screening }) {
               </CardContent>
             </Card>
           </TabsContent>
-          
+
           <TabsContent value="questionnaire">
             <Card>
               <CardHeader>
@@ -96,6 +96,7 @@ export default function ScreeningDetails({ screening }) {
             </Card>
           </TabsContent>
         </Tabs>
+        <ButtonBack />
       </div>
     </Sidebar>
   )

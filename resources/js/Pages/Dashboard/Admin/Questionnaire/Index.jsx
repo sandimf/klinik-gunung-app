@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AdminSidebar from "@/Layouts/Dashboard/AdminSidebarLayout";
-import { Head, Link } from "@inertiajs/react";
+import { Head, Link, usePage } from "@inertiajs/react";
 import {
     Table,
     TableBody,
@@ -12,11 +12,23 @@ import {
 } from "@/Components/ui/table";
 import { Button } from "@/Components/ui/button";
 import EditQuestionModal from "./Partials/Edit";
-import { Plus } from "lucide-react";
+import { Plus,CircleCheck } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
+import { toast, Toaster } from "sonner";
+
 
 export default function Index({ questions }) {
     const [questionList, setQuestionList] = useState(questions.data || []);
+
+    const { flash } = usePage().props;
+    useEffect(() => {
+        if (flash.message) {
+            toast(flash.message, {
+                icon: <CircleCheck className="w-5 h-5 text-green-500" />,
+            });
+        }
+    }, [flash.message]);
+
 
     const handleEditClick = (question) => {
         setCurrentQuestion(question);
@@ -43,13 +55,16 @@ export default function Index({ questions }) {
                     <Link href={route("questioner.create")}>
                         <Button className="space-x-1">
                             <Plus />
-                            <span>Buat Kuesioner</span>
+                            <span>Buat Pertanyaan Baru</span>
                         </Button>
                     </Link>
                 </CardHeader>
                 <CardContent>
                     <Table>
-                        <TableCaption>Daftar Kuesioner</TableCaption>
+                        <TableCaption>
+                            Kelola daftar pertanyaan yang akan digunakan dalam
+                            screening.
+                        </TableCaption>
                         <TableHeader>
                             <TableRow>
                                 <TableHead>No</TableHead>

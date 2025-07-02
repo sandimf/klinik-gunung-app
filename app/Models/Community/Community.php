@@ -11,14 +11,13 @@ class Community extends Model
     protected $table = 'community';
 
     protected $fillable = [
-        'bio', 'username', 'content', 'image', 'status', 'user_id', 'slug',
+        'bio', 'username', 'user_id', 'slug',
     ];
 
     public static function boot()
     {
         parent::boot();
 
-        // Buat atau perbarui slug saat model akan dibuat atau diperbarui
         static::saving(function ($community) {
             if (! empty($community->username)) {
                 $community->slug = Str::slug($community->username);
@@ -29,5 +28,13 @@ class Community extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Community profile has many posts.
+     */
+    public function posts()
+    {
+        return $this->hasMany(CommunityPost::class);
     }
 }

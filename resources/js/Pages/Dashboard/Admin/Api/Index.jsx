@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/Components/ui/button";
 import {
     Card,
@@ -20,34 +20,49 @@ import {
 } from "@/Components/ui/table";
 import {
     Key,
-    RefreshCw,
     AlertTriangle,
     CheckCircle,
-    CircleCheck,
+    CheckCircle2,
 } from "lucide-react";
 import Sidebar from "@/Layouts/Dashboard/AdminSidebarLayout";
 import { Head, useForm } from "@inertiajs/react";
 import { toast, Toaster } from "sonner";
 
-export default function GeminiApiKey({ apikeys }) {
+export default function GeminiApiKey({ apikeys, errors }) {
     const [setApiKeyStatus] = useState("Not Set");
-    const { data, setData, put, processing, errors } = useForm({
+    const { data, setData, put, processing } = useForm({
         api_key: "",
     });
+
+    useEffect(() => {
+        if (errors?.api_key) {
+            toast.error(`Gagal memperbaharui APIKEY: ${errors.api_key}`, {
+                icon: <AlertTriangle className="w-5 h-5 text-red-500" />,
+            });
+        }
+    }, [errors?.api_key]);
 
     const saveApikey = (e) => {
         e.preventDefault();
 
         put(route("apikey.update", 1), {
             onSuccess: () => {
-                toast.success("API Key Berhasil Di Perbaharui");
+                toast.success("APIKEY Berhasil Di Perbaharui", {
+                    icon: <CheckCircle2 className="w-5 h-5 text-green-500" />,
+                });
                 setApiKeyStatus("Active");
             },
             onError: (error) => {
+                // Coba ambil error validasi dari response
+                const apiKeyError =
+                    error?.response?.data?.message ||
+                    "Terjadi kesalahan!";
+
                 toast.error(
-                    `Gagal memperbaharui API Key ${
-                        error.response?.data?.message || "Terjadi kesalahan!"
-                    }`
+                    `Gagal memperbaharui API KEY: ${apiKeyError}`,
+                    {
+                        icon: <AlertTriangle className="w-5 h-5 text-red-500" />,
+                    }
                 );
             },
         });
@@ -57,25 +72,23 @@ export default function GeminiApiKey({ apikeys }) {
         <Sidebar header={"Apikey"}>
             <Head title="Apikey" />
             <div className="container p-6 mx-auto space-y-6">
-                <h1 className="mb-6 text-3xl font-bold">
-                    Google Gemini AI API Key
-                </h1>
-                <Toaster richColors position="top-center" />
+                <h1 className="mb-6 text-3xl font-bold">API KEY</h1>
+                <Toaster  position="top-center" />
                 <Card>
                     <CardHeader>
                         <CardTitle className="flex gap-2 items-center">
                             <Key className="w-6 h-6" />
-                            Set Google Gemini AI API Key
+                            Google Gemini API KEY
                         </CardTitle>
                         <CardDescription>
-                            Masukkan kunci API AI Google Gemini Anda untuk
-                            mengaktifkan fitur Ai ,{" "}
+                            Untuk mengaktifkan fitur scan KTP, mohon masukkan
+                            kunci API Google Gemini Anda.
                             <a
                                 className="text-blue-400"
                                 href="https://aistudio.google.com/apikey"
                                 target="_blank"
                             >
-                                Dapatkan Kunci Api.
+                                Dapatkan Kunci API di sini.
                             </a>
                         </CardDescription>
                     </CardHeader>

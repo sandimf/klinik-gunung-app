@@ -47,7 +47,7 @@ export default function CreateQuestionnaire() {
             preserveScroll: true,
             onSuccess: () => {
                 toast.success("Berhasil Membuat Kuesioner",{
-                    icon: <CircleCheck className="h-5 w-5 text-green-500" />
+                    icon: <CircleCheck className="w-5 h-5 text-green-500" />
                 });
                 setData({
                     question_text: "",

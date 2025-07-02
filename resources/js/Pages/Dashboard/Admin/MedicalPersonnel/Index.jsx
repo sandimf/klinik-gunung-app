@@ -4,6 +4,7 @@ import { Head, Link } from "@inertiajs/react";
 import AdminSidebar from "@/Layouts/Dashboard/AdminSidebarLayout";
 import { Button } from "@/Components/ui/button";
 import { Input } from "@/Components/ui/input";
+import { Toaster } from "sonner";
 import {
     Table,
     TableBody,
@@ -15,9 +16,25 @@ import {
 } from "@/Components/ui/table";
 import { Badge } from "@/Components/ui/badge";
 import { Search, UserPlus } from "lucide-react";
+import ChangePasswordDialog from "./_components/ChangePasswordDialog"
+
+function formatTanggalIndo(dateString) {
+    if (!dateString) return "";
+    const bulan = [
+        "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+        "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+    ];
+    const date = new Date(dateString);
+    const tgl = date.getDate();
+    const bln = bulan[date.getMonth()];
+    const thn = date.getFullYear();
+    return `${tgl} ${bln} ${thn}`;
+}
 
 export default function Index({ users }) {
     const [searchTerm, setSearchTerm] = useState("");
+    const [openDialog, setOpenDialog] = useState(false)
+    const [selectedUserId, setSelectedUserId] = useState(null)
 
     const filteredUsers = users.filter(
         (user) =>
@@ -32,6 +49,7 @@ export default function Index({ users }) {
         <AdminSidebar header="Daftar Staff">
             <Head title="Daftar Staff" />
             <div className="">
+                <Toaster position="top-center" />
                 <div className="flex justify-between items-center mb-6">
                     <div className="relative">
                         <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -53,20 +71,24 @@ export default function Index({ users }) {
                 <Card>
                     <CardHeader className="flex flex-row justify-between items-center pb-2 space-y-0">
                         <CardTitle className="text-2xl font-bold">
-                            Daftar Staff
+                            Daftar Staff Klinik
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
                         <Table>
+                            <TableCaption>
+                                Daftar staff klinik yang terdaftar.
+                            </TableCaption>
                             <TableHeader>
                                 <TableRow>
                                     <TableHead>No</TableHead>
                                     <TableHead>Nama Staff</TableHead>
                                     <TableHead>Email</TableHead>
-                                    <TableHead>Nik</TableHead>
+                                    <TableHead>NIK</TableHead>
                                     <TableHead>Telepon</TableHead>
                                     <TableHead>Peran</TableHead>
-                                    <TableHead>Tanggal Dibuat</TableHead>
+                                    <TableHead>Tanggal Pendaftaran</TableHead>
+                                    <TableHead>Aksi</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -89,13 +111,23 @@ export default function Index({ users }) {
                                                         : "secondary"
                                                 }
                                             >
-                                                {user.role}
+                                                {user.role === "admin" ? "master" : user.role}
                                             </Badge>
                                         </TableCell>
                                         <TableCell>
-                                            {new Date(
-                                                user.created_at
-                                            ).toLocaleDateString()}
+                                            {formatTanggalIndo(user.created_at)}
+                                        </TableCell>
+                                        <TableCell>
+                                            <Button
+                                                variant="outline"
+                                                onClick={() => {
+                                                    setSelectedUserId(user.id)
+                                                    setOpenDialog(true)
+                                                }}
+                                                
+                                            >
+                                                Ubah Password
+                                            </Button>
                                         </TableCell>
                                     </TableRow>
                                 ))}
@@ -103,6 +135,11 @@ export default function Index({ users }) {
                         </Table>
                     </CardContent>
                 </Card>
+                <ChangePasswordDialog
+                    open={openDialog}
+                    onOpenChange={setOpenDialog}
+                    userId={selectedUserId}
+                />
             </div>
         </AdminSidebar>
     );

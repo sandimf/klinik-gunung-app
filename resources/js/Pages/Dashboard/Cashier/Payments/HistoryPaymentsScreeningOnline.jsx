@@ -56,47 +56,57 @@ const ScreeningOnlineIndex = ({ patients = []}) => {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {paginatedpatients.map((patients,index) => (
-                                <TableRow key={patients.id}>
-                                    <TableCell>{index + 1}</TableCell>
-                                    <TableCell>{capitalizeFirstLetter(patients.name)}</TableCell>
-                                    <TableCell>{capitalizeFirstLetter(patients.payments.payment_method || '')}</TableCell>
-                                    <TableCell>{patients.payments.amount_paid}</TableCell>
-                                    <TableCell>
-                                        <Badge>{capitalizeFirstLetter(patients.payment_status || '')}</Badge>
+                            {paginatedpatients.length === 0 ? (
+                                <TableRow>
+                                    <TableCell colSpan={5} className="text-center text-gray-500">
+                                        Belum ada data
                                     </TableCell>
                                 </TableRow>
-                            ))}
+                            ) : (
+                                paginatedpatients.map((patients, index) => (
+                                    <TableRow key={patients.id}>
+                                        <TableCell>{(currentPage - 1) * itemsPerPage + index + 1}</TableCell>
+                                        <TableCell>{capitalizeFirstLetter(patients.name)}</TableCell>
+                                        <TableCell>{capitalizeFirstLetter(patients.payments.payment_method || '')}</TableCell>
+                                        <TableCell>{patients.payments.amount_paid}</TableCell>
+                                        <TableCell>
+                                            <Badge>{capitalizeFirstLetter(patients.payment_status || '')}</Badge>
+                                        </TableCell>
+                                    </TableRow>
+                                ))
+                            )}
                         </TableBody>
 
                     </Table>
 
-                    <Pagination className="mt-4">
-                        <PaginationContent>
-                            <PaginationItem>
-                                <PaginationPrevious
-                                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                                    disabled={currentPage === 1}
-                                />
-                            </PaginationItem>
-                            {[...Array(totalPages)].map((_, i) => (
-                                <PaginationItem key={i}>
-                                    <PaginationLink
-                                        onClick={() => setCurrentPage(i + 1)}
-                                        isActive={currentPage === i + 1}
-                                    >
-                                        {i + 1}
-                                    </PaginationLink>
+                    {filteredpatients.length > 0 && (
+                        <Pagination className="mt-4">
+                            <PaginationContent>
+                                <PaginationItem>
+                                    <PaginationPrevious
+                                        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                                        disabled={currentPage === 1}
+                                    />
                                 </PaginationItem>
-                            ))}
-                            <PaginationItem>
-                                <PaginationNext
-                                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                                    disabled={currentPage === totalPages}
-                                />
-                            </PaginationItem>
-                        </PaginationContent>
-                    </Pagination>
+                                {[...Array(totalPages)].map((_, i) => (
+                                    <PaginationItem key={i}>
+                                        <PaginationLink
+                                            onClick={() => setCurrentPage(i + 1)}
+                                            isActive={currentPage === i + 1}
+                                        >
+                                            {i + 1}
+                                        </PaginationLink>
+                                    </PaginationItem>
+                                ))}
+                                <PaginationItem>
+                                    <PaginationNext
+                                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                                        disabled={currentPage === totalPages}
+                                    />
+                                </PaginationItem>
+                            </PaginationContent>
+                        </Pagination>
+                    )}
                 </CardContent>
             </Card>
         </CashierSidebar>

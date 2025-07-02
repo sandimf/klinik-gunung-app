@@ -4,14 +4,27 @@ namespace App\Http\Controllers\Community;
 
 use App\Http\Controllers\Controller;
 use App\Models\Community\Community;
+use App\Models\Community\CommunityPost;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class CommunityController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     */
     public function index()
     {
-        return Inertia::render('Community/Index');
+        // Ambil postingan yang sudah disetujui, dan sertakan data profil pembuatnya
+        $posts = CommunityPost::with(['community.user'])
+            ->where('status', 'approve')
+            ->latest()
+            ->paginate(15);
+
+        return Inertia::render('Community/Index', [
+            'posts' => $posts,
+        ]);
     }
 
     public function show()

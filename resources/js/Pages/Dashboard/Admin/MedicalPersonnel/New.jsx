@@ -23,7 +23,6 @@ import AdminSidebar from "@/Layouts/Dashboard/AdminSidebarLayout";
 import {
     CheckCircle2,
     X,
-    CalendarIcon,
     RefreshCw,
     Eye,
     EyeOff,
@@ -346,7 +345,7 @@ export default function CreatePersonal() {
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="admin">
-                                            Admin
+                                            Master
                                         </SelectItem>
                                         <SelectItem value="manager">
                                             Manager

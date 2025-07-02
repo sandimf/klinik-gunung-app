@@ -33,7 +33,7 @@ export default function Index({ questions }) {
     };
 
     return (
-        <AdminSidebar header={"Daftar Kuesioner"}>
+        <AdminSidebar header={"Daftar Kuesioner Online"}>
             <Head title="Daftar Kuesioner" />
             <Card>
                 <CardHeader className="flex flex-row justify-between items-center pb-2 space-y-0">
@@ -43,13 +43,16 @@ export default function Index({ questions }) {
                     <Link href={route("questioner-online.create")}>
                         <Button className="space-x-1">
                             <Plus />
-                            <span>Buat Kuesioner</span>
+                            <span>Buat Pertanyaan Baru</span>
                         </Button>
                     </Link>
                 </CardHeader>
                 <CardContent>
                     <Table>
-                        <TableCaption>Daftar Kuesioner Online</TableCaption>
+                        <TableCaption>
+                            Kelola daftar pertanyaan yang akan digunakan dalam
+                            screening online.
+                        </TableCaption>
                         <TableHeader>
                             <TableRow>
                                 <TableHead>No</TableHead>

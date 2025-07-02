@@ -103,7 +103,7 @@ export default function Index({ questions, patient }) {
     return (
         <PatientSidebar header={"Screening Online"}>
             <div className="space-y-8">
-                <Toaster richColors position="top-center" />
+                <Toaster  position="top-center" />
                 <Head title="Screening" />
 
                 {questions.length === 1 ? (

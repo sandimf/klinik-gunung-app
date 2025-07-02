@@ -13,8 +13,8 @@ export default {
     theme: {
     	extend: {
     		fontFamily: {
-    			sans: ['Inter', 'sans-serif'],
-    		},
+				mona: ['"Mona Sans"', 'sans-serif'],
+			  },
     		borderRadius: {
     			lg: 'var(--radius)',
     			md: 'calc(var(--radius) - 2px)',

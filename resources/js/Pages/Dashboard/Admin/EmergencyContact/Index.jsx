@@ -19,7 +19,7 @@ import {
 } from "@/Components/ui/table";
 import Sidebar from "@/Layouts/Dashboard/AdminSidebarLayout";
 import { Head, useForm } from "@inertiajs/react";
-import { Contact } from "lucide-react";
+import { Contact, CheckCircle2 } from "lucide-react";
 import { toast, Toaster } from "sonner";
 
 export default function GeminiApiKey({ emergencyContacts }) {
@@ -33,7 +33,9 @@ export default function GeminiApiKey({ emergencyContacts }) {
 
         put(route("emergecy-contact.update", 1), {
             onSuccess: () => {
-                toast.success("Emergency contact berhasil disimpan");
+                toast.success("Kontak darurat berhasil disimpan", {
+                    icon: <CheckCircle2 className="w-5 h-5 text-green-500" />,
+                });
             },
             onError: (error) => {
                 if (
@@ -61,7 +63,7 @@ export default function GeminiApiKey({ emergencyContacts }) {
             <Head title="Kontak Darurat" />
             <div className="container p-6 mx-auto space-y-6">
                 <h1 className="mb-6 text-3xl font-bold">Kontak Darurat</h1>
-                <Toaster richColors position="top-center" />
+                <Toaster  position="top-center" />
                 <Card>
                     <CardHeader>
                         <CardTitle className="flex gap-2 items-center">
@@ -69,17 +71,17 @@ export default function GeminiApiKey({ emergencyContacts }) {
                             Informasi Kontak Darurat
                         </CardTitle>
                         <CardDescription>
-                            Masukan kontak darurat untuk di tampilkan di
+                            Informasi kontak darurat untuk di tampilkan di
                             dashboard pasien.
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
                         <div className="grid gap-4 items-center w-full">
                             <div className="flex flex-col space-y-1.5 mb-4">
-                                <Label htmlFor="name">Nama</Label>
+                                <Label htmlFor="name">Nama Kontak</Label>
                                 <Input
                                     id="name"
-                                    placeholder="Nama kontak darurat"
+                                    placeholder="Nama Pihak/Layanan Darurat"
                                     value={data.name}
                                     onChange={(e) =>
                                         setData("name", e.target.value)
@@ -96,7 +98,7 @@ export default function GeminiApiKey({ emergencyContacts }) {
                                 <Label htmlFor="contact">Nomor Kontak</Label>
                                 <Input
                                     id="contact"
-                                    placeholder="08123456789"
+                                    placeholder="08XXXXXXXXXX"
                                     value={data.contact}
                                     onChange={(e) =>
                                         setData("contact", e.target.value)

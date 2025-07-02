@@ -42,7 +42,6 @@ export default function PatientDataEntry({ patient, apiKey }) {
     const [isCameraActive, setIsCameraActive] = useState(false);
     const fileInputRef = useRef(null);
     const [agreedToPrivacy, setAgreedToPrivacy] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
 
     const { data, setData, post, processing, errors, error } = useForm({
         nik: patient?.nik || "",
@@ -63,7 +62,7 @@ export default function PatientDataEntry({ patient, apiKey }) {
         nationality: patient?.nationality || "",
         valid_until: patient?.valid_until || "",
         blood_type: patient?.blood_type || "",
-        age: patient?.age || "",
+        ktp_images: null,
     });
 
     const isReadOnly = Boolean(patient);
@@ -72,36 +71,28 @@ export default function PatientDataEntry({ patient, apiKey }) {
 
         if (!agreedToPrivacy) {
             toast.error(
-                "Please agree to the privacy policy before submitting."
+                "Harap centang persetujuan Kebijakan Privasi untuk mengirim data."
             );
             return;
         }
 
-        setIsLoading(true); // Animasi loading langsung aktif
-
-        // Tambahkan delay sebelum menjalankan `post`
-        setTimeout(() => {
-            post(route("information.store"), {
-                onSuccess: () => {
-                    setIsLoading(false); // Nonaktifkan loading setelah berhasil
-                    toast.success(`Berhasil`, {
-                        icon: (
-                            <CheckCircle2 className="w-5 h-5 text-green-500" />
-                        ),
-                    });
-                },
-                onError: () => {
-                    setIsLoading(false);
-                    toast.error("Ada kesalahan!");
-                },
-            });
-        }, 2000); // Delay selama 2 detik
+        post(route("information.store"), {
+            onSuccess: () => {
+                toast.success(`Berhasil`, {
+                    icon: <CheckCircle2 className="w-5 h-5 text-green-500" />,
+                });
+            },
+            onError: () => {
+                toast.error("Ada kesalahan!");
+            },
+        });
     };
 
     const handleFileChange = (event) => {
         const file = event.target.files?.[0];
         if (file) {
             setImageFile(file);
+            setData("ktp_images", file);
             analyzeImage(file);
         }
     };
@@ -114,6 +105,7 @@ export default function PatientDataEntry({ patient, apiKey }) {
                     type: "image/jpeg",
                 });
                 setImageFile(file);
+                setData("ktp_images", file);
                 analyzeImage(file);
             });
     };
@@ -177,8 +169,8 @@ export default function PatientDataEntry({ patient, apiKey }) {
                     .toLowerCase()
                     .replace(/\b\w/g, (match) => match.toUpperCase());
             };
-            setData({
-                ...data,
+            setData((currentData) => ({
+                ...currentData,
                 nik: parsedData.NIK || "",
                 name: capitalizeWords(parsedData.Nama || ""),
                 place_of_birth: capitalizeWords(
@@ -202,9 +194,11 @@ export default function PatientDataEntry({ patient, apiKey }) {
                     parsedData["Berlaku Hingga"] || ""
                 ),
                 blood_type: capitalizeWords(parsedData["Golongan Darah"] || ""),
-            });
+            }));
         } catch (err) {
-            setAnalysisError("Error during image analysis. Please try again.");
+            setAnalysisError(
+                "Terjadi kesalahan saat menganalisis gambar. Mohon coba lagi."
+            );
             console.error(err);
         } finally {
             setIsAnalyzing(false);
@@ -221,10 +215,10 @@ export default function PatientDataEntry({ patient, apiKey }) {
     }, [flash.message]);
 
     return (
-        <Sidebar header={"Patient Information"}>
-            <Toaster richColors position="top-center" />
+        <Sidebar header={"Formulir Data Pribadi"}>
+            <Toaster  position="top-center" />
             <Card>
-                <Head title="Patient Information" />
+                <Head title="Formulir Data Pribadi" />
                 <CardHeader>
                     <CardTitle className="text-2xl font-bold">
                         Formulir Data Pribadi
@@ -235,8 +229,8 @@ export default function PatientDataEntry({ patient, apiKey }) {
                         <InfoIcon className="w-4 h-4" />
                         <AlertTitle>Informasi</AlertTitle>
                         <AlertDescription>
-                            Kamu hanya bisa mengakses fitur hanya jika sudah
-                            mengisi formulir ini.
+                            Mohon masukan data diri anda terlebih dahulu sebelum
+                            melakukan screening.
                         </AlertDescription>
                     </Alert>
 
@@ -263,12 +257,14 @@ export default function PatientDataEntry({ patient, apiKey }) {
                                             <Upload className="mb-4 w-8 h-8 text-gray-500 dark:text-gray-400" />
                                             <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
                                                 <span className="font-semibold">
-                                                    Click to upload
+                                                    Klik untuk Unggah
                                                 </span>{" "}
-                                                or drag and drop
+                                                atau seret dan lepas gambar di
+                                                sini.
                                             </p>
                                             <p className="text-xs text-gray-500 dark:text-gray-400">
-                                                SVG, PNG, JPG or GIF
+                                                Format: SVG, PNG, JPG, atau GIF
+                                                (Maks. 800x400px)
                                             </p>
                                         </div>
                                         <Input
@@ -296,7 +292,7 @@ export default function PatientDataEntry({ patient, apiKey }) {
                                     className="w-full"
                                 >
                                     {isAnalyzing
-                                        ? "Ai Menganalisa..."
+                                        ? "Mengupload..."
                                         : "Pilih Foto KTP"}
                                 </Button>
                                 {analysisError && (
@@ -322,8 +318,8 @@ export default function PatientDataEntry({ patient, apiKey }) {
                                     className="w-full"
                                 >
                                     {isCameraActive
-                                        ? "Stop Camera"
-                                        : "Start Camera"}
+                                        ? "Hentikan Kamera"
+                                        : "Mulai Kamera"}
                                 </Button>
                                 {analysisError && (
                                     <Alert variant="destructive">
@@ -430,14 +426,14 @@ export default function PatientDataEntry({ patient, apiKey }) {
                                             <SelectLabel>
                                                 Jenis Kelamin
                                             </SelectLabel>
-                                            <SelectItem value="male">
-                                                Male
+                                            <SelectItem value="laki-laki">
+                                                Laki-Laki
                                             </SelectItem>
-                                            <SelectItem value="female">
-                                                Female
+                                            <SelectItem value="perempuan">
+                                                Perempuan
                                             </SelectItem>
-                                            <SelectItem value="other">
-                                                Other
+                                            <SelectItem value="lainnya">
+                                                Lainnya
                                             </SelectItem>
                                         </SelectGroup>
                                     </SelectContent>
@@ -622,12 +618,12 @@ export default function PatientDataEntry({ patient, apiKey }) {
                             </div>
                             <div>
                                 <Label htmlFor="blood_type">
-                                    Golongan Dara
+                                    Golongan Darah
                                 </Label>
                                 <Input
                                     id="blood_type"
                                     value={data.blood_type}
-                                    placeholder="Golonga darah, - jika tidak ada"
+                                    placeholder="Contoh: A, B, AB, O (- jika tidak diketahui)"
                                     onChange={(e) =>
                                         setData("blood_type", e.target.value)
                                     }
@@ -662,7 +658,7 @@ export default function PatientDataEntry({ patient, apiKey }) {
                                     id="email"
                                     type="email"
                                     value={data.email}
-                                    placeholder="johndoe@example.com"
+                                    placeholder="nama@email.com"
                                     onChange={(e) =>
                                         setData("email", e.target.value)
                                     }
@@ -702,7 +698,7 @@ export default function PatientDataEntry({ patient, apiKey }) {
                                     htmlFor="privacyAgreement"
                                     className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                                 >
-                                    I agree to the privacy policy
+                                    Saya menyetujui Kebijakan Privasi.
                                 </label>
                             </div>
                         </div>
@@ -712,7 +708,7 @@ export default function PatientDataEntry({ patient, apiKey }) {
                                 className="w-full"
                                 disabled={processing || !agreedToPrivacy}
                             >
-                                {isLoading ? (
+                                {processing ? (
                                     <>
                                         <Loader2 className="mr-2 w-4 h-4 animate-spin" />
                                         Please wait...
@@ -724,7 +720,7 @@ export default function PatientDataEntry({ patient, apiKey }) {
                         )}
                         {isReadOnly && (
                             <p className="text-gray-600">
-                                Your profile data cannot be edited.
+                                Data profil Anda tidak dapat diubah.
                             </p>
                         )}
                     </form>

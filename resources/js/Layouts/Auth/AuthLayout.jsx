@@ -1,11 +1,9 @@
-import React from "react";
+import AuthLayoutTemplate from "./AuthSimpleLayout";
 
-const AuthLayout = ({ children }) => {
+export default function AuthLayout({ children, title, description, ...props }) {
     return (
-        <section className="flex items-center justify-center h-screen">
-                {children}
-        </section>
+        <AuthLayoutTemplate title={title} description={description} {...props}>
+            {children}
+        </AuthLayoutTemplate>
     );
-};
-
-export default AuthLayout;
+}

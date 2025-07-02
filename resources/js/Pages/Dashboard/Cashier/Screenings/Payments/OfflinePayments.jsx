@@ -75,7 +75,7 @@ export default function PaymentDialog({
             preserveScroll: true,
             onSuccess: () => {
                 toast.success(`Pembayaran Berhasil di Proses`, {
-                    icon: <CheckCircle2 className="h-5 w-5 text-green-500" />,
+                    icon: <CheckCircle2  />,
                 });
                 onClose();
             },

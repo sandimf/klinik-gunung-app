@@ -47,7 +47,7 @@ export default function UpdatePasswordForm() {
                     }
                     type="password"
                     autoComplete="current-password"
-                    placeholder="*****"
+                    placeholder="Kata Sandi"
                 />
                 {errors.current_password && (
                     <p className="mt-1 text-sm text-red-600">
@@ -65,7 +65,7 @@ export default function UpdatePasswordForm() {
                     onChange={(e) => setData("password", e.target.value)}
                     type="password"
                     autoComplete="new-password"
-                    placeholder="*****"
+                    placeholder="Kata Sandi Baru"
                 />
                 {errors.password && (
                     <p className="mt-1 text-sm text-red-600">
@@ -86,7 +86,7 @@ export default function UpdatePasswordForm() {
                     }
                     type="password"
                     autoComplete="new-password"
-                    placeholder="*****"
+                    placeholder="Konfirmasi Kata Sandi"
                 />
                 {errors.password_confirmation && (
                     <p className="mt-1 text-sm text-red-600">

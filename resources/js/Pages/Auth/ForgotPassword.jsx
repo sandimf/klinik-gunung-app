@@ -18,17 +18,10 @@ export default function ForgotPassword({ status }) {
 
     return (
         <AuthLayout>
-            <Head title="Forgot Password" />
-
-            <Card className="w-full max-w-md mx-auto mt-8">
-                <CardHeader>
-                    <CardTitle>Forgot Password</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <p className="mb-4 text-sm text-gray-600">
-                        Forgot your password? No problem. Just let us know your email
-                        address and we will email you a password reset link that will
-                        allow you to choose a new one.
+            <Head title="Lupa Kata Sandi" />
+           
+                    <p className="mb-4 text-sm text-gray-600 text-center">
+                        Reset kata sandi Anda dengan mengisi alamat email Anda di bawah ini.
                     </p>
 
                     {status && (
@@ -46,6 +39,7 @@ export default function ForgotPassword({ status }) {
                                 name="email"
                                 value={data.email}
                                 className="mt-1 block w-full"
+                                placeholder="nama@email.com"
                                 onChange={(e) => setData('email', e.target.value)}
                                 autoFocus
                             />
@@ -54,13 +48,9 @@ export default function ForgotPassword({ status }) {
                             )}
                         </div>
                     </form>
-                </CardContent>
-                <CardFooter className="flex justify-end">
                     <Button type="submit" disabled={processing} onClick={submit}>
-                        Email Password Reset Link
+                        Kirim Tautan Reset Kata Sandi
                     </Button>
-                </CardFooter>
-            </Card>
         </AuthLayout>
     );
 }

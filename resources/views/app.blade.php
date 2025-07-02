@@ -5,8 +5,16 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title inertia>{{ config('app.name', 'Klinik Gunung') }}</title>
         <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://rsms.me/inter/inter.css"> <!-- fallback Inter -->
+        <style>
+          @font-face {
+            font-family: 'Mona Sans';
+            src: url('https://github.githubassets.com/assets/Mona-Sans.woff2') format('woff2');
+            font-weight: 100 1000;
+            font-display: swap;
+          }
+        </style>
+        
         <!-- Favicon -->
         <link rel="shortcut icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
         <!-- Scripts -->
