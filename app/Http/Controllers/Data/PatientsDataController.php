@@ -17,8 +17,7 @@ class PatientsDataController extends Controller
     public function __construct(
         protected PatientDataQueryService $queryService,
         protected PatientDataCreationService $creationService
-    ) {
-    }
+    ) {}
 
     public function index(): InertiaResponse
     {
@@ -36,13 +35,13 @@ class PatientsDataController extends Controller
                 $request->hasFile('ktp_images') ? $request->file('ktp_images') : null
             );
         } catch (\Exception $e) {
-            Log::error('Gagal menyimpan data pasien: ' . $e->getMessage(), ['exception' => $e]);
+            Log::error('Gagal menyimpan data pasien: '.$e->getMessage(), ['exception' => $e]);
 
             return redirect()->back()->with('error', 'Gagal menyimpan profil pasien. Silakan coba lagi.');
         }
 
         return redirect()
             ->route('dashboard')
-            ->with('message', 'Profil pasien berhasil disimpan.');
+            ->with('success', 'Profil pasien berhasil disimpan.');
     }
 }

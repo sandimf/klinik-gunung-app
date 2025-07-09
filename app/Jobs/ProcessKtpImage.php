@@ -13,8 +13,9 @@ class ProcessKtpImage implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $patient;
-    public $ktpImages;
+    protected $patient;
+
+    protected $ktpImages;
 
     /**
      * Create a new job instance.
@@ -23,6 +24,16 @@ class ProcessKtpImage implements ShouldQueue
     {
         $this->patient = $patient;
         $this->ktpImages = $ktpImages;
+    }
+
+    public function getPatient()
+    {
+        return $this->patient;
+    }
+
+    public function getKtpImages()
+    {
+        return $this->ktpImages;
     }
 
     /**
@@ -34,4 +45,4 @@ class ProcessKtpImage implements ShouldQueue
         // Contoh:
         // OcrService::process($this->ktpImages, $this->patient);
     }
-} 
+}

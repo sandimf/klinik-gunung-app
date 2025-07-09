@@ -29,6 +29,7 @@ A comprehensive medical clinic management system designed for mountain clinics, 
 - **QR Code System** - Digital identification and quick access
 - **PDF Generation** - Medical reports and documentation
 - **Email Notifications** - Automated alerts and confirmations
+- **Screening Result PDF to Email** - Screening results are now automatically sent to the patient's email as a PDF attachment (using the health_check template)
 - **Inventory Management** - Medicine and equipment tracking
 - **Community Platform** - Patient community and health information sharing
 

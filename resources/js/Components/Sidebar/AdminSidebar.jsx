@@ -10,15 +10,7 @@ import {
     Ghost,
     Key,
     Contact,
-    LayoutDashboard,
-    Users,
-    Calendar,
-    FileText,
-    Stethoscope,
-    UserCog,
-    Pill,
-    FileStack,
-    Settings,
+    DollarSign
 } from "lucide-react";
 import { NavUser } from "@/Components/Nav/NavUser";
 import { TeamSwitcher } from "@/Components/Nav/TeamSwitcher";
@@ -48,17 +40,7 @@ import {
     TooltipProvider,
 } from '@/Components/ui/tooltip';
 
-const navLinks = [
-    { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { href: '/admin/pasien', label: 'Pasien', icon: Users },
-    { href: '/admin/janji-temu', label: 'Janji Temu', icon: Calendar },
-    { href: '/admin/rekam-medis', label: 'Rekam Medis', icon: FileText },
-    { href: '/admin/dokter', label: 'Dokter', icon: Stethoscope },
-    { href: '/admin/staf', label: 'Staf', icon: UserCog },
-    { href: '/admin/inventaris', label: 'Inventaris', icon: Pill },
-    { href: '/admin/tagihan', label: 'Tagihan', icon: FileStack },
-    { href: '/admin/pengaturan', label: 'Pengaturan', icon: Settings },
-];
+
 
 export function AppSidebar({ ...sidebarProps }) {
     const { url, props } = usePage();
@@ -104,6 +86,11 @@ export function AppSidebar({ ...sidebarProps }) {
                 title: "Staff",
                 url: route("staff.index"),
                 icon: UserPlus,
+            },
+            {
+                title: "Harga Screening",
+                url: route("amounts.index"),
+                icon: DollarSign,
             },
             {
                 title: "Pindai QrCode",

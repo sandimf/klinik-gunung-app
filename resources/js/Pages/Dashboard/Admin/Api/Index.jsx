@@ -26,7 +26,6 @@ import {
 } from "lucide-react";
 import Sidebar from "@/Layouts/Dashboard/AdminSidebarLayout";
 import { Head, useForm } from "@inertiajs/react";
-import { toast, Toaster } from "sonner";
 
 export default function GeminiApiKey({ apikeys, errors }) {
     const [setApiKeyStatus] = useState("Not Set");
@@ -36,9 +35,12 @@ export default function GeminiApiKey({ apikeys, errors }) {
 
     useEffect(() => {
         if (errors?.api_key) {
-            toast.error(`Gagal memperbaharui APIKEY: ${errors.api_key}`, {
-                icon: <AlertTriangle className="w-5 h-5 text-red-500" />,
-            });
+            // Coba ambil error validasi dari response
+            const apiKeyError =
+                error?.response?.data?.message ||
+                "Terjadi kesalahan!";
+
+            // Tidak perlu menampilkan toast di sini, karena akan ditangani oleh FlashToast global
         }
     }, [errors?.api_key]);
 
@@ -47,9 +49,6 @@ export default function GeminiApiKey({ apikeys, errors }) {
 
         put(route("apikey.update", 1), {
             onSuccess: () => {
-                toast.success("APIKEY Berhasil Di Perbaharui", {
-                    icon: <CheckCircle2 className="w-5 h-5 text-green-500" />,
-                });
                 setApiKeyStatus("Active");
             },
             onError: (error) => {
@@ -58,12 +57,7 @@ export default function GeminiApiKey({ apikeys, errors }) {
                     error?.response?.data?.message ||
                     "Terjadi kesalahan!";
 
-                toast.error(
-                    `Gagal memperbaharui API KEY: ${apiKeyError}`,
-                    {
-                        icon: <AlertTriangle className="w-5 h-5 text-red-500" />,
-                    }
-                );
+                // Tidak perlu menampilkan toast di sini, karena akan ditangani oleh FlashToast global
             },
         });
     };
@@ -73,7 +67,6 @@ export default function GeminiApiKey({ apikeys, errors }) {
             <Head title="Apikey" />
             <div className="container p-6 mx-auto space-y-6">
                 <h1 className="mb-6 text-3xl font-bold">API KEY</h1>
-                <Toaster  position="top-center" />
                 <Card>
                     <CardHeader>
                         <CardTitle className="flex gap-2 items-center">

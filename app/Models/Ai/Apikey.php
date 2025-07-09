@@ -14,4 +14,10 @@ class Apikey extends Model
 
     // Jika tabel tidak memiliki kolom 'created_at' dan 'updated_at', matikan fitur timestamps
     public $timestamps = true;  // Jika tidak memerlukan timestamps, set ke false
+
+    // Tambahkan getter jika property perlu diakses dari luar
+    public function getPropertyName()
+    {
+        return $this->propertyName;
+    }
 }

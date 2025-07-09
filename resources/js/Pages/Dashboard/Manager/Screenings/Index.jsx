@@ -146,7 +146,7 @@ export default function Report({
                         <Card>
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                                 <CardTitle className="text-sm font-medium">
-                                    Jumlah Pasien Membutuhkan Pendamping
+                                    Jumlah Pasien Membutuhkan pendamping
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
@@ -208,7 +208,7 @@ export default function Report({
                                             ? "Membutuhkan Dokter"
                                             : patient.health_status ===
                                               "butuh_pendamping"
-                                            ? "Membutuhkan Pendamping"
+                                            ? "Membutuhkan pendamping"
                                             : "Status Tidak Diketahui"}
                                     </Badge>
                                 </TableCell>

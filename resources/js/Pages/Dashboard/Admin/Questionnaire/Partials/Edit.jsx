@@ -21,7 +21,6 @@ import {
     DialogFooter,
     DialogTrigger,
 } from "@/Components/ui/dialog";
-import { toast, Toaster } from "sonner";
 import { Edit } from "lucide-react";
 const EditQuestionModal = ({ question, onSave }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -43,7 +42,7 @@ const EditQuestionModal = ({ question, onSave }) => {
     const confirmEdit = () => {
         put(route("questioner.update", data.id), {
             onSuccess: () => {
-                toast.success("Pertanyaan berhasil diperbarui");
+                if (onSave) onSave({ ...data });
                 setIsOpen(false);
                 setShowConfirmation(false);
                 reset();
@@ -68,7 +67,6 @@ const EditQuestionModal = ({ question, onSave }) => {
 
     return (
         <>
-            <Toaster position="top-center" />
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
                 <DialogTrigger asChild>
                     <Button variant="outline" size="icon">

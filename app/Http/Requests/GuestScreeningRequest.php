@@ -14,7 +14,7 @@ class GuestScreeningRequest extends FormRequest
     public function rules()
     {
         return [
-            'nik' => 'required|numeric|digits_between:1,16|unique:patients,nik',
+            'nik' => 'required|numeric|digits_between:1,16',
             'name' => 'required|string|max:255',
             'place_of_birth' => 'required|string|max:255',
             'date_of_birth' => 'required|string|max:255',
@@ -28,9 +28,11 @@ class GuestScreeningRequest extends FormRequest
             'nationality' => 'required|string|max:255',
             'gender' => 'required|string|max:10',
             'blood_type' => 'required|string|max:10',
+            'tinggi_badan' => 'required|numeric|min:1',
+            'berat_badan' => 'required|numeric|min:1',
             'email' => 'required|email|max:255|unique:patients,email',
             'age' => 'required|integer',
-            'contact' => 'required|string|max:15|unique:patients,contact',
+            'contact' => 'required|string|max:15',
             'ktp_images' => 'nullable|file|mimes:jpg,jpeg,png|max:10240', // KTP image, optional
             'answers' => 'required|array',
             'answers.*.questioner_id' => 'required|exists:screening_offline_questions,id',
@@ -43,7 +45,6 @@ class GuestScreeningRequest extends FormRequest
         return [
             'nik.required' => 'NIK wajib diisi.',
             'nik.numeric' => 'NIK harus berupa angka.',
-            'nik.unique' => 'NIK sudah terdaftar.',
 
             'name.required' => 'Nama wajib diisi.',
             'name.string' => 'Nama harus berupa teks.',
@@ -81,7 +82,6 @@ class GuestScreeningRequest extends FormRequest
             'contact.required' => 'Nomor kontak wajib diisi.',
             'contact.string' => 'Nomor kontak harus berupa teks.',
             'contact.max' => 'Nomor kontak tidak boleh lebih dari 15 karakter.',
-            'contact.unique' => 'Nomor kontak sudah digunakan.',
 
             'ktp_images.file' => 'File KTP harus berupa file.',
             'ktp_images.mimes' => 'Format file KTP harus jpg, jpeg, atau png.',

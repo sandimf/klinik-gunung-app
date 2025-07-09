@@ -51,7 +51,7 @@ class MedicineController extends Controller
         try {
             Excel::import(new MedicineImport, $request->file('file'));
 
-            return redirect()->back()->with('message', 'Data berhasil diimport.');
+            return redirect()->back()->with('success', 'Data berhasil diimport.');
         } catch (\Exception $e) {
             Log::error('Import Error: '.$e->getMessage());
 

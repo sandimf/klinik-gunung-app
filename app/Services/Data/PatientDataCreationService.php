@@ -3,9 +3,9 @@
 namespace App\Services\Data;
 
 use App\Jobs\ProcessKtpImage;
+use App\Models\User;
 use App\Models\Users\Patients;
 use App\Models\Users\PatientsOnline;
-use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -17,10 +17,7 @@ class PatientDataCreationService
      * Menangani logika pembuatan data pasien yang kompleks,
      * termasuk penyimpanan file dan sinkronisasi ke beberapa tabel.
      *
-     * @param User $user
-     * @param array<string, mixed> $data
-     * @param UploadedFile|null $ktpImage
-     * @return void
+     * @param  array<string, mixed>  $data
      */
     public function createPatientData(User $user, array $data, ?UploadedFile $ktpImage): void
     {
@@ -59,4 +56,4 @@ class PatientDataCreationService
             }
         });
     }
-} 
+}

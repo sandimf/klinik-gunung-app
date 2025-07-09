@@ -10,9 +10,6 @@ class ScreeningPdfService
 {
     /**
      * Generate PDF from screening data.
-     *
-     * @param Patients $screening
-     * @return Response
      */
     public function generateForScreening(Patients $screening): Response
     {
@@ -34,4 +31,4 @@ class ScreeningPdfService
 
         return $pdf->download($filename);
     }
-} 
+}

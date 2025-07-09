@@ -3,7 +3,6 @@ import { Input } from "@/Components/ui/input"
 import { Button } from "@/Components/ui/button"
 import { useState } from "react"
 import { router } from "@inertiajs/react"
-import { toast, Toaster } from "sonner"
 
 export default function ChangePasswordDialog({ open, onOpenChange, userId }) {
   const [password, setPassword] = useState("")
@@ -26,7 +25,6 @@ export default function ChangePasswordDialog({ open, onOpenChange, userId }) {
           setPassword("")
           setPasswordConfirmation("")
           onOpenChange(false)
-          toast.success("Password berhasil diubah!")
         },
         onError: (errors) => {
           setError(errors.password)

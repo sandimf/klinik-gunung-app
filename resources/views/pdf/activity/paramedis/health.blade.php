@@ -34,7 +34,7 @@
                     @elseif ($examination['health_status'] === 'butuh_dokter')
                     Membutuhkan Dokter
                     @elseif ($examination['health_status'] === 'butuh_pendamping')
-                    Membutuhkan Pendamping
+                    Membutuhkan pendamping
                     @else
                     Status Tidak Diketahui
                     @endif</td>

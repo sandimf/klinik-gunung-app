@@ -12,10 +12,8 @@ import {
 import CreateAppointmentModal from "./Partials/CreateAppointmentModal";
 import CancelAppointmentModal from "./Partials/CancelAppointmentModal";
 import { Head, useForm } from "@inertiajs/react";
-import { Toaster, toast } from "sonner";
 import { CheckCircle2, X } from "lucide-react";
 import MedicalHeader from "./_components/table-header";
-import useFlashToast from "@/hooks/flash";
 import { Badge } from "@/Components/ui/badge";
 
 export default function Appointments({ appointments: initialAppointments }) {
@@ -47,12 +45,6 @@ export default function Appointments({ appointments: initialAppointments }) {
                 preserveState: true,
                 preserveScroll: true,
                 onSuccess: () => {
-                    toast.success("Appointment cancelled successfully!", {
-                        icon: (
-                            <CheckCircle2 className="w-5 h-5 text-green-500" />
-                        ),
-                        duration: 3000,
-                    });
                     setIsCancelModalOpen(false);
                     setAppointments(
                         appointments.map((appointment) =>
@@ -63,23 +55,15 @@ export default function Appointments({ appointments: initialAppointments }) {
                     );
                 },
                 onError: (errors) => {
-                    toast.error(
-                        "Failed to cancel appointment. Please try again.",
-                        {
-                            icon: <X className="w-5 h-5 text-red-500" />,
-                            duration: 3000,
-                        }
-                    );
+                    // Error will be handled by flash messages from backend
                 },
             }
         );
     };
 
-    useFlashToast();
     return (
         <Sidebar header={"Appointments"}>
             <Head title="Appointments" />
-            <Toaster position="top-center" />
             <MedicalHeader setIsCreateModalOpen={setIsCreateModalOpen} />
             <Table>
                 <TableHeader>

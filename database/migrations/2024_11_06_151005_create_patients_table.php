@@ -34,10 +34,15 @@ return new class extends Migration
             $table->integer('age')->nullable();
             $table->string('contact')->unique();
             $table->string('ktp_images')->nullable();
+            $table->decimal('tinggi_badan', 5, 2); // 999.99 cm
+            $table->decimal('berat_badan', 5, 2);  // 999.99 kg
             $table->enum('screening_status', ['completed', 'pending', 'cancelled'])->nullable();
-            $table->enum('health_status', ['pending', 'healthy', 'sick', 'under treatment', 'butuh_dokter', 'butuh_pendamping'])->nullable();
+            $table->enum('health_status', ['pending', 'sehat', 'tidak_sehat'])->nullable();
             $table->enum('health_check_status', ['pending', 'completed'])->nullable();
             $table->enum('payment_status', ['completed', 'pending', 'cancelled'])->nullable();
+            $table->boolean('konsultasi_dokter')->nullable();
+            $table->boolean('konsultasi_dokter_status')->nullable();
+            $table->enum('pendampingan', ['pendampingan_paramedis', 'pendampingan_perawat', 'pendampingan_dokter'])->nullable();
             $table->integer('queue')->nullable();
             $table->date('screening_date')->nullable();
             $table->timestamps();

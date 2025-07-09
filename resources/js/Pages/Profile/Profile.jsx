@@ -2,12 +2,10 @@ import { Head } from "@inertiajs/react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
 import UpdateProfileInformationForm from "./_components/UpdateProfileInformationForm";
 import UpdatePasswordForm from "./_components/UpdatePasswordForm";
-import { toast, Toaster } from "sonner";
 
 export default function Profile({ mustVerifyEmail, status }) {
     return (
-        <div className="container py-8 mx-auto">
-            <Toaster position="top-center" />
+        <>
             <Head title="Profile" />
             <div className="space-y-6">
                 <Card>
@@ -31,6 +29,6 @@ export default function Profile({ mustVerifyEmail, status }) {
                     </CardContent>
                 </Card>
             </div>
-        </div>
+        </>
     );
 }

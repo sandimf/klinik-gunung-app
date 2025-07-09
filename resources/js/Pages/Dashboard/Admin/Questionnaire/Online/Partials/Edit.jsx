@@ -8,7 +8,6 @@ import { Checkbox } from "@/Components/ui/checkbox";
 import { AlertCircle, Edit, Plus, Trash2,CircleCheck } from "lucide-react";
 import { Alert, AlertDescription } from "@/Components/ui/alert";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/Components/ui/dialog";
-import { toast, Toaster } from "sonner";
 
 
 const EditQuestionModal = ({ question, onSave }) => {
@@ -31,9 +30,6 @@ const EditQuestionModal = ({ question, onSave }) => {
   const confirmEdit = () => {
     put(route("questioner-online.update", data.id), {
       onSuccess: () => {
-        toast.success("Pertanyaan berhasil diperbarui", {
-          icon: <CircleCheck className="w-5 h-5 text-green-500" />
-        });
         setIsOpen(false);
         setShowConfirmation(false);
         reset();
@@ -58,7 +54,6 @@ const EditQuestionModal = ({ question, onSave }) => {
 
   return (
     <>
-      <Toaster position="top-center" />
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
           <Button variant="outline" size="icon"><Edit/></Button>

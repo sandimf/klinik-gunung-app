@@ -32,4 +32,4 @@ class SyncProfileToCrm implements ShouldQueue
         // Contoh:
         // CrmService::syncUser($this->user);
     }
-} 
+}

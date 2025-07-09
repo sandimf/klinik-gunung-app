@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { Command, CalendarPlus, Scan, Home, User, SquareActivity, Users, ChevronRight, Pill, Bandage } from 'lucide-react'
+import { Command, CalendarPlus, Home, User, SquareActivity, Users, ChevronRight, Bandage, Hospital } from 'lucide-react'
 import { NavUser } from "@/Components/Nav/NavUser"
 import { TeamSwitcher } from "@/Components/Nav/TeamSwitcher"
 import {
@@ -49,19 +49,30 @@ export function AppSidebar({ ...sidebarProps }) {
         icon: Bandage,
       },
       {
+        title: "Konsultasi Dokter",
+        url: route("consultation.index"),
+        icon: Hospital,
+      },
+      {
         title: "Daftar Pasien",
         url: route("patients.doctor"),
         icon: Users,
       },
       {
-        title: "Appointments",
+        title: "Janji Mendatang",
         url: route("appointments.doctor"),
         icon: CalendarPlus,
-      },
-      {
-        title: "History Appointments",
-        url: route("doctor.history.appointments"),
-        icon: CalendarPlus,
+        items: [
+          {
+            title: "Daftar Janji Mendatang",
+            url: route("appointments.doctor"),
+          },
+          {
+            title: "Riwayat Janji Mendatang",
+            url: route("doctor.history.appointments"),
+          },
+
+        ],
       },
       {
         title: "Medical Record",
@@ -96,39 +107,23 @@ export function AppSidebar({ ...sidebarProps }) {
           <SidebarMenu>
             {data.navMain.map((item) => (
               <SidebarMenuItem key={item.title}>
-                <Collapsible
-                  open={openItems.includes(item.title)}
-                  onOpenChange={() => toggleItem(item.title)}
-                  className="group/collapsible"
-                >
-                  <CollapsibleTrigger asChild>
-                    {item.items ? (
-                      <SidebarMenuButton 
-                        tooltip={item.title} 
+                {item.items ? (
+                  <Collapsible
+                    open={openItems.includes(item.title)}
+                    onOpenChange={() => toggleItem(item.title)}
+                    className="group/collapsible"
+                  >
+                    <CollapsibleTrigger asChild>
+                      <SidebarMenuButton
+                        tooltip={item.title}
                         isActive={isRouteActive(item.url)}
-                        className={isRouteActive(item.url) ? "bg-gray-200 dark:bg-gray-800" : ""}
+                        className={isRouteActive(item.url) ? "bg-muted text-primary" : ""}
                       >
                         {item.icon && <item.icon className="size-4" />}
                         <span>{item.title}</span>
                         <ChevronRight className="ml-auto size-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                       </SidebarMenuButton>
-                    ) : (
-                      <SidebarMenuButton
-                        tooltip={item.title}
-                        isActive={isRouteActive(item.url)}
-                        asChild
-                      >
-                        <Link 
-                          href={item.url} 
-                          className={`flex items-center w-full ${isRouteActive(item.url) ? "bg-gray-200 dark:bg-gray-800" : ""}`}
-                        >
-                          {item.icon && <item.icon className="size-4" />}
-                          <span>{item.title}</span>
-                        </Link>
-                      </SidebarMenuButton>
-                    )}
-                  </CollapsibleTrigger>
-                  {item.items && (
+                    </CollapsibleTrigger>
                     <CollapsibleContent>
                       <SidebarMenuSub>
                         {item.items.map((subItem) => (
@@ -137,9 +132,9 @@ export function AppSidebar({ ...sidebarProps }) {
                               isActive={isRouteActive(subItem.url)}
                               asChild
                             >
-                              <Link 
-                                href={subItem.url} 
-                                className={`flex items-center w-full ${isRouteActive(subItem.url) ? "bg-gray-200 dark:bg-gray-800" : ""}`}
+                              <Link
+                                href={subItem.url}
+                                className={`flex items-center w-full ${isRouteActive(subItem.url) ? "bg-muted text-primary" : ""}`}
                               >
                                 <span>{subItem.title}</span>
                               </Link>
@@ -148,8 +143,23 @@ export function AppSidebar({ ...sidebarProps }) {
                         ))}
                       </SidebarMenuSub>
                     </CollapsibleContent>
-                  )}
-                </Collapsible>
+                  </Collapsible>
+                ) : (
+                  <SidebarMenuButton
+                    tooltip={item.title}
+                    isActive={isRouteActive(item.url)}
+                    asChild
+                    className={isRouteActive(item.url) ? "bg-muted text-primary" : ""}
+                  >
+                    <Link
+                      href={item.url}
+                      className="flex items-center w-full"
+                    >
+                      {item.icon && <item.icon className="size-4" />}
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                )}
               </SidebarMenuItem>
             ))}
           </SidebarMenu>

@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Users;
 
 use App\Http\Controllers\Controller;
 use App\Models\Medicines\Medicine;
+use App\Models\Payments;
+use App\Models\Roles\Admin\Management\AmountScreening;
 use App\Models\Users\Patients;
 use App\Models\Users\PatientsOnline;
 use Inertia\Inertia;
@@ -11,38 +13,34 @@ use Inertia\Inertia;
 class CashierController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display screening
      */
-    public function index()
+    public function screenings()
     {
-        return Inertia::render('Dashboard/Cashier/Index');
-    }
+        $screenings_offline = Patients::with(['answers.question'])
+            ->whereIn('payment_status', ['pending', 'completed'])
 
-    public function profile()
-    {
-        return Inertia::render('Profile/Cashier');
-    }
-
-    /**
-     * Display screening offline
-     */
-    public function showScreeningOffline()
-    {
-        // Muat screening yang statusnya pending, memiliki jawaban, dan sehat
-        $screenings = Patients::with(['answers.question'])
-            ->where('payment_status', 'pending')
-            ->where('health_status', 'healthy')
             ->whereHas('answers', function ($query) {
                 $query->whereNotNull('answer_text');
             })
             ->get();
 
-        // Muat semua obat
-        $medicines = Medicine::with('pricing')->get();
+        $screenings_online = PatientsOnline::with(['answers.question'])
+            ->where('payment_status', 'checking')
+            ->whereHas('answers', function ($query) {
+                $query->whereNotNull('answer_text');
+            })
+            ->get();
 
-        return Inertia::render('Dashboard/Cashier/Screenings/ScreeningOffline', [
-            'screenings' => $screenings,
+        $medicines = Medicine::with('pricing')->get();
+        $amounts = AmountScreening::all();
+
+        // dd($screenings_offline);
+        return Inertia::render('Dashboard/Cashier/Screenings/Index', [
+            'screenings_offline' => $screenings_offline,
+            'screenings_online' => $screenings_online,
             'medicines' => $medicines,
+            'amounts' => $amounts,
         ]);
     }
 
@@ -81,20 +79,6 @@ class CashierController extends Controller
 
         return Inertia::render('Dashboard/Cashier/Payments/HistoryPaymentsScreeningOnline', [
             'patients' => $patients,
-        ]);
-    }
-
-    public function showScreeningOnline()
-    {
-        $screenings = PatientsOnline::with(['answers.question'])
-            ->where('payment_status', 'checking')
-            ->whereHas('answers', function ($query) {
-                $query->whereNotNull('answer_text');
-            })
-            ->get();
-
-        return Inertia::render('Dashboard/Cashier/Screenings/ScreeningOnline', [
-            'screenings' => $screenings,
         ]);
     }
 

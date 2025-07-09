@@ -15,9 +15,6 @@ import {
 import { Input } from "@/Components/ui/input"
 import { Separator } from "@/Components/ui/separator"
 import { Card, CardContent, CardFooter, CardHeader } from "@/Components/ui/card"
-import { toast } from "@/hooks/use-toast"
-import { Toaster } from "sonner"
-import useFlashToast from "@/hooks/flash"
 import { RadioGroup, RadioGroupItem } from "@/Components/ui/radio-group"
 import { Label } from "@/Components/ui/label"
 import {
@@ -100,24 +97,6 @@ export default function MedicalRecord({ products }) {
   const handleCheckout = (e) => {
     if (e) e.preventDefault();
 
-    if (cart.length === 0) {
-      toast({
-        title: "Error",
-        description: "Keranjang belanja kosong!",
-        variant: "destructive",
-      })
-      return
-    }
-
-    if ((paymentMethod === "qris" || paymentMethod === "transfer") && !paymentProof) {
-      toast({
-        title: "Error",
-        description: "Harap unggah bukti pembayaran untuk metode QRIS atau transfer.",
-        variant: "destructive",
-      })
-      return
-    }
-
     const formData = new FormData()
     formData.append("items", JSON.stringify(data.items))
     formData.append("payment_method", data.payment_method)
@@ -134,18 +113,9 @@ export default function MedicalRecord({ products }) {
         setPaymentMethod("cash")
         setPaymentProof(null)
         reset("items", "payment_method", "payment_proof", "total_amount")
-        toast({
-          title: "Success",
-          description: "Checkout berhasil!",
-        })
       },
       onError: (errors) => {
         console.error("Checkout error:", errors)
-        toast({
-          title: "Error",
-          description: errors.items || "Terjadi kesalahan saat checkout. Silakan coba lagi.",
-          variant: "destructive",
-        })
       },
     })
   }
@@ -154,39 +124,9 @@ export default function MedicalRecord({ products }) {
     return products.filter((product) => product.name.toLowerCase().includes(searchTerm.toLowerCase()))
   }, [products, searchTerm])
 
-  useFlashToast()
-
-  useEffect(() => {
-    if (errors && Object.keys(errors).length > 0) {
-      Object.entries(errors).forEach(([field, message]) => {
-        if (message) {
-          toast({
-            title: "Error",
-            description: message,
-            variant: "destructive",
-          })
-        }
-      })
-    }
-  }, [errors])
-
-  useEffect(() => {
-    if (
-      (paymentMethod === "qris" || paymentMethod === "transfer") &&
-      !paymentProof
-    ) {
-      toast({
-        title: "Perhatian",
-        description: "Harap unggah bukti pembayaran untuk metode QRIS atau transfer.",
-        variant: "destructive",
-      })
-    }
-  }, [paymentMethod])
-
   return (
     <CashierSidebar>
       <Head title="Product" />
-      <Toaster position="top-center" />
       <div className="space-y-4">
         <h1 className="text-3xl font-bold tracking-tight">Pembelian Barang</h1>
         <div className="flex items-center justify-between">

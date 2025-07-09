@@ -4,7 +4,6 @@ import { Button } from "@/Components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
 import { Input } from "@/Components/ui/input";
 import { Label } from "@/Components/ui/label";
-import { toast, Toaster } from "sonner";
 import {
     Dialog,
     DialogContent,
@@ -68,17 +67,9 @@ export default function CreateQuestionnaire() {
             description,
             onSuccess: () => {
                 setIsLoading(false);
-                toast.success("Berhasil Membuat Kuesioner", {
-                    icon: <CircleCheck className="w-5 h-5 text-green-500" />,
-                });
             },
             onError: (errors) => {
                 setIsLoading(false);
-                Object.values(errors).forEach((error) => {
-                    toast.error("Gagal Membuat Kuesioner", error, {
-                        icon: <X className="w-5 h-5 text-red-500" />,
-                    });
-                });
             },
         });
     };
@@ -86,7 +77,6 @@ export default function CreateQuestionnaire() {
     return (
         <AdminSidebar header={"Buat Kuisioner"}>
             <Head title="Buat Kuesioner" />
-            <Toaster position="top-center" />
             <Card>
                 <CardHeader>
                     <CardTitle>Buat Kuesioner</CardTitle>

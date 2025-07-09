@@ -10,9 +10,9 @@ class StaffCreated extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $user;
+    protected $user;
 
-    public $plainPassword;
+    protected $plainPassword;
 
     /**
      * Create a new message instance.
@@ -23,6 +23,16 @@ class StaffCreated extends Mailable
     {
         $this->user = $user;
         $this->plainPassword = $plainPassword;
+    }
+
+    public function getUser()
+    {
+        return $this->user;
+    }
+
+    public function getPlainPassword()
+    {
+        return $this->plainPassword;
     }
 
     /**

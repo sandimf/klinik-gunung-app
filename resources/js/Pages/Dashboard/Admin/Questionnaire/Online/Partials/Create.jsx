@@ -15,7 +15,6 @@ import { Checkbox } from "@/Components/ui/checkbox";
 import { AlertCircle, Plus, Trash2,CircleCheck,X } from "lucide-react";
 import { Alert, AlertDescription } from "@/Components/ui/alert";
 import AdminSidebar from "@/Layouts/Dashboard/AdminSidebarLayout";
-import { Toaster, toast } from "sonner";
 
 export default function CreateQuestionnaire() {
     const { data, setData, post, errors, processing } = useForm({
@@ -46,9 +45,6 @@ export default function CreateQuestionnaire() {
             preserveState: true,
             preserveScroll: true,
             onSuccess: () => {
-                toast.success("Berhasil Membuat Kuesioner",{
-                    icon: <CircleCheck className="w-5 h-5 text-green-500" />
-                });
                 setData({
                     question_text: "",
                     answer_type: "text",
@@ -56,17 +52,12 @@ export default function CreateQuestionnaire() {
                 });
             },
             onError: () => {
-                toast.error(
-                    "Gagal Membuat Kuesioner.",{
-                        icon: <X className="h-5 w-5 text-red-500" />,
-                    });
             },
         });
     };
 
     return (
         <AdminSidebar header={"Buat Kuisioner"}>
-            <Toaster position="top-center" />
             <Head title="Buat Kuesioner Online" />
             <Card>
                 <CardHeader>

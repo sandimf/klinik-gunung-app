@@ -33,7 +33,7 @@ export default function PatientDataEntry({ patient, apiKey }) {
     const user = usePage().props.auth.user;
 
     const genAI = new GoogleGenerativeAI(apiKey || "default_api_key");
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
     const [entryMethod, setEntryMethod] = useState("manual");
     const [imageFile, setImageFile] = useState(null);
@@ -216,7 +216,7 @@ export default function PatientDataEntry({ patient, apiKey }) {
 
     return (
         <Sidebar header={"Formulir Data Pribadi"}>
-            <Toaster  position="top-center" />
+            <Toaster position="top-center" />
             <Card>
                 <Head title="Formulir Data Pribadi" />
                 <CardHeader>
@@ -301,6 +301,9 @@ export default function PatientDataEntry({ patient, apiKey }) {
                                             {analysisError}
                                         </AlertDescription>
                                     </Alert>
+                                )}
+                                {errors.ktp_images && (
+                                    <p className="text-sm text-red-600">{errors.ktp_images}</p>
                                 )}
                             </div>
                         </TabsContent>

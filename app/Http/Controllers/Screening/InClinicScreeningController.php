@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Screening;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Http\Requests\Screenings\ScreeningOfflineRequest;
 use App\Models\Users\Patients;
 use App\Services\ScreeningPdfService;
@@ -18,15 +17,14 @@ class InClinicScreeningController extends Controller
         protected ScreeningQueryService $queryService,
         protected ScreeningSubmissionService $submissionService,
         protected ScreeningPdfService $pdfService
-    ) {
-    }
+    ) {}
 
     public function index()
     {
         $patient = $this->queryService->findPatient(Auth::user());
         if (! $patient) {
             return redirect()->route('information.index')
-                ->with('message', 'Masukan data diri kamu terlebih dahulu sebelum melakukan screening.');
+                ->with('error', 'Masukan data diri kamu terlebih dahulu sebelum melakukan screening.');
         }
 
         $screeningData = $this->queryService->getPatientScreeningIndexData(Auth::id());
@@ -53,7 +51,7 @@ class InClinicScreeningController extends Controller
             return redirect()->back()->with('error', 'Terjadi kesalahan saat menyimpan screening. Silakan coba lagi.');
         }
 
-        return redirect(route('screening.index'))->with('message', 'Screening Anda Berhasil Di Simpan');
+        return redirect(route('screening.index'))->with('success', 'Screening Anda Berhasil Di Simpan');
     }
 
     public function show($uuid)

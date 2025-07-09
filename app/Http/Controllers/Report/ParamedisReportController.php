@@ -220,7 +220,7 @@ class ParamedisReportController extends Controller
         $pdf = Pdf::loadView('pdf.screenings.health_check', $data);
 
         // Download PDF dengan nama yang sesuai
-        return $pdf->download('hasil_pemeriksaan_' . $patientName . '.pdf');
+        return $pdf->download('hasil_pemeriksaan_'.$patientName.'.pdf');
     }
 
     // generate pdf  pemeriksaan yang dilakukan paramedis

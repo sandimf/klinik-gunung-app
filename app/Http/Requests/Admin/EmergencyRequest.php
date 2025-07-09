@@ -28,7 +28,7 @@ class EmergencyRequest extends FormRequest
                 'string',
                 'regex:/^(\+62|62|0)[0-9]{8,13}$/',
                 'min:10',
-                'max:15'
+                'max:15',
             ],
         ];
     }
@@ -59,11 +59,11 @@ class EmergencyRequest extends FormRequest
 
             // Jika dimulai dengan +, pastikan hanya ada satu + di awal
             if (str_starts_with($contact, '+')) {
-                $contact = '+' . preg_replace('/[^\d]/', '', substr($contact, 1));
+                $contact = '+'.preg_replace('/[^\d]/', '', substr($contact, 1));
             }
 
             $this->merge([
-                'contact' => $contact
+                'contact' => $contact,
             ]);
         }
     }

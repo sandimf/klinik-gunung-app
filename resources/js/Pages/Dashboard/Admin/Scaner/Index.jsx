@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from "react"
 import { Html5Qrcode } from "html5-qrcode"
 import { Head } from "@inertiajs/react"
 import axios from "axios"
-import { toast, Toaster } from "sonner"
 import { Button } from "@/Components/ui/button"
 import { ArrowLeft } from "lucide-react"
 import {
@@ -13,6 +12,8 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/Components/ui/dialog"
+import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card"
+import { Alert, AlertDescription } from "@/Components/ui/alert"
 
 export default function QrScanner() {
   const [scannedData, setScannedData] = useState("")
@@ -29,22 +30,17 @@ export default function QrScanner() {
           encryptedData: decodedText,
         })
 
-        
         if (response.data.success) {
           setDecryptedData(response.data.data)
           setError("")
-
-          toast.success("QR code berhasil di-scan.")
           setIsDialogOpen(true)
         } else {
           setError("Gagal mendekripsi QR code.")
           setDecryptedData(null)
-          toast.error("Gagal mendekripsi QR code.")
         }
       } catch (err) {
         setError("Gagal mendekripsi QR code.")
         setDecryptedData(null)
-        toast.error("Terjadi kesalahan saat memproses QR code.")
       }
     }
   }
@@ -60,7 +56,6 @@ export default function QrScanner() {
     html5QrCode.start({ facingMode: "environment" }, config, handleScanSuccess, handleScanFailure).catch((err) => {
       console.error("Camera start error:", err)
       setError("Tidak bisa mengakses kamera.")
-      toast.error("Tidak bisa mengakses kamera.")
     })
 
     return () => {
@@ -77,36 +72,38 @@ export default function QrScanner() {
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
       <Head title="Scan QR Code" />
-      <div className="w-full max-w-2xl p-4 bg-white shadow rounded">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold">Scan QR Code</h2>
+      <Card className="w-full max-w-2xl">
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle>Scan QR Code</CardTitle>
           <Button variant="outline" size="sm" onClick={handleGoBack} className="flex items-center gap-2">
             <ArrowLeft className="h-4 w-4" />
-            Back
+            Kembali
           </Button>
-        </div>
-        <div id="reader" style={{ width: "100%" }}></div>
-        {scannedData && (
-          <div className="mt-4 p-4 bg-gray-100 rounded">
-            <h3 className="text-lg font-bold">Hasil Scan:</h3>
-            <p className="text-sm text-gray-700">
-              <strong>Data Terenkripsi:</strong> {scannedData}
-            </p>
-          </div>
-        )}
-        {decryptedData && (
-          <div className="mt-4 p-4 bg-green-100 rounded">
-            <h3 className="text-lg font-bold">Hasil Dekripsi:</h3>
-            <pre className="text-sm text-gray-800 whitespace-pre-wrap">{JSON.stringify(decryptedData, null, 2)}</pre>
-          </div>
-        )}
-        {error && (
-          <div className="mt-4 p-4 bg-red-100 rounded">
-            <p className="text-sm text-red-700">{error}</p>
-          </div>
-        )}
-      </div>
-      <Toaster />
+        </CardHeader>
+        <CardContent>
+          <div id="reader" style={{ width: "100%" }}></div>
+          {scannedData && (
+            <Alert className="mt-4" variant="default">
+              <AlertDescription>
+                <span className="font-semibold">Data Terenkripsi:</span> {scannedData}
+              </AlertDescription>
+            </Alert>
+          )}
+          {decryptedData && (
+            <Alert className="mt-4" variant="success">
+              <AlertDescription>
+                <span className="font-semibold">Hasil Dekripsi:</span>
+                <pre className="text-sm text-gray-800 whitespace-pre-wrap mt-2">{JSON.stringify(decryptedData, null, 2)}</pre>
+              </AlertDescription>
+            </Alert>
+          )}
+          {error && (
+            <Alert className="mt-4" variant="destructive">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+        </CardContent>
+      </Card>
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent>
           <DialogHeader>
@@ -114,7 +111,7 @@ export default function QrScanner() {
             <DialogDescription>QR code berhasil di-scan dan didekripsi.</DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <p>Screening status telah diperbarui menjadi completed.</p>
+            <p>Screening status telah diperbarui menjadi <span className="font-semibold">completed</span>.</p>
           </div>
           <DialogFooter>
             <Button onClick={() => setIsDialogOpen(false)}>Tutup</Button>

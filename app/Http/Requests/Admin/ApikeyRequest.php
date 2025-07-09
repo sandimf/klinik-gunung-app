@@ -22,16 +22,16 @@ class ApikeyRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "api_key" => "required|string|max:255",
+            'api_key' => 'required|string|max:255',
         ];
     }
 
     public function messages(): array
     {
         return [
-            "api_key.required" => "Wajib diisi",
-            "api_key.string" => "API KEY harus berupa string",
-            "api_key.max" => "API KEY tidak boleh lebih dari 255 karakter",
+            'api_key.required' => 'Wajib diisi',
+            'api_key.string' => 'API KEY harus berupa string',
+            'api_key.max' => 'API KEY tidak boleh lebih dari 255 karakter',
         ];
     }
 }

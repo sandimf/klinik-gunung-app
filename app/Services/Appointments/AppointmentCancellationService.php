@@ -17,15 +17,15 @@ class AppointmentCancellationService
     public function cancel(User $user, int $appointmentId): void
     {
         $patient = $user->patient;
-        if (!$patient) {
+        if (! $patient) {
             throw new SchedulingConflictException('Profil pasien tidak ditemukan.');
         }
-        
+
         $appointment = Appointments::where('id', $appointmentId)
             ->where('patient_id', $patient->id)
-            ->firstOrFail(); 
-        
-        $appointmentDateTime = Carbon::parse($appointment->appointment_date . ' ' . $appointment->appointment_time);
+            ->firstOrFail();
+
+        $appointmentDateTime = Carbon::parse($appointment->appointment_date.' '.$appointment->appointment_time);
 
         if (Carbon::now()->diffInHours($appointmentDateTime) < 24) {
             throw new SchedulingConflictException('Janji temu tidak dapat dibatalkan kurang dari 24 jam sebelumnya.');
@@ -37,8 +37,8 @@ class AppointmentCancellationService
         NotifyStaffOfCancellation::dispatch($appointment)->onQueue('notifications');
 
         Log::info('Janji temu dibatalkan oleh user', [
-            'appointment_id' => $appointment->id, 
-            'patient_id' => $patient->id
+            'appointment_id' => $appointment->id,
+            'patient_id' => $patient->id,
         ]);
     }
-} 
+}

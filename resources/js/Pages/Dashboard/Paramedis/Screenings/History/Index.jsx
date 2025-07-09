@@ -1,14 +1,7 @@
 import React, { useState } from "react";
-import { Head, usePage } from "@inertiajs/react";
+import { Head, usePage, Link } from "@inertiajs/react";
 import ParamedisSidebar from "@/Layouts/Dashboard/ParamedisSidebarLayout";
 import { Input } from "@/Components/ui/input";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/Components/ui/select";
 import {
     Table,
     TableBody,
@@ -18,207 +11,199 @@ import {
     TableRow,
 } from "@/Components/ui/table";
 import {
-    Pagination,
-    PaginationContent,
-    PaginationItem,
-    PaginationLink,
-    PaginationNext,
-    PaginationPrevious,
-} from "@/Components/ui/pagination";
-import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
+    flexRender,
+    getCoreRowModel,
+    getFilteredRowModel,
+    getPaginationRowModel,
+    getSortedRowModel,
+    useReactTable,
+} from "@tanstack/react-table";
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/Components/ui/dropdown-menu";
+import { ChevronDown, Book, Pen, Printer } from "lucide-react";
 import ScreeningDialog from "../_components/PhysicalExamination";
 import { Badge } from "@/Components/ui/badge";
-import { Link } from "@inertiajs/react";
-import { Book } from "lucide-react";
 import { Button } from "@/Components/ui/button";
 
-const ScreeningOfflineIndex = ({ screenings = [] }) => {
+const ScreeningHistoryIndex = ({ screenings = [] }) => {
     const { errors } = usePage().props;
-    const [searchTerm, setSearchTerm] = useState("");
-    const [selectedType, setSelectedType] = useState("all");
-    const [currentPage, setCurrentPage] = useState(1);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [examiningScreening, setExaminingScreening] = useState(null);
-    const itemsPerPage = 10;
 
-    const filteredScreenings = screenings.filter((screening) => {
-        const nameMatch = screening.name
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase());
-        const typeMatch =
-            selectedType === "all" ||
-            (selectedType === "online" &&
-                screening.answers[0]?.isOnline === 1) ||
-            (selectedType === "offline" &&
-                (screening.answers[0]?.isOnline === 0 ||
-                    screening.answers[0]?.isOnline === undefined));
-        return nameMatch && typeMatch;
-    });
+    const [globalFilter, setGlobalFilter] = useState("");
 
-    const totalPages = Math.ceil(filteredScreenings.length / itemsPerPage);
-    const paginatedScreenings = filteredScreenings.slice(
-        (currentPage - 1) * itemsPerPage,
-        currentPage * itemsPerPage
+    const columns = React.useMemo(
+        () => [
+            {
+                id: "no",
+                header: "No.",
+                cell: ({ row }) => row.index + 1,
+            },
+            {
+                accessorKey: "name",
+                header: "Nama Pasien",
+                cell: ({ row }) => (
+                    <span className="font-bold">{row.original.name}</span>
+                ),
+            },
+            {
+                accessorKey: "jenis_screening",
+                header: "Jenis Screening",
+                cell: ({ row }) => (
+                    <Badge variant={row.original.answers?.[0]?.isOnline === 1 ? "default" : "secondary"}>
+                        {row.original.answers?.[0]?.isOnline === 1 ? "Screening Online" : "Screening Offline"}
+                    </Badge>
+                ),
+            },
+            {
+                id: "status_pemeriksaan",
+                header: "Status Pemeriksaan",
+                cell: ({ row }) => (
+                    <Badge>
+                        {row.original.screening_status === "completed"
+                            ? "Selesai"
+                            : row.original.screening_status}
+                    </Badge>
+                ),
+            },
+            {
+                id: "status_kesehatan",
+                header: "Status Kesehatan",
+                cell: ({ row }) => (
+                    <Badge>
+                        {row.original.health_status === "Sehat"
+                            ? "Sehat"
+                            : row.original.health_status === "Tidak_sehat"
+                                ? "Tidak Sehat"
+                                : "Status Tidak Diketahui"}
+                    </Badge>
+                ),
+            },
+            {
+                id: "sertifikat",
+                header: "Sertifikat",
+                cell: ({ row }) => (
+                    <a href={route("pdf.healthcheck.paramedis", row.original.uuid)}>
+                        <Button variant="outline">
+                            <Printer className="w-4 h-4" />
+                        </Button>
+                    </a>
+                ),
+            },
+            {
+                id: "kuesioner",
+                header: "Kuesioner",
+                cell: ({ row }) => (
+                    <Link href={route("history.healthcheck", { uuid: row.original.uuid })}>
+                        <Button variant="outline" className="mb-4">
+                            <Book className="mr-2 w-4 h-4" /> Kuesioner
+                        </Button>
+                    </Link>
+                ),
+            },
+            {
+                id: "aksi",
+                header: "Aksi",
+                cell: ({ row }) => (
+                    <Link href={route("edit.screening", { uuid: row.original.id })}>
+                        <Button variant="outline" className="mb-4">
+                            <Pen className="mr-2 w-4 h-4" /> Edit
+                        </Button>
+                    </Link>
+                ),
+            },
+        ],
+        []
     );
 
-    const handleDialogSuccess = () => {
-        setIsDialogOpen(false);
-        setExaminingScreening(null);
-    };
-
-    const capitalizeWords = (str) => {
-        return str
-            .split(" ")
-            .map(
-                (word) =>
-                    word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-            )
-            .join(" ");
-    };
+    const table = useReactTable({
+        data: screenings,
+        columns,
+        state: { globalFilter },
+        onGlobalFilterChange: setGlobalFilter,
+        getCoreRowModel: getCoreRowModel(),
+        getFilteredRowModel: getFilteredRowModel(),
+        getSortedRowModel: getSortedRowModel(),
+        getPaginationRowModel: getPaginationRowModel(),
+    });
 
     return (
         <ParamedisSidebar header={"Riwayat Screening"}>
             <Head title="Riwayat Screening" />
-            <Card>
-                <CardHeader>
-                    <CardTitle>Riwayat Screening</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <div className="flex flex-col gap-4 mb-4 md:flex-row">
-                        <Input
-                            placeholder="Cari nama pasien..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="max-w-sm"
-                        />
-                        <Select
-                            value={selectedType}
-                            onValueChange={setSelectedType}
-                        >
-                            <SelectTrigger className="max-w-[180px]">
-                                <SelectValue placeholder="Pilih tipe screening" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all">Semua</SelectItem>
-                                <SelectItem value="online">Online</SelectItem>
-                                <SelectItem value="offline">Offline</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
-
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Nomor Antrian</TableHead>
-                                <TableHead>Nama Pasien</TableHead>
-                                <TableHead>Jenis Screening</TableHead>
-                                <TableHead>Status Pemeriksaan</TableHead>
-                                <TableHead>Status Kesehatan</TableHead>
-                                <TableHead>Kuesioner</TableHead>
+            {/* Judul utama */}
+            <h1 className="text-2xl font-bold mb-6">Riwayat Screening</h1>
+            <p className="text-muted-foreground mb-6">Daftar seluruh hasil screening pasien yang telah dilakukan.</p>
+            <div className="flex items-center py-4 gap-4">
+                <Input
+                    placeholder="Cari nama pasien..."
+                    value={globalFilter ?? ""}
+                    onChange={e => setGlobalFilter(e.target.value)}
+                    className="max-w-sm"
+                />
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="outline" className="ml-auto">
+                            Columns <ChevronDown />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        {table.getAllColumns().map(column => (
+                            <DropdownMenuCheckboxItem
+                                key={column.id}
+                                checked={column.getIsVisible()}
+                                onCheckedChange={value => column.toggleVisibility(!!value)}
+                            >
+                                {column.id}
+                            </DropdownMenuCheckboxItem>
+                        ))}
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            </div>
+            <div className="rounded-md border">
+                <Table>
+                    <TableHeader>
+                        {table.getHeaderGroups().map(headerGroup => (
+                            <TableRow key={headerGroup.id}>
+                                {headerGroup.headers.map(header => (
+                                    <TableHead key={header.id}>
+                                        {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                                    </TableHead>
+                                ))}
                             </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {paginatedScreenings.map((screening, index) => (
-                                <TableRow key={`${screening.id}-${index}`}>
-                                    <TableCell>
-                                        {screening.answers[0]?.queue || "N/A"}
-                                    </TableCell>
-                                    <TableCell className="font-bold">
-                                        {capitalizeWords(screening.name)}
-                                    </TableCell>
-                                    <TableCell>
-                                        {screening.answers[0]?.isOnline === 1
-                                            ? "ScreeningOnline"
-                                            : "Screening Offline"}
-                                    </TableCell>
-                                    <TableCell>
-                                        <Badge>
-                                            {screening.screening_status ===
-                                            "Completed"
-                                                ? "Selesai"
-                                                : screening.screening_status}
-                                        </Badge>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Badge>
-                                            {screening.health_status ===
-                                            "Healthy"
-                                                ? "Sehat"
-                                                : screening.health_status ===
-                                                  "Butuh_dokter"
-                                                ? "Membutuhkan Dokter"
-                                                : screening.health_status ===
-                                                  "Butuh_pendamping"
-                                                ? "Membutuhkan Pendamping"
-                                                : "Status Tidak Diketahui"}
-                                        </Badge>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Link
-                                            href={route("history.healthcheck", {
-                                                uuid: screening.uuid,
-                                            })}
-                                        >
-                                            <Button
-                                                variant="outline"
-                                                className="mb-4"
-                                            >
-                                                <Book className="mr-2 w-4 h-4" />{" "}
-                                                Kuesioner
-                                            </Button>
-                                        </Link>
-                                    </TableCell>
+                        ))}
+                    </TableHeader>
+                    <TableBody>
+                        {table.getRowModel().rows.length ? (
+                            table.getRowModel().rows.map(row => (
+                                <TableRow key={row.id}>
+                                    {row.getVisibleCells().map(cell => (
+                                        <TableCell key={cell.id}>
+                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                        </TableCell>
+                                    ))}
                                 </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-
-                    <Pagination className="mt-4">
-                        <PaginationContent>
-                            <PaginationItem>
-                                <PaginationPrevious
-                                    onClick={() =>
-                                        setCurrentPage((prev) =>
-                                            Math.max(prev - 1, 1)
-                                        )
-                                    }
-                                    disabled={currentPage === 1}
-                                />
-                            </PaginationItem>
-                            {[...Array(totalPages)].map((_, i) => (
-                                <PaginationItem key={i}>
-                                    <PaginationLink
-                                        onClick={() => setCurrentPage(i + 1)}
-                                        isActive={currentPage === i + 1}
-                                    >
-                                        {i + 1}
-                                    </PaginationLink>
-                                </PaginationItem>
-                            ))}
-                            <PaginationItem>
-                                <PaginationNext
-                                    onClick={() =>
-                                        setCurrentPage((prev) =>
-                                            Math.min(prev + 1, totalPages)
-                                        )
-                                    }
-                                    disabled={currentPage === totalPages}
-                                />
-                            </PaginationItem>
-                        </PaginationContent>
-                    </Pagination>
-
-                    <ScreeningDialog
-                        isOpen={isDialogOpen}
-                        setIsOpen={setIsDialogOpen}
-                        onSuccess={handleDialogSuccess}
-                        examiningScreening={examiningScreening}
-                        errors={errors}
-                    />
-                </CardContent>
-            </Card>
+                            ))
+                        ) : (
+                            <TableRow>
+                                <TableCell colSpan={columns.length} className="h-24 text-center">
+                                    Belum ada data
+                                </TableCell>
+                            </TableRow>
+                        )}
+                    </TableBody>
+                </Table>
+            </div>
+            <ScreeningDialog
+                isOpen={isDialogOpen}
+                setIsOpen={setIsDialogOpen}
+                onSuccess={() => {
+                    setIsDialogOpen(false);
+                    setExaminingScreening(null);
+                }}
+                examiningScreening={examiningScreening}
+                errors={errors}
+            />
         </ParamedisSidebar>
     );
 };
 
-export default ScreeningOfflineIndex;
+export default ScreeningHistoryIndex;

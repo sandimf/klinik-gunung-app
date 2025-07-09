@@ -4,8 +4,8 @@ namespace App\Services;
 
 use App\Jobs\NotifyClinicStaffOfNewScreening;
 use App\Models\Screenings\ScreeningAnswers;
-use App\Models\Users\Patients;
 use App\Models\User;
+use App\Models\Users\Patients;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -21,11 +21,11 @@ class ScreeningSubmissionService
                 ->whereDate('screening_date', $today)
                 ->lockForUpdate() // Mengunci baris untuk mencegah race condition
                 ->max('queue') ?? 0;
-            
+
             $newQueueNumber = $lastQueue + 1;
 
             $patient = Patients::firstOrNew(['nik' => $data['nik']]);
-            
+
             $patient->fill([
                 'user_id' => $user->id,
                 'name' => $data['name'],
@@ -46,7 +46,23 @@ class ScreeningSubmissionService
             $patient->answers()->delete();
 
             foreach ($data['answers'] as $answer) {
-                $answer_text = is_array($answer['answer']) ? implode(', ', $answer['answer']) : $answer['answer'];
+                $answer_content = $answer['answer'];
+                $answer_text = '';
+
+                if (is_array($answer_content)) {
+                    // Cek apakah ini array assosiatif dari checkbox_textarea
+                    if (array_key_exists('options', $answer_content) || array_key_exists('textarea', $answer_content)) {
+                        $options = ! empty($answer_content['options']) ? implode(', ', $answer_content['options']) : 'N/A';
+                        $textarea = $answer_content['textarea'] ?? '';
+                        $answer_text = json_encode(['options' => $options, 'textarea' => $textarea]);
+                    } else {
+                        // Ini adalah array biasa dari checkbox
+                        $answer_text = implode(', ', $answer_content);
+                    }
+                } else {
+                    // Ini adalah jawaban string biasa
+                    $answer_text = $answer_content;
+                }
 
                 ScreeningAnswers::create([
                     'question_id' => $answer['questioner_id'],
@@ -61,4 +77,4 @@ class ScreeningSubmissionService
             NotifyClinicStaffOfNewScreening::dispatch($patient)->onQueue('high');
         });
     }
-} 
+}

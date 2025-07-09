@@ -39,4 +39,24 @@ class ProfileUpdateRequest extends FormRequest
             ],
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'Nama wajib diisi',
+            'name.string' => 'Nama harus berupa teks.',
+            'name.max' => 'Nama maksimal 255 karakter.',
+
+            'avatar.image' => 'Avatar harus berupa gambar.',
+            'avatar.mimes' => 'Avatar harus berformat jpeg, png, jpg, atau gif.',
+            'avatar.max' => 'Ukuran avatar maksimal 2MB.',
+
+            'email.required' => 'Email wajib diisi.',
+            'email.string' => 'Email harus berupa teks.',
+            'email.lowercase' => 'Email harus menggunakan huruf kecil.',
+            'email.email' => 'Format email tidak valid.',
+            'email.max' => 'Email maksimal 255 karakter.',
+            'email.unique' => 'Email sudah digunakan.',
+        ];
+    }
 }

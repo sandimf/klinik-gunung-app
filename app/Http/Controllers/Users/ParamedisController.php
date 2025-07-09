@@ -4,10 +4,9 @@ namespace App\Http\Controllers\Users;
 
 use App\Http\Controllers\Controller;
 use App\Models\Screenings\ScreeningAnswers;
-use App\Models\Screenings\ScreeningOnlineAnswers;
-use App\Models\Users\Patients;
 use App\Models\Users\PatientsOnline;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class ParamedisController extends Controller
@@ -17,7 +16,22 @@ class ParamedisController extends Controller
      */
     public function index()
     {
-        return Inertia::render('Dashboard/Paramedis/Index');
+        $waitingCount = \App\Models\Users\Patients::where('screening_status', 'pending')->count();
+        $sehatCount = \App\Models\Users\Patients::where('health_status', 'sehat')->count();
+        $tidakSehatCount = \App\Models\Users\Patients::where('health_status', 'tidak_sehat')->count();
+        $finishedCount = \App\Models\Users\Patients::where('screening_status', 'completed')->count();
+        $waitingList = \App\Models\Users\Patients::where('screening_status', 'pending')
+            ->orderByDesc('created_at')
+            ->limit(3)
+            ->get(['id', 'name', 'created_at']);
+
+        return Inertia::render('Dashboard/Paramedis/Index', [
+            'waitingCount' => $waitingCount,
+            'sehatCount' => $sehatCount,
+            'tidakSehatCount' => $tidakSehatCount,
+            'finishedCount' => $finishedCount,
+            'waitingList' => $waitingList,
+        ]);
     }
 
     // test pdf
@@ -38,52 +52,6 @@ class ParamedisController extends Controller
     {
         //
     }
-
-    /**
-     * show screening offline
-     */
-    // public function showScreeningOffline()
-    // {
-    //     // Ambil screening dengan pertanyaan dan jawaban terkait
-    //     $screenings = Patients::with(['answers.question'])
-    //         ->whereHas('answers', function ($query) {
-    //             $query->whereNotNull('answer_text'); // Pastikan ada jawaban
-    //         })
-    //         ->where('screening_status', 'pending') // Pastikan status screening adalah pending
-    //         ->get();
-
-    //     // Pisahkan screening ke dalam dua kategori berdasarkan kondisi
-
-    //     $screenings = $screenings->filter(function ($screening) {
-    //         return ! $screening->answers->some(function ($answer) {
-    //             // Cek apakah ada jawaban yang sesuai dengan condition_value untuk pertanyaan yang memerlukan dokter
-    //             return $answer->question->requires_doctor &&
-    //                 $answer->answer_text == $answer->question->condition_value;
-    //         });
-    //     });
-
-    //     return Inertia::render('Dashboard/Paramedis/Screenings/Offline/Index', [
-    //         'screenings' => $screenings,
-    //     ]);
-    // }
-
-
-    // Menampilkan Screening Online
-    // public function showScreeningOnline()
-    // {
-    //     $screenings = PatientsOnline::with(['answers.question'])
-    //         ->whereHas('answers', function ($query) {
-    //             $query->whereNotNull('answer_text');
-    //         })
-    //         ->where('screening_status', 'pending') // Tambahkan kondisi untuk screening_status
-    //         ->where('payment_status', 'completed') // Tambahkan kondisi untuk payment_status
-    //         ->where('scan_status', 'completed') // Tambahkan kondisi untuk hanya menampilkan scan_status 'completed'
-    //         ->get();
-
-    //     return Inertia::render('Dashboard/Paramedis/Screenings/Online/Index', [
-    //         'screenings' => $screenings,
-    //     ]);
-    // }
 
     public function showScreeningOnlineDetail($id)
     {
@@ -125,46 +93,55 @@ class ParamedisController extends Controller
                 $answer->save();
             } else {
                 // Jika 'answer' tidak ditemukan, berikan feedback
-                return redirect()->back()->with('error', 'API Key has been successfully saved or updated');
+                return redirect()->back()->with('error', 'Gagal Menyimpan Jawaban');
             }
         }
 
         return redirect()->back()->with('message', 'Berhasil Menyimpan Jawaban');
     }
 
-    public function showScreenings()
+    /**
+     * Update only the physical attributes (tinggi_badan, berat_badan) of a patient.
+     */
+    public function updatePhysicalAttributes(Request $request, $id)
     {
-        // Ambil screening offline
-        $offline = Patients::with(['answers.question'])
-            ->whereHas('answers', function ($query) {
-                $query->whereNotNull('answer_text');
-            })
-            ->where('screening_status', 'pending')
-            ->get()
-            ->map(function ($item) {
-                $item->screening_type = 'offline';
-                return $item;
-            });
+        $validated = $request->validate([
+            'tinggi_badan' => 'nullable|integer|min:1',
+            'berat_badan' => 'nullable|integer|min:1',
+        ]);
 
-        // Ambil screening online
-        $online = PatientsOnline::with(['answers.question'])
-            ->whereHas('answers', function ($query) {
-                $query->whereNotNull('answer_text');
-            })
-            ->where('screening_status', 'pending')
-            ->where('payment_status', 'completed')
-            ->where('scan_status', 'completed')
-            ->get()
-            ->map(function ($item) {
-                $item->screening_type = 'online';
-                return $item;
-            });
+        $patient = \App\Models\Users\Patients::findOrFail($id);
+        $patient->update($validated);
 
-        // Gabungkan
-        $screenings = $offline->concat($online)->values();
+        return back()->with('success', 'Data fisik pasien berhasil diperbarui.');
+    }
+
+    public function showScreenings(Request $request)
+    {
+        $page = $request->input('page', 1);
+        $perPage = 20;
+        $search = $request->input('search');
+        $cacheKey = "screenings:offline:{$page}:{$perPage}:{$search}";
+        $offline = DB::table('patients')
+            ->select('patients.id', 'patients.uuid', 'patients.name', 'patients.screening_status', 'q.queue')
+            ->join(DB::raw('(
+                SELECT patient_id, MIN(queue) as queue
+                FROM screening_offline_answers
+                WHERE answer_text IS NOT NULL
+                GROUP BY patient_id
+            ) as q'), 'patients.id', '=', 'q.patient_id')
+            ->where('patients.screening_status', 'pending');
+        if ($search) {
+            $offline->where('patients.name', 'like', '%'.$search.'%');
+        }
+        $offline = $offline
+            ->orderBy('q.queue', 'asc')
+            ->paginate($perPage, ['*'], 'page', $page);
+        $online = [];
 
         return Inertia::render('Dashboard/Paramedis/Screenings/Index', [
-            'screenings' => $screenings,
+            'screenings_offline' => $offline,
+            'screenings_online' => $online,
         ]);
     }
 }

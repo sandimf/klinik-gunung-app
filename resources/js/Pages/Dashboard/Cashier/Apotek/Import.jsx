@@ -8,7 +8,6 @@ import { Input } from "@/Components/ui/input";
 import { Label } from "@/Components/ui/label";
 import { Upload, FileUp } from 'lucide-react';
 import Sidebar from "@/Layouts/Dashboard/CashierSidebarLayout";
-import { toast, Toaster } from "sonner";
 import { Head } from "@inertiajs/react"
 
 export default function ImportObat() {
@@ -24,7 +23,6 @@ export default function ImportObat() {
     e.preventDefault();
 
     if (!file) {
-      toast.error('Harap pilih file CSV sebelum mengimpor.');
       return;
     }
 
@@ -33,11 +31,9 @@ export default function ImportObat() {
 
     router.post(route('import.combined'), formData, {
       onSuccess: () => {
-        toast.success('File berhasil diimport!');
         setFile(null); // Reset file setelah berhasil diupload
       },
       onError: (errors) => {
-        toast.error('Gagal mengimpor file. Silakan coba lagi.');
         console.error(errors); // Untuk debugging
       },
     });
@@ -47,7 +43,6 @@ export default function ImportObat() {
     <Sidebar>
       <div className="container mx-auto p-6 space-y-6">
         <Head title='Import Data Obat' />
-        <Toaster position="top-right" /> {/* Toast notification */}
         <h1 className="text-3xl font-bold mb-6">Import Obat</h1>
 
         <Card>

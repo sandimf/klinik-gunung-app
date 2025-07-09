@@ -11,9 +11,9 @@ class AccountCreated extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $user;
+    protected $user;
 
-    public $password;
+    protected $password;
 
     /**
      * Create a new message instance.
@@ -22,6 +22,16 @@ class AccountCreated extends Mailable
     {
         $this->user = $user;
         $this->password = $password;
+    }
+
+    public function getUser()
+    {
+        return $this->user;
+    }
+
+    public function getPassword()
+    {
+        return $this->password;
     }
 
     /**

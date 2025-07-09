@@ -14,21 +14,10 @@ import { Button } from "@/Components/ui/button";
 import EditQuestionModal from "./Partials/Edit";
 import { Plus,CircleCheck } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
-import { toast, Toaster } from "sonner";
 
 
 export default function Index({ questions }) {
     const [questionList, setQuestionList] = useState(questions.data || []);
-
-    const { flash } = usePage().props;
-    useEffect(() => {
-        if (flash.message) {
-            toast(flash.message, {
-                icon: <CircleCheck className="w-5 h-5 text-green-500" />,
-            });
-        }
-    }, [flash.message]);
-
 
     const handleEditClick = (question) => {
         setCurrentQuestion(question);

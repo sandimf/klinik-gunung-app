@@ -3,7 +3,6 @@
 namespace App\Services\Screening;
 
 use App\Exceptions\NikAlreadyExistsException;
-use App\Jobs\SendAccountCreationEmail;
 use App\Models\Screenings\ScreeningAnswers;
 use App\Models\User;
 use App\Models\Users\Patients;
@@ -30,8 +29,6 @@ class GuestScreeningSubmissionService
 
             Log::info('Setelah formatPersonalData', $data);
 
-            $this->ensureNikIsUnique($data['nik']);
-
             Log::info('NIK unik', ['nik' => $data['nik']]);
 
             if ($ktpImage) {
@@ -49,21 +46,11 @@ class GuestScreeningSubmissionService
         });
     }
 
-    /**
-     * @throws NikAlreadyExistsException
-     */
-    private function ensureNikIsUnique(string $nik): void
-    {
-        if (Patients::where('nik', $nik)->exists() || PatientsOnline::where('nik', $nik)->exists()) {
-            throw new NikAlreadyExistsException("NIK sudah terdaftar di sistem kami.");
-        }
-    }
-
     private function formatPersonalData(array $data): array
     {
         $fieldsToFormat = [
             'name', 'place_of_birth', 'district', 'village', 'address',
-            'occupation', 'religion', 'nationality', 'gender', 'marital_status',
+            'occupation', 'religion', 'nationality', 'gender', 'marital_status', 'tinggi_badan', 'berat_badan',
         ];
 
         foreach ($fieldsToFormat as $field) {
@@ -71,6 +58,7 @@ class GuestScreeningSubmissionService
                 $data[$field] = ucwords(strtolower($data[$field]));
             }
         }
+
         return $data;
     }
 
@@ -100,6 +88,7 @@ class GuestScreeningSubmissionService
         ]);
 
         PatientsOnline::create($patientData);
+
         return Patients::create($patientData);
     }
 
@@ -121,7 +110,7 @@ class GuestScreeningSubmissionService
 
     private function parseComplexAnswer($answerData): string
     {
-        if (!is_array($answerData) || empty($answerData)) {
+        if (! is_array($answerData) || empty($answerData)) {
             return (string) ($answerData ?? '');
         }
 
@@ -130,7 +119,7 @@ class GuestScreeningSubmissionService
         if (isset($answerData['options']) && is_array($answerData['options'])) {
             $parts[] = implode(', ', $answerData['options']);
         }
-        if (isset($answerData['textarea']) && !empty($answerData['textarea'])) {
+        if (isset($answerData['textarea']) && ! empty($answerData['textarea'])) {
             $parts[] = $answerData['textarea'];
         }
 
@@ -140,4 +129,4 @@ class GuestScreeningSubmissionService
 
         return implode(', ', array_filter($parts));
     }
-} 
+}

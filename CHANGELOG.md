@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Contributing guidelines
 - Comprehensive README with installation instructions
 - Changelog tracking
+- Email hasil screening otomatis ke pasien dengan PDF (template health_check) terlampir
 
 ### Changed
 - Improved project structure documentation

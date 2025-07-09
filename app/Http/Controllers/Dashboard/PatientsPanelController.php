@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers\Dashboard;
 
-use App\Models\User;
-use Inertia\Inertia;
-use App\Models\Users\Patients;
 use App\Http\Controllers\Controller;
 use App\Models\EmergecyContactModel;
-use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+use App\Models\Users\Patients;
 use App\Repositories\VisitRepository;
-use App\Models\Emergency\EmergencyContact;
+use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class PatientsPanelController extends Controller
 {
@@ -34,7 +33,6 @@ class PatientsPanelController extends Controller
         $patient = Patients::where('user_id', $this->user->id)->first();
 
         $emergencyContact = EmergecyContactModel::first();
-
 
         if (! $patient) {
             return redirect()->route('information.index');

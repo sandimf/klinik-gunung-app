@@ -11,15 +11,12 @@ class AppointmentQueryService
     /**
      * Mengambil data janji temu untuk user.
      * Mengembalikan null jika profil pasien tidak ada.
-     *
-     * @param User $user
-     * @return Collection|null
      */
     public function getAppointmentsForUser(User $user): ?Collection
     {
         $patient = $user->patient;
 
-        if (!$patient) {
+        if (! $patient) {
             return null;
         }
 
@@ -28,4 +25,4 @@ class AppointmentQueryService
             ->latest('created_at')
             ->get();
     }
-} 
+}

@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Product;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ProductRequest;
 use App\Models\Product;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class ProductController extends Controller
@@ -18,24 +18,26 @@ class ProductController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(ProductRequest $request)
     {
         // Validasi data yang dikirim
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'price' => 'required|numeric|min:0',
-            'stock' => 'required|integer|min:0',
-        ]);
+        $validatedData = $request->validated();
 
         try {
             // Menyimpan produk baru ke dalam database
             Product::create($validatedData);
 
             // Mengarahkan kembali dengan pesan sukses
-            return redirect()->route('product.cashier')->with('message', 'Produk berhasil ditambahkan!');
+            return back()->with('success', 'Produk berhasil ditambahkan!');
         } catch (\Exception $e) {
             // Jika terjadi error, menampilkan pesan error
-            return redirect()->route('product.cashier')->with('error', 'Terjadi kesalahan saat menyimpan produk. Coba lagi.');
+            return back()->with('error', 'Terjadi kesalahan saat menyimpan produk. Coba lagi.');
         }
+    }
+
+    // Tambahkan endpoint untuk testing flash message
+    public function testMessage()
+    {
+        return redirect()->route('product.cashier')->with('message', 'Ini pesan flash dengan key message!');
     }
 }

@@ -11,7 +11,6 @@ class PatientDataQueryService
     /**
      * Mengambil data yang dibutuhkan untuk halaman data pasien.
      *
-     * @param User $user
      * @return array<string, mixed>
      */
     public function getDataForIndex(User $user): array
@@ -25,4 +24,4 @@ class PatientDataQueryService
             'apiKey' => Apikey::first()?->api_key,
         ];
     }
-} 
+}

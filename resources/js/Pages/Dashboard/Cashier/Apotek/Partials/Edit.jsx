@@ -38,7 +38,6 @@ const EditMedicineDialog = ({ medicine, onSuccess }) => {
         setShowConfirmation(false);
         onSuccess();
         reset();
-        toast.success('Data obat berhasil diperbarui');
       },
     });
   };
@@ -64,14 +63,13 @@ const EditMedicineDialog = ({ medicine, onSuccess }) => {
 
   return (
     <>
-      <Toaster position='top-center' />
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
-          <Button variant="outline" size="icon"><Edit/></Button>
+          <Button variant="outline" size="icon"><Edit /></Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[800px] h-[80vh] flex flex-col">
           <DialogHeader>
-          <DialogTitle>Edit Data Obat {medicine.medicine_name}</DialogTitle>
+            <DialogTitle>Edit Data Obat {medicine.medicine_name}</DialogTitle>
           </DialogHeader>
           <ScrollArea className="flex-grow">
             <form onSubmit={handleSubmit} className="space-y-6 p-6">
@@ -224,8 +222,8 @@ const EditMedicineDialog = ({ medicine, onSuccess }) => {
             </Button>
           </DialogFooter>
         </DialogContent>
-        </Dialog>
-        </>
+      </Dialog>
+    </>
   );
 };
 

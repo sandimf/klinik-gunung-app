@@ -4,7 +4,6 @@ import { Head, Link } from "@inertiajs/react";
 import AdminSidebar from "@/Layouts/Dashboard/AdminSidebarLayout";
 import { Button } from "@/Components/ui/button";
 import { Input } from "@/Components/ui/input";
-import { Toaster } from "sonner";
 import {
     Table,
     TableBody,
@@ -49,7 +48,6 @@ export default function Index({ users }) {
         <AdminSidebar header="Daftar Staff">
             <Head title="Daftar Staff" />
             <div className="">
-                <Toaster position="top-center" />
                 <div className="flex justify-between items-center mb-6">
                     <div className="relative">
                         <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />

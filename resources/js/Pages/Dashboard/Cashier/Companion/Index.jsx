@@ -1,138 +1,153 @@
-import React, { useState } from 'react';
-import { Head, usePage } from '@inertiajs/react';
+import React, { useState, useMemo } from 'react';
+import { Head } from '@inertiajs/react';
 import CashierSidebar from "@/Layouts/Dashboard/CashierSidebarLayout";
 import { Input } from "@/Components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/Components/ui/table";
-import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/Components/ui/pagination";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/Components/ui/card";
 import { Button } from '@/Components/ui/button';
-import { CreditCard, ArrowRight } from 'lucide-react';
-import PaymentDialog from '../Screenings/Payments/OfflinePayments';
-import { Toaster } from 'sonner';
-import { Badge } from '@/Components/ui/badge';
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/Components/ui/dropdown-menu";
+import { ChevronDown } from 'lucide-react';
+import { Toaster, toast } from 'sonner';
+import {
+    flexRender,
+    getCoreRowModel,
+    getFilteredRowModel,
+    getPaginationRowModel,
+    getSortedRowModel,
+    useReactTable,
+} from "@tanstack/react-table";
 
-export default function CompanionIndex({ screenings = [], medicines }) {
-    const [searchTerm, setSearchTerm] = useState('');
+const labelMap = {
+    Pendampingan_perawat: "Pendampingan Perawat",
+    Pendampingan_paramedis: "Pendampingan Paramedis",
+    Pendampingan_dokter: "Pendampingan Dokter"
+};
 
-    const [currentPage, setCurrentPage] = useState(1);
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [paymentScreening, setPaymentScreening] = useState(null);
-    const itemsPerPage = 10;
-
-    const filteredScreenings = screenings.filter(screening =>
-        screening.name.toLowerCase().includes(searchTerm.toLowerCase())
+function CompanionDataTable({ data }) {
+    const columns = useMemo(
+        () => [
+            {
+                id: "no",
+                header: "No.",
+                cell: ({ row }) => row.index + 1,
+            },
+            {
+                accessorKey: "name",
+                header: "Nama Pasien",
+            },
+            {
+                accessorKey: "pendampingan",
+                header: "Pendampingan",
+                cell: ({ row }) => labelMap[row.original.pendampingan] || "-",
+            },
+        ],
+        []
     );
 
-    const totalPages = Math.ceil(filteredScreenings.length / itemsPerPage);
-    const paginatedScreenings = filteredScreenings.slice(
-        (currentPage - 1) * itemsPerPage,
-        currentPage * itemsPerPage
-    );
-
-    const handlePayment = (screening) => {
-        setPaymentScreening(screening);
-        setIsDialogOpen(true);
-    };
-
-    const handleDialogClose = () => {
-        setIsDialogOpen(false);
-        setPaymentScreening(null);
-    };
+    const [globalFilter, setGlobalFilter] = useState("");
+    const table = useReactTable({
+        data,
+        columns,
+        state: { globalFilter },
+        onGlobalFilterChange: setGlobalFilter,
+        getCoreRowModel: getCoreRowModel(),
+        getFilteredRowModel: getFilteredRowModel(),
+        getSortedRowModel: getSortedRowModel(),
+        getPaginationRowModel: getPaginationRowModel(),
+    });
 
     return (
-        <CashierSidebar header={'Daftar Screening Offline'}>
-            <Head title="Screening Offline" />
-            <Toaster position='top-center' />
-            <Card>
-                <CardHeader>
-                    <CardTitle>Pembayaran Membutuhkan Pendamping</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <div className="flex flex-col md:flex-row gap-4 mb-4">
-                        <Input
-                            placeholder="Cari nama pasien..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="max-w-sm"
-                        />
-
-                    </div>
-
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Nomor Antrian</TableHead>
-                                <TableHead>Nama Pasien</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead>Aksi</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {paginatedScreenings.length === 0 ? (
-                                <TableRow>
-                                    <TableCell colSpan={5} className="text-center text-gray-500">
-                                        Belum ada data
-                                    </TableCell>
-                                </TableRow>
-                            ) : (
-                                paginatedScreenings.map((screening) => (
-                                    <TableRow key={screening.id}>
-                                        <TableCell>{screening.answers[0]?.queue}</TableCell>
-                                        <TableCell>{screening.name}</TableCell>
-                                        <TableCell>
-                                            <Badge>
-                                                {screening.health_status === 'Butuh_pendamping' ? 'Membutuhkan Pendamping' : screening.health_status}
-                                            </Badge>
-                                        </TableCell>
-                                        <TableCell>
-                                            <Button onClick={() => handlePayment(screening)}>
-                                                <CreditCard className="h-4 w-4 mr-2" />
-                                                Bayar
-                                            </Button>
-                                        </TableCell>
-                                    </TableRow>
-                                ))
-                            )}
-                        </TableBody>
-                    </Table>
-
-                    {filteredScreenings.length > 0 && (
-                        <Pagination className="mt-4">
-                            <PaginationContent>
-                                <PaginationItem>
-                                    <PaginationPrevious
-                                        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                                        disabled={currentPage === 1}
-                                    />
-                                </PaginationItem>
-                                {[...Array(totalPages)].map((_, i) => (
-                                    <PaginationItem key={i}>
-                                        <PaginationLink
-                                            onClick={() => setCurrentPage(i + 1)}
-                                            isActive={currentPage === i + 1}
-                                        >
-                                            {i + 1}
-                                        </PaginationLink>
-                                    </PaginationItem>
+        <div className="w-full">
+            <div className="flex items-center py-4 gap-2">
+                <Input
+                    placeholder="Cari nama pasien..."
+                    value={globalFilter ?? ""}
+                    onChange={e => setGlobalFilter(e.target.value)}
+                    className="max-w-sm"
+                />
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="outline" className="ml-auto">
+                            Columns <ChevronDown />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        {table.getAllColumns().map(column => (
+                            <DropdownMenuCheckboxItem
+                                key={column.id}
+                                checked={column.getIsVisible()}
+                                onCheckedChange={value => column.toggleVisibility(!!value)}
+                            >
+                                {column.id}
+                            </DropdownMenuCheckboxItem>
+                        ))}
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            </div>
+            <div className="rounded-md border">
+                <Table>
+                    <TableHeader>
+                        {table.getHeaderGroups().map(headerGroup => (
+                            <TableRow key={headerGroup.id}>
+                                {headerGroup.headers.map(header => (
+                                    <TableHead key={header.id}>
+                                        {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                                    </TableHead>
                                 ))}
-                                <PaginationItem>
-                                    <PaginationNext
-                                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                                        disabled={currentPage === totalPages}
-                                    />
-                                </PaginationItem>
-                            </PaginationContent>
-                        </Pagination>
-                    )}
+                            </TableRow>
+                        ))}
+                    </TableHeader>
+                    <TableBody>
+                        {table.getRowModel().rows.length ? (
+                            table.getRowModel().rows.map(row => (
+                                <TableRow key={row.id}>
+                                    {row.getVisibleCells().map(cell => (
+                                        <TableCell key={cell.id}>
+                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                        </TableCell>
+                                    ))}
+                                </TableRow>
+                            ))
+                        ) : (
+                            <TableRow>
+                                <TableCell colSpan={columns.length} className="h-24 text-center">
+                                    Belum ada data
+                                </TableCell>
+                            </TableRow>
+                        )}
+                    </TableBody>
+                </Table>
+            </div>
+            <div className="flex items-center justify-end space-x-2 py-4">
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => table.previousPage()}
+                    disabled={!table.getCanPreviousPage()}
+                >
+                    Previous
+                </Button>
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => table.nextPage()}
+                    disabled={!table.getCanNextPage()}
+                >
+                    Next
+                </Button>
+            </div>
+        </div>
+    );
+}
 
-                <PaymentDialog
-                isOpen={isDialogOpen}
-                onClose={handleDialogClose}
-                screening={paymentScreening}
-                medicines={medicines} // pass medicines here
-            />
-                </CardContent>
-            </Card>
+const ScreeningOfflineIndex = ({ screenings = [], medicines, amounts = [], flash = {} }) => {
+    return (
+        <CashierSidebar header={'Daftar pendamping'}>
+            <Head title="pendamping" />
+            <Toaster position='top-center' />
+            <h2 className="text-2xl font-bold mb-4">Pendampingan Medis</h2>
+            <CompanionDataTable data={screenings} />
         </CashierSidebar>
     );
 };
+
+export default ScreeningOfflineIndex;

@@ -22,4 +22,4 @@ class CommunityPost extends Model
     {
         return $this->belongsTo(Community::class);
     }
-} 
+}

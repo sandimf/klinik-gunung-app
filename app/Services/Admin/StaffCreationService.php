@@ -32,7 +32,8 @@ class StaffCreationService
     /**
      * Menangani logika kompleks pembuatan anggota staf baru.
      *
-     * @param array $data Data yang tervalidasi dari request.
+     * @param  array  $data  Data yang tervalidasi dari request.
+     *
      * @throws NikExistsException Jika NIK sudah ada di peran lain.
      */
     public function createStaff(array $data): void
@@ -86,4 +87,4 @@ class StaffCreationService
             }
         }
     }
-} 
+}

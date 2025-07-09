@@ -13,7 +13,7 @@
     <p>Total Pasien yang Diperiksa: {{ $totalPatients }}</p>
     <p>Total Pasien yang Sehat: {{ $healthyPatientsCount }}</p>
     <p>Total Pasien Membutuhkan Dokter: {{ $sickPatientsCount }}</p>
-    <p>Total Pasien Membutuhkan Pendamping: {{ $needPatientsCount }}</p>
+    <p>Total Pasien Membutuhkan pendamping: {{ $needPatientsCount }}</p>
 
     <h2>Daftar Pasien yang Diperiksa</h2>
     <table border="1" cellpadding="5">
@@ -37,7 +37,7 @@
             @elseif ($patient['health_status'] === 'butuh_dokter')
                 Membutuhkan Dokter
             @elseif ($patient['health_status'] === 'butuh_pendamping')
-                Membutuhkan Pendamping
+                Membutuhkan pendamping
             @else
                 Status Tidak Diketahui
             @endif

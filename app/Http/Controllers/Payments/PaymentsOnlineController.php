@@ -55,7 +55,7 @@ class PaymentsOnlineController extends Controller
         $payment = PaymentOnline::create([
             'name' => $validated['name'],
             'patient_id' => $validated['patient_id'],
-            'screening_online_answer_id' => $validated['screening_online_answer_id'],
+            // 'screening_online_answer_id' => $validated['screening_online_answer_id'],
             'payment_status' => false, // Awalnya belum lunas
             'status' => 'checking',
             'amount_paid' => $validated['amount_paid'],
@@ -69,8 +69,7 @@ class PaymentsOnlineController extends Controller
             $patient->update(['payment_status' => 'checking']); // Contoh update kolom `payment_status`
         }
 
-        return redirect()->route('screening-online.index', $payment->id)
-            ->with('message', 'Pembayaran telah berhasil dicatat.');
+        return Inertia::location(route('screening-online.index'));
     }
 
     public function confirmPayment($id)

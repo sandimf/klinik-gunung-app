@@ -13,7 +13,7 @@ class NotifyClinicStaffOfNewScreening implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $patient;
+    protected $patient;
 
     /**
      * Create a new job instance.
@@ -21,6 +21,11 @@ class NotifyClinicStaffOfNewScreening implements ShouldQueue
     public function __construct($patient)
     {
         $this->patient = $patient;
+    }
+
+    public function getPatient()
+    {
+        return $this->patient;
     }
 
     /**
@@ -32,4 +37,4 @@ class NotifyClinicStaffOfNewScreening implements ShouldQueue
         // Contoh:
         // Notification::send($staff, new NewScreeningNotification($this->patient));
     }
-} 
+}

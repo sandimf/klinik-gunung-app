@@ -168,7 +168,7 @@ const ScreeningDialog = ({ isOpen, setIsOpen, onSuccess, examiningScreening }) =
                 <SelectContent>
                   <SelectItem value="healthy">Sehat</SelectItem>
                   <SelectItem value="butuh_dokter">Butuh Dokter</SelectItem>
-                  <SelectItem value="butuh_pendamping">Butuh Pendamping</SelectItem>
+                  <SelectItem value="butuh_pendamping">Butuh pendamping</SelectItem>
                 </SelectContent>
               </Select>
               {errors.health_status && <p className="text-red-500 text-sm col-span-4">{errors.health_status}</p>}

@@ -6,8 +6,6 @@ import ScreeningInfo from "@/Pages/Dashboard/Patients/Screenings/_components/Scr
 import NoScreeningData from "@/Pages/Dashboard/Patients/Screenings/_components/NoScreeningData";
 import { CheckCircle, AlertCircle, Loader2, Info } from "lucide-react";
 import { CardContent } from "@/Components/ui/card";
-import { Toaster } from "sonner";
-import useFlashToast from "@/hooks/flash";
 
 export default function ScreeningOnline({ screening }) {
     const user = usePage().props.auth.user;
@@ -19,12 +17,9 @@ export default function ScreeningOnline({ screening }) {
     const isPaymentChecking =
         hasScreening && screening.payment_status === "checking";
 
-    useFlashToast();
-
     return (
         <SideBar header="Screening Online">
             <Head title="Screening Status" />
-            <Toaster position="top-center" />
             <div className="container max-w-full px-4 py-6 mx-auto">
                 {isPaymentCompleted && (
                     <Alert className="mb-6">

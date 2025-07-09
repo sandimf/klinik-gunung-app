@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Input } from "@/Components/ui/input";
+import { PhoneInput } from "@/Components/ui/phone-input";
 import { Label } from "@/Components/ui/label";
 import {
     Select,
@@ -11,7 +12,27 @@ import {
     SelectLabel,
 } from "@/Components/ui/select";
 
+function calculateAge(dateString) {
+    if (!dateString) return "";
+    const today = new Date();
+    const birthDate = new Date(dateString);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const m = today.getMonth() - birthDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+    }
+    return age;
+}
+
 export function PatientInfoForm({ data, setData, errors }) {
+    useEffect(() => {
+        if (data.date_of_birth) {
+            setData("age", calculateAge(data.date_of_birth));
+        } else {
+            setData("age", "");
+        }
+    }, [data.date_of_birth]);
+
     return (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             {/* NIK field */}
@@ -56,10 +77,16 @@ export function PatientInfoForm({ data, setData, errors }) {
                 <Label htmlFor="date_of_birth">Tanggal Lahir</Label>
                 <Input
                     id="date_of_birth"
+                    type="date"
                     value={data.date_of_birth}
-                    placeholder="23 maret 2000"
                     onChange={(e) => setData("date_of_birth", e.target.value)}
+                    placeholder="Tanggal Lahir"
                 />
+                {data.date_of_birth && (
+                    <div className="text-sm text-muted-foreground mt-1">
+                        Umur: {calculateAge(data.date_of_birth)} tahun
+                    </div>
+                )}
             </div>
 
             {/* Gender field */}
@@ -203,7 +230,6 @@ export function PatientInfoForm({ data, setData, errors }) {
                     id="age"
                     value={data.age}
                     placeholder="Umur"
-                    onChange={(e) => setData("age", e.target.value)}
                 />
             </div>
 
@@ -222,14 +248,40 @@ export function PatientInfoForm({ data, setData, errors }) {
             {/* Contact field */}
             <div>
                 <Label htmlFor="contact">Nomor Telepon</Label>
-                <Input
+                <PhoneInput
                     id="contact"
                     value={data.contact}
-                    placeholder="Nomor Telepon"
-                    onChange={(e) => setData("contact", e.target.value)}
+                    defaultCountry="ID"
+                    onChange={val => setData("contact", val)}
+                    international
+                    countryCallingCodeEditable={false}
                 />
                 {errors.contact && (
                     <p className="text-red-600">{errors.contact}</p>
+                )}
+            </div>
+            <div>
+                <Label htmlFor="tinggi_badan">Tinggi Badan</Label>
+                <Input
+                    id="tinggi_badan"
+                    value={data.tinggi_badan}
+                    placeholder="Tinggi Badan"
+                    onChange={(e) => setData("tinggi_badan", e.target.value)}
+                />
+                {errors.tinggi_badan && (
+                    <p className="text-red-600">{errors.tinggi_badan}</p>
+                )}
+            </div>
+            <div>
+                <Label htmlFor="berat_badan">Berat Badan</Label>
+                <Input
+                    id="berat_badan"
+                    value={data.berat_badan}
+                    placeholder="Tinggi Badan"
+                    onChange={(e) => setData("berat_badan", e.target.value)}
+                />
+                {errors.berat_badan && (
+                    <p className="text-red-600">{errors.berat_badan}</p>
                 )}
             </div>
         </div>

@@ -39,7 +39,7 @@ const CreateMedicineDialog = ({ isOpen, setIsOpen, onSuccess }) => {
         e.preventDefault();
         post(route("medicine.store"), {
             onSuccess: () => {
-                setIsOpen(false); // Close the dialog on success
+                setIsOpen(false);
                 onSuccess(); // Trigger the onSuccess callback to handle any side effects
             },
         });

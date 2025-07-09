@@ -20,7 +20,6 @@ import {
 import Sidebar from "@/Layouts/Dashboard/AdminSidebarLayout";
 import { Head, useForm } from "@inertiajs/react";
 import { Contact, CheckCircle2 } from "lucide-react";
-import { toast, Toaster } from "sonner";
 
 export default function GeminiApiKey({ emergencyContacts }) {
     const { data, setData, put, processing, errors } = useForm({
@@ -33,9 +32,9 @@ export default function GeminiApiKey({ emergencyContacts }) {
 
         put(route("emergecy-contact.update", 1), {
             onSuccess: () => {
-                toast.success("Kontak darurat berhasil disimpan", {
-                    icon: <CheckCircle2 className="w-5 h-5 text-green-500" />,
-                });
+                // toast.success("Kontak darurat berhasil disimpan", {
+                //     icon: <CheckCircle2 className="w-5 h-5 text-green-500" />,
+                // });
             },
             onError: (error) => {
                 if (
@@ -47,12 +46,12 @@ export default function GeminiApiKey({ emergencyContacts }) {
                     Object.values(error.response.data.errors).forEach(
                         (messages) => {
                             messages.forEach((message) => {
-                                toast.error(message);
+                                // toast.error(message);
                             });
                         }
                     );
                 } else {
-                    toast.error("Emergency contact gagal disimpan");
+                    // toast.error("Emergency contact gagal disimpan");
                 }
             },
         });
@@ -63,7 +62,6 @@ export default function GeminiApiKey({ emergencyContacts }) {
             <Head title="Kontak Darurat" />
             <div className="container p-6 mx-auto space-y-6">
                 <h1 className="mb-6 text-3xl font-bold">Kontak Darurat</h1>
-                <Toaster  position="top-center" />
                 <Card>
                     <CardHeader>
                         <CardTitle className="flex gap-2 items-center">

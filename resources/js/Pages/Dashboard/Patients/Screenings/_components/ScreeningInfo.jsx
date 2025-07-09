@@ -53,18 +53,15 @@ const ScreeningInfo = ({ screening, detailRouteName, RouteName }) => {
                         />
                     </div>
                 </div>
-                <Badge
-                    variant={
-                        screening.status === "Completed"
-                            ? "success"
-                            : screening.status === "pending"
-                            ? "secondary"
-                            : "destructive"
-                    }
-                    className="px-4 py-1 text-sm"
-                >
-                    {screening.screening_status}
-                </Badge>
+                <div className="space-y-4">
+                    <div className="flex items-center gap-2">
+                        <Badge
+                            className="px-4 py-1 text-sm"
+                        >
+                            {screening.screening_status}
+                        </Badge>
+                    </div>
+                </div>
             </div>
 
             <div className="grid gap-4 md:grid-cols-3">

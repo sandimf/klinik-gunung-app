@@ -10,7 +10,6 @@ import { Button } from "@/Components/ui/button";
 import { Input } from "@/Components/ui/input";
 import { Label } from "@/Components/ui/label";
 import { useForm } from "@inertiajs/react";
-import { Toaster, toast } from "sonner";
 import { CheckCircle2, X, Clock } from "lucide-react";
 
 export default function CreateAppointmentModal({
@@ -37,22 +36,15 @@ export default function CreateAppointmentModal({
             onSuccess: () => {
                 reset(); // Reset form after success
                 onClose(); // Close modal
-                toast.success("Janji temu berhasil dibuat!!", {
-                    icon: <CheckCircle2 className="w-5 h-5 text-green-500" />,
-                });
             },
             onError: (errors) => {
                 console.error(errors);
-                toast.error("Gagal membuat janji temu. Silakan coba lagi.", {
-                    icon: <X className="w-5 h-5 text-red-500" />,
-                });
             },
         });
     };
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <Toaster position="top-center" />
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
                     <DialogTitle>Buat Janji Temu</DialogTitle>

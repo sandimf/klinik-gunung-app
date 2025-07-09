@@ -18,7 +18,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/Components/ui/select";
-import { Toaster, toast } from "sonner";
 import AdminSidebar from "@/Layouts/Dashboard/AdminSidebarLayout";
 import {
     CheckCircle2,
@@ -63,9 +62,6 @@ export default function CreatePersonal() {
         e.preventDefault();
         post(route("staff.store"), {
             onSuccess: () => {
-                toast.success(`Staff ${data.name} berhasil ditambahkan!`, {
-                    icon: <CheckCircle2 className="w-5 h-5 text-green-500" />,
-                });
                 setData(initialData);
             },
             onError: (errors) => {
@@ -73,9 +69,6 @@ export default function CreatePersonal() {
                 const errorMessage = Array.isArray(errors)
                     ? errors.join(", ")
                     : errors?.message || "Terjadi kesalahan, coba lagi!";
-                toast.error(errorMessage, {
-                    icon: <X className="w-5 h-5 text-red-500" />,
-                });
             },
         });
     };
@@ -83,7 +76,6 @@ export default function CreatePersonal() {
     return (
         <AdminSidebar header="Staff">
             <Head title="Staff" />
-            <Toaster position="top-center" />
             <Card>
                 <CardHeader>
                     <CardTitle className="text-2xl font-bold">

@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Admin\v2;
 
-use Inertia\Inertia;
-use Illuminate\Http\Request;
-use App\Models\Auth\SocialLogin;
 use App\Http\Controllers\Controller;
+use App\Models\Auth\SocialLogin;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class LoginSettingController extends Controller
 {
@@ -29,6 +29,7 @@ class LoginSettingController extends Controller
         if ($socialLogin) {
             $socialLogin->update($request->only(['google']));
         }
+
         return redirect()->back()->with('message', 'Social login settings updated successfully!');
     }
 }

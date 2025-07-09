@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers\Paramedis\v2;
 
-use Inertia\Inertia;
-use Illuminate\Http\Request;
-use App\Models\Users\Patients;
 use App\Http\Controllers\Controller;
+use App\Models\Users\Patients;
 use App\Models\Users\PatientsOnline;
+use Inertia\Inertia;
 
 class HistoryHealthCheckController extends Controller
 {
@@ -37,7 +36,7 @@ class HistoryHealthCheckController extends Controller
     {
         $patient = Patients::with([
             'answers.question',
-            'physicalExaminations'
+            'physicalExaminations',
         ])
             ->where('uuid', $uuid)
             ->firstOrFail();

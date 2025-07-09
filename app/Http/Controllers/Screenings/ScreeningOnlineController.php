@@ -27,7 +27,7 @@ class ScreeningOnlineController extends Controller
         if (! $patient) {
             // Redirect ke halaman untuk melengkapi data pasien
             return redirect()->route('information.index')
-                ->with('message', 'Masukan data diri kamu terlebih dahulu sebelum mengakses Screening online.');
+                ->with('error', 'Masukan data diri kamu terlebih dahulu sebelum mengakses Screening online.');
         }
 
         // Fetch the patient and their related questionnaire answers
@@ -60,7 +60,7 @@ class ScreeningOnlineController extends Controller
         if ($patient->screening_status === 'pending') {
             // Jika status 'pending', redirect ke halaman lain (misalnya halaman error)
             return redirect()->route('screening-online.index')
-                ->with('message', 'Screening Anda Berhasil & status Anda masih pending. Silakan selesaikan pembayaran terlebih dahulu.');
+                ->with('success', 'Screening Anda Berhasil & status Anda masih pending. Silakan selesaikan pembayaran terlebih dahulu.');
         }
 
         // Jika status tidak 'pending', lanjutkan dan tampilkan halaman screening
@@ -78,7 +78,7 @@ class ScreeningOnlineController extends Controller
             'name' => 'required|string|max:255',
             'age' => 'required|integer',
             'contact' => 'required|string|numeric',
-            'gender' => 'required|string|in:male,female,other',
+            'gender' => 'required|string|in:laki-laki,perempuan,lainnya',
             'email' => 'nullable|email|max:255',
             'answers' => 'required|array',
             'answers.*.questioner_id' => 'required|exists:screening_online_questions,id',
@@ -180,7 +180,7 @@ class ScreeningOnlineController extends Controller
         ]);
 
         // Pastikan nama file aman
-        $fileName = 'screening_detail_' . $patientName . '.pdf';
+        $fileName = 'screening_detail_'.$patientName.'.pdf';
 
         // Kembalikan file PDF untuk diunduh
         return $pdf->download($fileName);

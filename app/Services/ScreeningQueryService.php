@@ -3,8 +3,8 @@
 namespace App\Services;
 
 use App\Models\Screenings\ScreeningQuestions;
-use App\Models\Users\Patients;
 use App\Models\User;
+use App\Models\Users\Patients;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
@@ -57,4 +57,4 @@ class ScreeningQueryService
 
         return $screening;
     }
-} 
+}

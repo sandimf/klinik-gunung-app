@@ -19,4 +19,4 @@ class GuestScreeningQueryService
             'apiKey' => Apikey::first()?->api_key,
         ];
     }
-} 
+}

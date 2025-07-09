@@ -1,8 +1,6 @@
-import { useState } from "react";
-import { Head } from "@inertiajs/react";
+import { useState, useMemo } from "react";
+import { Head, Link } from "@inertiajs/react";
 import CashierSidebar from "@/Layouts/Dashboard/CashierSidebarLayout";
-import { Toaster } from "sonner";
-import useFlashToast from "@/hooks/flash";
 import { Input } from "@/Components/ui/input";
 import { Button } from "@/Components/ui/button";
 import {
@@ -16,17 +14,21 @@ import {
 } from "@/Components/ui/table";
 import ProductHeader from "./_components/table-header";
 import CreateMedicineDialog from "./Create";
-import { Edit } from "lucide-react";
+import { Edit, ChevronDown } from "lucide-react";
+import {
+    flexRender,
+    getCoreRowModel,
+    getFilteredRowModel,
+    getPaginationRowModel,
+    getSortedRowModel,
+    useReactTable,
+} from "@tanstack/react-table";
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/Components/ui/dropdown-menu";
 
 export default function Product({ products }) {
-    const [searchTerm, setSearchTerm] = useState("");
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [globalFilter, setGlobalFilter] = useState("");
 
-    const filteredProduct = products.data.filter((product) =>
-        Object.values(product).some((value) =>
-            value.toString().toLowerCase().includes(searchTerm.toLowerCase())
-        )
-    );
     const formatCurrency = (value) => {
         return new Intl.NumberFormat("id-ID", {
             style: "currency",
@@ -34,48 +36,132 @@ export default function Product({ products }) {
         }).format(value);
     };
 
-    useFlashToast();
+    const columns = useMemo(
+        () => [
+            {
+                id: "no",
+                header: "No.",
+                cell: ({ row }) => row.index + 1,
+            },
+            {
+                accessorKey: "name",
+                header: "Nama Produk",
+            },
+            {
+                accessorKey: "stock",
+                header: "Stok",
+            },
+            {
+                accessorKey: "price",
+                header: "Harga",
+                cell: ({ row }) => formatCurrency(parseFloat(row.original.price)),
+            },
+            {
+                id: "edit",
+                header: "Edit",
+                cell: ({ row }) => (
+                    <Button>
+                        <Edit />
+                    </Button>
+                ),
+            },
+        ],
+        []
+    );
+
+    const table = useReactTable({
+        data: products.data,
+        columns,
+        state: { globalFilter },
+        onGlobalFilterChange: setGlobalFilter,
+        getCoreRowModel: getCoreRowModel(),
+        getFilteredRowModel: getFilteredRowModel(),
+        getSortedRowModel: getSortedRowModel(),
+        getPaginationRowModel: getPaginationRowModel(),
+    });
+
     return (
         <CashierSidebar header="Produk">
             <Head title="Produk" />
-            <Toaster position="top-center" />
             <ProductHeader onAddProductClick={() => setIsDialogOpen(true)} />
-            <Input
-                placeholder="Search medicines..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="max-w-sm"
-            />
-            <Table>
-                <TableCaption>Data Stok Obat</TableCaption>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead>Nama Produk</TableHead>
-                        <TableHead>Stok</TableHead>
-                        <TableHead>Harga</TableHead>
-                        <TableHead>Edit</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {filteredProduct.map((product) => (
-                        <TableRow key={product.id}>
-                            <TableCell className="font-medium">
-                                {product.name}
-                            </TableCell>
-                            <TableCell>{product.stock}</TableCell>
-                            <TableCell>
-                                {formatCurrency(parseFloat(product.price))}
-                            </TableCell>
-                            <TableCell>
-                                <Button>
-                                    <Edit />
-                                </Button>
-                            </TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-
+            <div className="flex items-center py-4 gap-2">
+                <Input
+                    placeholder="Cari produk..."
+                    value={globalFilter ?? ""}
+                    onChange={e => setGlobalFilter(e.target.value)}
+                    className="max-w-sm"
+                />
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="outline" className="ml-auto">
+                            Columns <ChevronDown />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        {table.getAllColumns().map(column => (
+                            <DropdownMenuCheckboxItem
+                                key={column.id}
+                                checked={column.getIsVisible()}
+                                onCheckedChange={value => column.toggleVisibility(!!value)}
+                            >
+                                {column.id}
+                            </DropdownMenuCheckboxItem>
+                        ))}
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            </div>
+            <div className="rounded-md border">
+                <Table>
+                    <TableHeader>
+                        {table.getHeaderGroups().map(headerGroup => (
+                            <TableRow key={headerGroup.id}>
+                                {headerGroup.headers.map(header => (
+                                    <TableHead key={header.id}>
+                                        {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                                    </TableHead>
+                                ))}
+                            </TableRow>
+                        ))}
+                    </TableHeader>
+                    <TableBody>
+                        {table.getRowModel().rows.length ? (
+                            table.getRowModel().rows.map(row => (
+                                <TableRow key={row.id}>
+                                    {row.getVisibleCells().map(cell => (
+                                        <TableCell key={cell.id}>
+                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                        </TableCell>
+                                    ))}
+                                </TableRow>
+                            ))
+                        ) : (
+                            <TableRow>
+                                <TableCell colSpan={columns.length} className="h-24 text-center">
+                                    Belum ada data
+                                </TableCell>
+                            </TableRow>
+                        )}
+                    </TableBody>
+                </Table>
+            </div>
+            <div className="flex items-center justify-end space-x-2 py-4">
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => table.previousPage()}
+                    disabled={!table.getCanPreviousPage()}
+                >
+                    Previous
+                </Button>
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => table.nextPage()}
+                    disabled={!table.getCanNextPage()}
+                >
+                    Next
+                </Button>
+            </div>
             <CreateMedicineDialog
                 isOpen={isDialogOpen}
                 setIsOpen={setIsDialogOpen}

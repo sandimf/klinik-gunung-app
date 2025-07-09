@@ -58,9 +58,10 @@ export default function Report({
         window.location.href = route("activity.healthcheck", { filter: value });
     };
 
+
     return (
-        <Sidebar header={"Laporan"}>
-            <Head title="Laporan Paramedis" />
+        <Sidebar header={"Aktivitas"}>
+            <Head title="Aktivitas Paramedis" />
             <div className="p-6">
                 <div className="flex justify-between items-center mb-6 no-print">
                     <h1 className="text-2xl font-bold">
@@ -75,10 +76,10 @@ export default function Report({
                                 <SelectValue placeholder="Filter by" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="all">All Time</SelectItem>
-                                <SelectItem value="daily">Daily</SelectItem>
-                                <SelectItem value="weekly">Weekly</SelectItem>
-                                <SelectItem value="monthly">Monthly</SelectItem>
+                                <SelectItem value="all">Semua Waktu</SelectItem>
+                                <SelectItem value="daily">Harian</SelectItem>
+                                <SelectItem value="weekly">Mingguan</SelectItem>
+                                <SelectItem value="monthly">Bulanan</SelectItem>
                             </SelectContent>
                         </Select>
                         <a
@@ -131,31 +132,7 @@ export default function Report({
                                 </div>
                             </CardContent>
                         </Card>
-                        <Card>
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">
-                                    Jumlah Pasien Membutuhkan Dokter
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-2xl font-bold">
-                                    {sickPatientsCount}
-                                </div>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">
-                                    Jumlah Pasien Membutuhkan Pendamping
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-2xl font-bold">
-                                    {needPatientsCount}
-                                </div>
-                            </CardContent>
-                        </Card>
-                        <Card>
+                        {/* <Card>
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                                 <CardTitle className="text-sm font-medium">
                                     Jumlah Paramedis
@@ -166,7 +143,7 @@ export default function Report({
                                     {totalParamedis}
                                 </div>
                             </CardContent>
-                        </Card>
+                        </Card> */}
                     </div>
 
                     <div className="flex items-center space-x-2 mb-4">
@@ -201,16 +178,15 @@ export default function Report({
                                 <TableCell>{patient.date_of_birth}</TableCell>
                                 <TableCell>
                                     <Badge>
-                                        {patient.health_status === "healthy"
-                                            ? "Sehat"
-                                            : patient.health_status ===
-                                              "butuh_dokter"
-                                            ? "Membutuhkan Dokter"
-                                            : patient.health_status ===
-                                              "butuh_pendamping"
-                                            ? "Membutuhkan Pendamping"
-                                            : "Status Tidak Diketahui"}
+                                        {
+                                            patient.health_status === "sehat"
+                                                ? "Sehat"                             // Jika statusnya "Sehat", tampilkan "Sehat"
+                                                : patient.health_status === "tidak_sehat"
+                                                    ? "Tidak Sehat"                    // Jika statusnya "Tidak_sehat", tampilkan "Tidak Sehat"
+                                                    : "Status Tidak Diketahui"      // Jika tidak cocok semua kondisi di atas, tampilkan "Status Tidak Diketahui"
+                                        }
                                     </Badge>
+
                                 </TableCell>
                                 <TableCell>{patient.examined_by}</TableCell>
                                 <TableCell>{patient.examined_at}</TableCell>

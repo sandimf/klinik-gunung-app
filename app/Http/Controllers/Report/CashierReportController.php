@@ -33,7 +33,7 @@ class CashierReportController extends Controller
                 'id' => $payment->patient->id,
                 'name' => $payment->patient->name,
                 'gender' => $payment->patient->gender,
-                'amount_paid' => 'Rp ' . number_format($payment->amount_paid, 0, ',', '.'), // Format amount_paid as IDR
+                'amount_paid' => 'Rp '.number_format($payment->amount_paid, 0, ',', '.'), // Format amount_paid as IDR
                 'payment_method' => $payment->payment_method,
                 'payment_by' => $payment->cashier->name ?? 'Tidak Diketahui', // Nama Cashier
             ];
@@ -43,7 +43,7 @@ class CashierReportController extends Controller
         return Inertia::render('Dashboard/Cashier/Activity/Index', [
             'patients' => $patients,
             'totalCashier' => $totalCashier,
-            'totalPayment' => 'Rp ' . $totalPayment, // Format total payment as IDR with "Rp" prefix
+            'totalPayment' => 'Rp '.$totalPayment, // Format total payment as IDR with "Rp" prefix
             'totalTransactions' => $totalTransactions,
             'paymentMethodsCount' => $paymentMethodsCount, // Add payment method count to the response
         ]);

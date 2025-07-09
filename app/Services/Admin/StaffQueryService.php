@@ -5,6 +5,7 @@ namespace App\Services\Admin;
 use App\Models\Users\Admin;
 use App\Models\Users\Cashier;
 use App\Models\Users\Doctor;
+use App\Models\Users\Manager;
 use App\Models\Users\Paramedis;
 use App\Models\Users\Warehouse;
 use Illuminate\Database\Eloquent\Model;
@@ -23,6 +24,7 @@ class StaffQueryService
         Paramedis::class,
         Admin::class,
         Warehouse::class,
+        Manager::class,
     ];
 
     /**
@@ -51,7 +53,7 @@ class StaffQueryService
      * Formatter terpusat untuk model staf mana pun.
      * Membuat penambahan peran baru menjadi mudah tanpa duplikasi kode.
      *
-     * @param Model&\Illuminate\Database\Eloquent\Relations\BelongsTo $staffMember
+     * @param  Model&\Illuminate\Database\Eloquent\Relations\BelongsTo  $staffMember
      */
     private function formatStaffData(Model $staffMember): array
     {
@@ -70,4 +72,4 @@ class StaffQueryService
             'updated_at' => $staffMember->updated_at,
         ];
     }
-} 
+}

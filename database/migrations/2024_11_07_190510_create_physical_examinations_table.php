@@ -30,7 +30,8 @@ return new class extends Migration
             $table->text('physical_assessment')->nullable(); // Penilaian fisik
             $table->text('reason')->nullable(); // Alasan konsultasi
             $table->text('medical_advice')->nullable(); // Saran medis
-            $table->enum('health_status', ['healthy', 'butuh_dokter', 'butuh_pendamping'])->nullable(); // Status kesehatan
+            $table->enum('health_status', ['sehat', 'tidak_sehat_dengan_pendamping', 'tidak_sehat'])->nullable();
+            $table->text('doctor_advice')->nullable();
 
             // Timestamp kolom created_at dan updated_at
             $table->timestamps();

@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers\Admin\v2;
 
-use Inertia\Inertia;
-use App\Models\Ai\Apikey;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\ApikeyRequest;
+use App\Models\Ai\Apikey;
+use Inertia\Inertia;
 
 class ApikeyController extends Controller
 {
@@ -35,6 +34,6 @@ class ApikeyController extends Controller
         $apiKey->save(); // Menyimpan perubahan atau entri baru ke database
 
         // Redirect kembali dengan pesan sukses
-        return redirect()->back()->with('message', 'API Key has been successfully saved or updated');
+        return redirect()->back()->with('message', 'Api Key Berhasil di Perbaharui');
     }
 }

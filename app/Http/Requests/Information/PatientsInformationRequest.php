@@ -18,7 +18,7 @@ class PatientsInformationRequest extends FormRequest
     {
         // Validasi Formulir Pasien
         return [
-            'nik' => 'required|string|unique:patients,nik|max:16|min:16',
+            'nik' => 'required|string|max:16|min:16',
             'name' => 'required|string|max:255',
             'place_of_birth' => 'required|string|max:255',
             'date_of_birth' => 'required|string|max:25',
@@ -34,19 +34,19 @@ class PatientsInformationRequest extends FormRequest
             'email' => 'required|email|unique:patients,email|max:255',
             'age' => 'required|integer|min:0',
             'blood_type' => 'required|string|max:10',
-            'contact' => 'required|string|unique:patients,contact|max:15',
-            'ktp_images' => 'nullable|image|max:2048',
+            'contact' => 'required|string|max:15',
+            'ktp_images' => 'nullable|image|max:5000',
             'screening_status' => 'nullable|in:completed,pending,cancelled',
             'health_status' => 'nullable|in:pending,healthy,sick,under treatment',
             'health_check_status' => 'nullable|in:pending,completed',
             'payment_status' => 'nullable|in:completed,pending,cancelled',
         ];
     }
+
     public function messages(): array
     {
         return [
             'nik.required' => 'NIK wajib diisi',
-            'nik.unique' => 'NIK sudah terdaftar',
             'nik.max' => 'NIK maksimal 16 karakter',
             'name.required' => 'Nama wajib diisi',
             'name.max' => 'Nama maksimal 255 karakter',
@@ -70,10 +70,9 @@ class PatientsInformationRequest extends FormRequest
             'age.min' => 'Umur tidak boleh kurang dari 0',
             'blood_type.required' => 'Golongan darah wajib diisi',
             'contact.required' => 'Nomor telepon wajib diisi',
-            'contact.unique' => 'Nomor telepon sudah terdaftar',
             'contact.max' => 'Nomor telepon maksimal 15 karakter',
             'ktp_images.image' => 'File yang diunggah harus berupa gambar.',
-            'ktp_images.max' => 'Ukuran gambar maksimal 2MB.',
+            'ktp_images.max' => 'Ukuran file KTP maksimal 2 MB.',
             'screening_status.in' => 'Status screening tidak valid',
             'health_status.in' => 'Status kesehatan tidak valid',
             'health_check_status.in' => 'Status pemeriksaan tidak valid',

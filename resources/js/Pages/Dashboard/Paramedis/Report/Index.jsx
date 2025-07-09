@@ -38,7 +38,7 @@ export default function Report({
                 </div>
 
                 <div className="space-y-6 no-print">
-                    <div className="grid grid-cols-3 gap-4">
+                    <div className="grid grid-cols-4 gap-4">
                         <Card>
                             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
                                 <CardTitle className="text-sm font-medium">
@@ -60,30 +60,6 @@ export default function Report({
                             <CardContent>
                                 <div className="text-2xl font-bold">
                                     {healthyPatientsCount}
-                                </div>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                                <CardTitle className="text-sm font-medium">
-                                    Jumlah Pasien Membutuhkan Dokter
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-2xl font-bold">
-                                    {sickPatientsCount}
-                                </div>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                                <CardTitle className="text-sm font-medium">
-                                    Jumlah Pasien Membutuhkan Pendamping
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-2xl font-bold">
-                                    {needPatientsCount}
                                 </div>
                             </CardContent>
                         </Card>
@@ -109,15 +85,13 @@ export default function Report({
                                     </TableCell>
                                     <TableCell>
                                         <Badge>
-                                            {patient.health_status === "healthy"
-                                                ? "Sehat"
-                                                : patient.health_status ===
-                                                  "butuh_dokter"
-                                                ? "Membutuhkan Dokter"
-                                                : patient.health_status ===
-                                                  "butuh_pendamping"
-                                                ? "Membutuhkan Pendamping"
-                                                : "Status Tidak Diketahui"}
+                                            {
+                                                patient.health_status === "sehat"
+                                                    ? "Sehat"                             // Jika statusnya "Sehat", tampilkan "Sehat"
+                                                    : patient.health_status === "tidak_sehat"
+                                                        ? "Tidak Sehat"                    // Jika statusnya "Tidak_sehat", tampilkan "Tidak Sehat"
+                                                        : "Status Tidak Diketahui"      // Jika tidak cocok semua kondisi di atas, tampilkan "Status Tidak Diketahui"
+                                            }
                                         </Badge>
                                     </TableCell>
 

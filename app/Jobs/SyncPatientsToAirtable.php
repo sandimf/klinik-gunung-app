@@ -19,7 +19,7 @@ class SyncPatientsToAirtable implements ShouldQueue
     {
         $apiKey = env('AIRTABLE_API_KEY');
         $baseId = env('AIRTABLE_BASE_ID');
-        $tableName = 'tblhRve40ahLSgGdo'; // Sesuaikan dengan nama tabel di Airtable
+        $tableName = env('AIRTABLE_TABLE_NAME'); // Sesuaikan dengan nama tabel di Airtable
 
         // Log untuk memulai eksekusi job
         Log::info('Starting SyncPatientsToAirtable job.');
@@ -42,6 +42,11 @@ class SyncPatientsToAirtable implements ShouldQueue
             $records[] = [
                 'fields' => [
                     'Name' => $patient->name,
+                    'ktp' => $patient->ktp_images
+                        ? [
+                            ['url' => url('storage/'.$patient->ktp_images)],
+                        ]
+                        : [],
                     'Nik' => $patient->nik,
                     'Place of Birth' => $patient->place_of_birth,
                     'Date of Birth' => $patient->date_of_birth,
@@ -62,7 +67,6 @@ class SyncPatientsToAirtable implements ShouldQueue
             ];
         }
 
-        // Kirim data ke Airtable
         Log::info('Sending data to Airtable API...');
         $response = Http::withHeaders([
             'Authorization' => 'Bearer '.$apiKey,
@@ -71,7 +75,6 @@ class SyncPatientsToAirtable implements ShouldQueue
             'records' => $records,
         ]);
 
-        // Log status response dari Airtable
         if ($response->successful()) {
             Log::info('Data successfully sent to Airtable.');
 
@@ -82,7 +85,6 @@ class SyncPatientsToAirtable implements ShouldQueue
                 Log::info("Updated patient ID {$patient->id} with Airtable ID {$savedRecords[$key]['id']}");
             }
         } else {
-            // Log jika permintaan gagal
             Log::error('Failed to send data to Airtable. Response: '.$response->body());
         }
     }

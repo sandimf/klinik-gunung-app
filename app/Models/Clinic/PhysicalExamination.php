@@ -24,6 +24,8 @@ class PhysicalExamination extends Model
         'reason',
         'medical_advice',
         'health_status',
+        'doctor_advice',
+
     ];
 
     // Relasi ke pasien

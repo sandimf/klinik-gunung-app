@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { Head } from "@inertiajs/react";
 import CashierSidebar from "@/Layouts/Dashboard/CashierSidebarLayout";
-import { Toaster } from "sonner";
-import useFlashToast from "@/hooks/flash";
 import { Input } from "@/Components/ui/input";
 import {
     Table,
@@ -39,11 +37,9 @@ export default function Product({ transactions }) {
         }).format(value);
     };
 
-    useFlashToast();
     return (
         <CashierSidebar header="Produk">
             <Head title="Produk" />
-            <Toaster position="top-center" />
             <Input
                 placeholder="Search medicines..."
                 value={searchTerm}

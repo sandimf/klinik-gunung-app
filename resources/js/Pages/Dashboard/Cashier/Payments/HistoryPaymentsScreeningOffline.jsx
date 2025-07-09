@@ -71,6 +71,7 @@ const ScreeningOfflineIndex = ({ patients = [], medicines }) => {
                                 <TableHead>Metode Pembayaran</TableHead>
                                 <TableHead>Jumlah Pembayaran</TableHead>
                                 <TableHead>Status Pembayaran</TableHead>
+                                <TableHead>Sertifikat</TableHead>
                                 <TableHead>Nota</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -108,6 +109,18 @@ const ScreeningOfflineIndex = ({ patients = [], medicines }) => {
                                                 )}
                                             </Badge>
                                         </TableCell>
+                                        <TableCell>
+                                    <a
+                                        href={route(
+                                            "pdf.healthcheck.paramedis",
+                                            patients.id
+                                        )}
+                                    >
+                                        <Button>
+                                            <Printer />
+                                        </Button>
+                                    </a>
+                                </TableCell>
                                         <TableCell>
                                             <a href={route('generate.nota.ts', patients.payments[0].no_transaction)}>
                                                 <Button>

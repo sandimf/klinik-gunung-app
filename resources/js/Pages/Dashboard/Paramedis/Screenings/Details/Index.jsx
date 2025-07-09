@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from 'prop-types';
-import { Link } from "@inertiajs/react";
+import { Link, router, usePage } from "@inertiajs/react";
 import {
     Table,
     TableBody,
@@ -20,12 +20,15 @@ import {
 import { Button } from "@/Components/ui/button";
 import SideBar from "@/Layouts/Dashboard/ParamedisSidebarLayout";
 import { Head } from "@inertiajs/react";
-import { ArrowLeft, FileText, Calendar, User, Phone, Info } from 'lucide-react';
+import { ArrowLeft, FileText, Calendar, User, Phone, Info, Loader2 } from 'lucide-react';
 import { EditAnswerDialog } from "../_components/edit-answer";
 import { Toaster } from "sonner";
 
 export default function ScreeningDetails({ patient, questionsAndAnswers, queue }) {
     const [qaState, setQaState] = React.useState(questionsAndAnswers);
+    const [patientState, setPatientState] = React.useState(patient);
+    const { ai_saran } = usePage().props;
+    const [isLoading, setIsLoading] = React.useState(false);
 
     const capitalizeWords = (str) => {
         return str
@@ -43,6 +46,13 @@ export default function ScreeningDetails({ patient, questionsAndAnswers, queue }
                 qa.id === id ? { ...qa, answer: newAnswer } : qa
             )
         );
+    };
+
+    const handleSavePhysical = (field, newValue) => {
+        setPatientState((prev) => ({
+            ...prev,
+            [field]: newValue,
+        }));
     };
 
     const screeningDetails = [
@@ -76,6 +86,16 @@ export default function ScreeningDetails({ patient, questionsAndAnswers, queue }
             value: patient.date_of_birth,
             icon: <Calendar className="h-4 w-4" />,
         },
+        {
+            label: "Tinggi Badan",
+            value: patient.tinggi_badan ? `${patient.tinggi_badan} cm` : '-',
+            icon: <Info className="h-4 w-4" />,
+        },
+        {
+            label: "Berat Badan",
+            value: patient.berat_badan ? `${patient.berat_badan} kg` : '-',
+            icon: <Info className="h-4 w-4" />,
+        },
     ];
 
     return (
@@ -104,28 +124,66 @@ export default function ScreeningDetails({ patient, questionsAndAnswers, queue }
                             <CardDescription>
                                 Jawaban {patient.name} kuesioner screening
                             </CardDescription>
+                            {ai_saran && (
+                                <Card className="mt-2">
+                                    <CardHeader>
+                                        <CardTitle>Saran AI</CardTitle>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <p>{ai_saran}</p>
+                                    </CardContent>
+                                </Card>
+                            )}
                         </CardHeader>
                         <CardContent>
                             <Table>
                                 <TableHeader>
                                     <TableRow>
-                                        <TableHead>ID</TableHead>
                                         <TableHead>Pertanyaan</TableHead>
                                         <TableHead>Jawaban</TableHead>
                                         <TableHead>Aksi</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
+                                    {/* Tinggi Badan */}
+                                    <TableRow>
+                                        <TableCell>Tinggi Badan</TableCell>
+                                        <TableCell>{patientState.tinggi_badan ? `${patientState.tinggi_badan} cm` : '-'}</TableCell>
+                                        <TableCell>
+                                            <EditAnswerDialog
+                                                id={patientState.id}
+                                                question="Tinggi Badan"
+                                                answer_text={patientState.tinggi_badan ? String(patientState.tinggi_badan) : ""}
+                                                onSave={(_, newValue) => handleSavePhysical('tinggi_badan', newValue[0])}
+                                                physicalField="tinggi_badan"
+                                            />
+                                        </TableCell>
+                                    </TableRow>
+                                    {/* Berat Badan */}
+                                    <TableRow>
+                                        <TableCell>Berat Badan</TableCell>
+                                        <TableCell>{patientState.berat_badan ? `${patientState.berat_badan} kg` : '-'}</TableCell>
+                                        <TableCell>
+                                            <EditAnswerDialog
+                                                id={patientState.id}
+                                                question="Berat Badan"
+                                                answer_text={patientState.berat_badan ? String(patientState.berat_badan) : ""}
+                                                onSave={(_, newValue) => handleSavePhysical('berat_badan', newValue[0])}
+                                                physicalField="berat_badan"
+                                            />
+                                        </TableCell>
+                                    </TableRow>
+                                    {/* Pertanyaan Kuesioner */}
                                     {qaState.map((qa) => (
                                         <TableRow key={qa.id}>
-                                            <TableCell>{qa.id}</TableCell>
                                             <TableCell>{qa.question}</TableCell>
                                             <TableCell>{qa.answer || "-"}</TableCell>
                                             <TableCell>
                                                 <EditAnswerDialog
                                                     id={qa.id}
                                                     question={qa.question}
-                                                    answer_text={qa.answer || ""}
+                                                    answer_text={Array.isArray(qa.answer) ? qa.answer.join(', ') : qa.answer || ""}
+                                                    answerType={qa.answer_type}
                                                     onSave={handleSaveAnswer}
                                                 />
                                             </TableCell>
@@ -133,6 +191,28 @@ export default function ScreeningDetails({ patient, questionsAndAnswers, queue }
                                     ))}
                                 </TableBody>
                             </Table>
+                            {/* Tombol Dapatkan Saran AI */}
+                            <div className="mt-6 flex flex-col gap-2">
+                                <Button
+                                    variant="secondary"
+                                    disabled={isLoading}
+                                    onClick={() => {
+                                        setIsLoading(true);
+                                        router.post(
+                                            route('paramedis.screenings.ai-saran'),
+                                            { answers: qaState, patient: patientState },
+                                            {
+                                                preserveScroll: true,
+                                                onFinish: () => setIsLoading(false),
+                                            }
+                                        );
+                                    }}
+                                >
+                                    {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                    {isLoading ? 'Meminta Saran AI...' : 'Dapatkan Saran AI'}
+                                </Button>
+
+                            </div>
                         </CardContent>
                     </Card>
                 </TabsContent>
@@ -189,6 +269,6 @@ ScreeningDetails.propTypes = {
         question: PropTypes.string.isRequired,
         answer: PropTypes.string,
     })).isRequired,
-    queue: PropTypes.any, // Add more specific PropTypes if needed
+    queue: PropTypes.any,
 };
 

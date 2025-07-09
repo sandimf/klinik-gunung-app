@@ -6,7 +6,6 @@ import { Label } from "@/Components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/Components/ui/avatar";
 import { AlertCircle, Upload, X, CheckCircle2 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/Components/ui/alert";
-import { toast, Toaster } from "sonner";
 import { ImageCropper } from "./ImageCropper";
 
 export default function UpdateProfileInformation({ mustVerifyEmail, status }) {
@@ -77,7 +76,6 @@ export default function UpdateProfileInformation({ mustVerifyEmail, status }) {
 
     return (
         <form onSubmit={submit} className="space-y-6">
-            <Toaster position="top-center" />
             <div className="flex items-center space-x-4">
                 <Avatar className="w-16 h-16">
                     <AvatarImage src={photoPreview} alt={user.name} />
@@ -134,6 +132,22 @@ export default function UpdateProfileInformation({ mustVerifyEmail, status }) {
                 />
                 {errors.email && (
                     <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+                )}
+                {user.email_verified_at === null && (
+                    <Alert variant="destructive" className="mt-2">
+                        <AlertCircle className="w-4 h-4" />
+                        <AlertTitle>Email kamu belum diverifikasi.</AlertTitle>
+                        <AlertDescription>
+                            Silakan cek email kamu untuk link verifikasi. Belum menerima email?
+                            <Button
+                                variant="link"
+                                className="h-auto p-0 font-normal"
+                                onClick={() => route("verification.send")}
+                            >
+                                  Klik di sini untuk kirim ulang verifikasi.
+                            </Button>
+                        </AlertDescription>
+                    </Alert>
                 )}
             </div>
 

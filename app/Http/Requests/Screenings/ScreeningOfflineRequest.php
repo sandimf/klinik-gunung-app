@@ -30,7 +30,6 @@ class ScreeningOfflineRequest extends FormRequest
                 'required',
                 'string',
                 'max:16',
-                Rule::unique('patients', 'nik')->ignore($userId, 'user_id'), // Abaikan jika pasien sudah terhubung dengan pengguna
             ],
             'name' => 'required|string|max:255',
             'age' => 'required|integer|min:0',
@@ -38,7 +37,6 @@ class ScreeningOfflineRequest extends FormRequest
                 'required',
                 'string',
                 'numeric',
-                Rule::unique('patients', 'contact')->ignore($userId, 'user_id'),
             ],
             'gender' => 'required|string',
             'email' => [
@@ -50,6 +48,13 @@ class ScreeningOfflineRequest extends FormRequest
             'answers' => 'required|array',
             'answers.*.questioner_id' => 'required|exists:screening_offline_questions,id',
             'answers.*.answer' => 'required',
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'email.unique' => 'Email sudah digunakan oleh pasien lain.',
         ];
     }
 }

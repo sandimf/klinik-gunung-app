@@ -18,7 +18,6 @@ export default function PaymentForm({ screening }) {
   const { data, setData, post, processing, errors } = useForm({
     name: "",
     patient_id: screening.id,
-    screening_online_answer_id: screening.id || null,
     amount_paid: "26000",
     payment_method: "",
     payment_proof: null,
@@ -42,22 +41,18 @@ export default function PaymentForm({ screening }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     post(route('payments.online.store'), {
+      name: data.name,
+      patient_id: data.patient_id,
+      amount_paid: data.amount_paid,
+      payment_method: data.payment_method,
+      payment_proof: data.payment_proof,
       preserveScroll: true,
       preserveState: true,
       onSuccess: () => {
-        toast({
-          title: "Payment Submitted",
-          description: "Pembayaran Kamu Berhasil di Simpan",
-          status: "success", // Tambahkan status untuk tipe notifikasi jika diperlukan
-        });
+        // Menampilkan toast untuk sukses
       },
       onError: (errors) => {
         // Menampilkan toast untuk error
-        toast({
-          title: "Payment Failed",
-          description: errors?.message || "An error occurred while submitting your payment. Please try again.",
-          status: "error", // Tambahkan status untuk tipe notifikasi jika diperlukan
-        });
       },
     });
   };
@@ -71,10 +66,6 @@ export default function PaymentForm({ screening }) {
     navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-    toast({
-      title: "Copied!",
-      description: "Account/E-Wallet number copied to clipboard.",
-    });
   };
 
   return (

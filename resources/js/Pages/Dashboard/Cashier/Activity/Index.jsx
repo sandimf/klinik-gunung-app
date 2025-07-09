@@ -70,6 +70,8 @@ export default function Report({ patients,totalTransactions,totalPayment }) {
                                     <TableCell className="font-medium">{patient.payment_by}</TableCell>
                                     <TableCell className="font-medium">{patient.amount_paid}</TableCell>
                                     <TableCell className="font-medium">{patient.payment_method}</TableCell>
+                                    
+                            
                                     <TableCell>
                                         <a href={route('pdf.healthcheck.paramedis', patient.id)}>
                                             <Button>

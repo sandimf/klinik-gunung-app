@@ -1,53 +1,157 @@
-import React from 'react';
-import { Head,usePage } from "@inertiajs/react";
-import Sidebar from "@/Layouts/Dashboard/CashierSidebarLayout";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/Components/ui/tabs';
-import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
-import { ArrowUpRight} from 'lucide-react';
+import { v4 as uuidv4 } from 'uuid';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/Components/ui/tabs"
+import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card"
+import { Button } from "@/Components/ui/button"
+import { ArrowUpRight, DollarSign, Activity, CalendarCheck, CreditCard, Users, BarChart3 } from 'lucide-react'
+import { ScrollArea } from "@/Components/ui/scroll-area"
+import CashierSidebar from "@/Layouts/Dashboard/CashierSidebarLayout"
+import {Avatar, AvatarFallback,AvatarImage} from "@/Components/ui/avatar"
+import { Head } from '@inertiajs/react';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/Components/ui/chart";
+import { LineChart, Line, CartesianGrid, XAxis, Tooltip, AreaChart, Area } from "recharts";
 
-export default function Dashboard() {
-    const totalIncome = 10000000
-    const totalExpense = 7000000
-    const balance = totalIncome - totalExpense;
+export default function Office({
+  totalPayment,
+  totalIncome,
+  totalOverallIncome,
+  lastPaymentDate,
+  successfulTransactions,
+  paymentsDetails,
+  totalProductIncome,
+  chartData = [],
+  chartDataProduct = [],
+}) {
 
-    const user = usePage().props.auth.user;
-    return (
-        <Sidebar header={'Patient Dashboard'}>
-            <Head title="Dashboard" />
-            <div className='w-full overflow-x-auto pb-2'>
-                <h1 className='text-2xl font-bold tracking-tight mb-4'>Selamat Datang Di Klinik Gunung, {user.name}</h1>
+  return (
+    <CashierSidebar header={'Overview'}>
+      <Head title='Cashier Dashboard' />
+      <div className="container mx-auto p-6 space-y-8">
+        <div className="flex justify-between items-center">
+          <h1 className="text-3xl font-bold">Overview</h1>
+          <a href={route('cashier.pdf.office')}>
+          <Button>Generate Report</Button>
+          </a>
+        </div>
 
-                <Tabs defaultValue="overview" className="space-y-4">
-                    <TabsList>
-                        <TabsTrigger value="overview">Overview</TabsTrigger>
-                        <TabsTrigger value="screening">Screening</TabsTrigger>
-                        <TabsTrigger value="appointments">Appointments</TabsTrigger>
-                        <TabsTrigger value="records">Medical Records</TabsTrigger>
-                        <TabsTrigger value="charts">Health Charts</TabsTrigger>
-                    </TabsList>
-                    <TabsContent value="overview" className="space-y-4">
-                        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                        <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Total Pemasukan
-              </CardTitle>
-              <ArrowUpRight className="h-4 w-4 text-green-600" />
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-5">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">Total Pemasukan</CardTitle>
+              <ArrowUpRight className="h-4 w-4 text-green-500" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(totalIncome)}
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Bulan ini
-              </p>
+              {totalOverallIncome}
+                </div>
+              <p className="text-xs text-muted-foreground">+20.1% from last month</p>
             </CardContent>
           </Card>
-                        </div>
-                    </TabsContent>
-                    {/* We'll add other TabsContent components later */}
-                </Tabs>
-            </div>
-        </Sidebar>
-    );
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">Total Pemasukan Screening</CardTitle>
+              <ArrowUpRight className="h-4 w-4 text-green-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+              {totalIncome}
+                </div>
+              <p className="text-xs text-muted-foreground">+20.1% from last month</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">Total Pemasukan Produk</CardTitle>
+              <ArrowUpRight className="h-4 w-4 text-green-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+              {totalProductIncome}
+                </div>
+              <p className="text-xs text-muted-foreground">+20.1% from last month</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">Pemasukan Terbaru</CardTitle>
+              <CalendarCheck className="h-4 w-4 text-blue-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{lastPaymentDate}</div>
+              <p className="text-xs text-muted-foreground">Last recorded payment</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">Jumlah Transaksi</CardTitle>
+              <CreditCard className="h-4 w-4 text-purple-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{successfulTransactions}</div>
+              <p className="text-xs text-muted-foreground">Successful transactions</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Chart Section */}
+        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Chart 1: Pemasukan Screening */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg font-medium">Tren Pemasukan Screening 6 Bulan Terakhir</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ChartContainer config={{ pemasukan: { label: "Pemasukan Screening", color: "#111" } }} className="min-h-[250px] w-full bg-transparent">
+                <AreaChart data={chartData && chartData.length > 0 ? chartData : []}>
+                  <CartesianGrid vertical={false} stroke="#e5e7eb" />
+                  <XAxis dataKey="month" tickLine={false} tickMargin={10} axisLine={false} stroke="#aaa" />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <Area
+                    type="monotone"
+                    dataKey="pemasukan"
+                    stroke="#111"
+                    fill="#f4f4f5"
+                    fillOpacity={1}
+                    strokeWidth={2}
+                    dot={{ r: 6, fill: '#fff', stroke: '#111', strokeWidth: 2 }}
+                    activeDot={{ r: 8, fill: '#fff', stroke: '#111', strokeWidth: 2 }}
+                    className="dark:stroke-white dark:fill-zinc-900"
+                  />
+                </AreaChart>
+              </ChartContainer>
+            </CardContent>
+          </Card>
+          {/* Chart 2: Pemasukan Produk */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg font-medium">Tren Pemasukan Produk 6 Bulan Terakhir</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ChartContainer config={{ produk: { label: "Pemasukan Produk", color: "#111" } }} className="min-h-[250px] w-full bg-transparent">
+                <AreaChart data={chartDataProduct && chartDataProduct.length > 0 ? chartDataProduct : []}>
+                  <CartesianGrid vertical={false} stroke="#e5e7eb" />
+                  <XAxis dataKey="month" tickLine={false} tickMargin={10} axisLine={false} stroke="#aaa" />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <Area
+                    type="monotone"
+                    dataKey="produk"
+                    stroke="#111"
+                    fill="#f4f4f5"
+                    fillOpacity={1}
+                    strokeWidth={2}
+                    dot={{ r: 6, fill: '#fff', stroke: '#111', strokeWidth: 2 }}
+                    activeDot={{ r: 8, fill: '#fff', stroke: '#111', strokeWidth: 2 }}
+                    className="dark:stroke-white dark:fill-zinc-900"
+                  />
+                </AreaChart>
+              </ChartContainer>
+            </CardContent>
+          </Card>
+        </div>
+
+      </div>
+    </CashierSidebar>
+  )
 }
+

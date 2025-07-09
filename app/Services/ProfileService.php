@@ -14,9 +14,9 @@ class ProfileService
     /**
      * Mengelola logika update profil user yang kompleks.
      *
-     * @param User $user User yang akan diupdate.
-     * @param array $validatedData Data yang sudah tervalidasi dari request.
-     * @param UploadedFile|null $avatarFile File avatar baru jika ada.
+     * @param  User  $user  User yang akan diupdate.
+     * @param  array  $validatedData  Data yang sudah tervalidasi dari request.
+     * @param  UploadedFile|null  $avatarFile  File avatar baru jika ada.
      */
     public function updateUser(User $user, array $data, ?UploadedFile $avatarFile): void
     {
@@ -59,4 +59,4 @@ class ProfileService
             }
         });
     }
-} 
+}

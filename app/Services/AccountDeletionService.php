@@ -11,7 +11,7 @@ class AccountDeletionService
     /**
      * Menangani proses penghapusan akun user secara menyeluruh.
      *
-     * @param User $user User yang akan dihapus.
+     * @param  User  $user  User yang akan dihapus.
      */
     public function deleteUserAccount(User $user): void
     {
@@ -20,7 +20,7 @@ class AccountDeletionService
             // Aturan bisnis: Postingan dan komentar tidak dihapus, tapi nama penulisnya diubah
             // menjadi "Pengguna Telah Dihapus". Ini menjaga integritas data forum/komentar.
             // AI tidak akan tahu relasi model `posts()` atau `comments()` atau aturan ini.
-            
+
             // Contoh jika user punya relasi Post
             // if ($user->posts()->exists()) {
             //     $user->posts()->update(['author_name' => 'Pengguna Dihapus']);
@@ -49,4 +49,4 @@ class AccountDeletionService
             $user->delete();
         });
     }
-} 
+}

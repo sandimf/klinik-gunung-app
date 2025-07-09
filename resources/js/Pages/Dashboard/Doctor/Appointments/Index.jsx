@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import { Head } from '@inertiajs/react';
+import DoctorSidebar from "@/Layouts/Dashboard/DoctorSidebarLayout";
+import { Input } from "@/Components/ui/input";
 import {
   Table,
   TableBody,
@@ -8,158 +11,201 @@ import {
   TableRow,
 } from "@/Components/ui/table";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/Components/ui/dropdown-menu";
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/Components/ui/dropdown-menu";
+import { ChevronDown, User, Calendar, Clock, MoreHorizontal } from 'lucide-react';
 import { Button } from "@/Components/ui/button";
-import { MoreHorizontal, Calendar, Clock, User, Search, FileDown } from 'lucide-react';
-import DoctorSidebar from "@/Layouts/Dashboard/DoctorSidebarLayout";
-import { Head } from '@inertiajs/react';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/Components/ui/select"
-import { Input } from "@/Components/ui/input";
+import { Badge } from "@/Components/ui/badge";
 import { PatientDetails } from './Partials/PatientDetails';
 import { StartAppointment } from './Partials/StartAppointment';
 
-export default function AppointmentsList({appointments}) {
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedAppointment, setSelectedAppointment] = useState(null);
-  const [isPatientDetailsOpen, setIsPatientDetailsOpen] = useState(false);
-  const [isRescheduleOpen, setIsRescheduleOpen] = useState(false);
-  const [isStartAppointmentOpen, setIsStartAppointmentOpen] = useState(false);
+function formatTanggalIndo(dateString) {
+  if (!dateString) return "-";
+  const bulan = [
+    "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+    "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+  ];
+  const d = new Date(dateString);
+  if (isNaN(d)) return "-";
+  return `${d.getDate()} ${bulan[d.getMonth()]} ${d.getFullYear()}`;
+}
 
-  const filteredAppointments = appointments.filter(appointment =>
-    (statusFilter === 'all' || appointment.status === statusFilter) &&
-    (appointment.patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-     appointment.appointment_date.includes(searchTerm) ||
-     appointment.appointment_time.includes(searchTerm))
+function AppointmentsDataTable({ data }) {
+  const columns = React.useMemo(
+    () => [
+      {
+        id: "no",
+        header: "No.",
+        cell: ({ row }) => row.index + 1,
+      },
+      {
+        accessorKey: "patient.name",
+        header: "Nama Pasien",
+        cell: ({ row }) => row.original.patient?.name || "-",
+      },
+      {
+        accessorKey: "appointment_date",
+        header: "Tanggal Pengunjungan",
+        cell: ({ row }) => formatTanggalIndo(row.original.appointment_date),
+      },
+      {
+        accessorKey: "appointment_time",
+        header: "Waktu",
+      },
+      {
+        accessorKey: "status",
+        header: "Status",
+        cell: ({ row }) => {
+          const status = row.original.status;
+          let color = "";
+          let label = status;
+          if (status === "confirmed") { color = "bg-green-100 text-green-800"; label = "Terkonfirmasi"; }
+          else if (status === "pending") { color = "bg-yellow-100 text-yellow-800"; label = "Menunggu"; }
+          else if (status === "cancelled") { color = "bg-red-100 text-red-800"; label = "Dibatalkan"; }
+          else if (status === "completed") { color = "bg-blue-100 text-blue-800"; label = "Selesai"; }
+          return <Badge className={color}>{label}</Badge>;
+        },
+      },
+      {
+        id: "aksi",
+        header: "Aksi",
+        cell: ({ row }) => (
+          <Button size="sm" variant="outline" onClick={() => row.original.onViewPatient(row.original)}>
+            <User className="mr-2 h-4 w-4" /> Detail
+          </Button>
+        ),
+      },
+    ],
+    []
   );
 
-  const handleExportPDF = () => {
-    console.log('Exporting to PDF...');
-  };
+  const [globalFilter, setGlobalFilter] = React.useState("");
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
+  const [isPatientDetailsOpen, setIsPatientDetailsOpen] = useState(false);
 
-  const handleViewPatientDetails = (appointment) => {
-    setSelectedAppointment(appointment);
-    setIsPatientDetailsOpen(true);
-  };
+  // Inject handler ke data
+  const tableData = data.map(item => ({
+    ...item,
+    onViewPatient: (appointment) => {
+      setSelectedAppointment(appointment);
+      setIsPatientDetailsOpen(true);
+    },
+  }));
 
-  const handleRescheduleAppointment = (appointment) => {
-    setSelectedAppointment(appointment);
-    setIsRescheduleOpen(true);
-  };
-
-  const handleStartAppointment = (appointment) => {
-    setSelectedAppointment(appointment);
-    setIsStartAppointmentOpen(true);
-  };
-
-  const onReschedule = (appointmentId, newDate, newTime) => {
-    // Placeholder for rescheduling logic
-    console.log(`Rescheduling appointment ${appointmentId} to ${newDate} at ${newTime}`);
-  };
-
+  const table = useReactTable({
+    data: tableData,
+    columns,
+    state: { globalFilter },
+    onGlobalFilterChange: setGlobalFilter,
+    getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+  });
 
   return (
-    <DoctorSidebar header={'Appointments'}>
-      <Head title='Appointments' />
-      <div className="">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold">Janji Mendatang</h2>
-          <div className="flex items-center space-x-4">
-            <div className="relative">
-              <Search className="mr-2 h-4 w-4 absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" />
-              <Input
-                type="text"
-                placeholder="Search appointments..."
-                className="pl-8 pr-4"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-          </div>
-        </div>
+    <div className="w-full">
+      <div className="flex items-center py-4">
+        <Input
+          placeholder="Cari nama pasien..."
+          value={globalFilter ?? ""}
+          onChange={e => setGlobalFilter(e.target.value)}
+          className="max-w-sm"
+        />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="ml-auto">
+              Columns <ChevronDown />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            {table.getAllColumns().map(column => (
+              <DropdownMenuCheckboxItem
+                key={column.id}
+                checked={column.getIsVisible()}
+                onCheckedChange={value => column.toggleVisibility(!!value)}
+              >
+                {column.id}
+              </DropdownMenuCheckboxItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+      <div className="rounded-md border">
         <Table>
           <TableHeader>
-            <TableRow>
-              <TableHead>Nama Pasien</TableHead>
-              <TableHead>Tanggal Pengunjungan</TableHead>
-              <TableHead>Waktu</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredAppointments.map((appointment) => (
-              <TableRow key={appointment.id}>
-                <TableCell className="font-medium">{appointment.patient.name}</TableCell>
-                <TableCell>{appointment.appointment_date}</TableCell>
-                <TableCell>{appointment.appointment_time}</TableCell>
-                <TableCell>{appointment.status}</TableCell>
-                <TableCell className="text-right">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="h-8 w-8 p-0">
-                        <span className="sr-only">Open menu</span>
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                      <DropdownMenuItem onClick={() => handleViewPatientDetails(appointment)}>
-                        <User className="mr-2 h-4 w-4" />
-                        <span>View Patient Details</span>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleRescheduleAppointment(appointment)}>
-                        <Calendar className="mr-2 h-4 w-4" />
-                        <span>Reschedule Appointment</span>
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={() => handleStartAppointment(appointment)}>
-                        <Clock className="mr-2 h-4 w-4" />
-                        <span>Start Appointment</span>
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
+            {table.getHeaderGroups().map(headerGroup => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map(header => (
+                  <TableHead key={header.id}>
+                    {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                  </TableHead>
+                ))}
               </TableRow>
             ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows.length ? (
+              table.getRowModel().rows.map(row => (
+                <TableRow key={row.id}>
+                  {row.getVisibleCells().map(cell => (
+                    <TableCell key={cell.id}>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={columns.length} className="h-24 text-center">
+                  Belum ada data
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </div>
+      <div className="flex items-center justify-end space-x-2 py-4">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => table.previousPage()}
+          disabled={!table.getCanPreviousPage()}
+        >
+          Previous
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => table.nextPage()}
+          disabled={!table.getCanNextPage()}
+        >
+          Next
+        </Button>
+      </div>
       {selectedAppointment && (
-        <>
-          <PatientDetails
-            patient={selectedAppointment.patient}
-            isOpen={isPatientDetailsOpen}
-            onClose={() => setIsPatientDetailsOpen(false)}
-          />
-          {/* <RescheduleAppointment
-            appointmentId={selectedAppointment.id}
-            currentDate={new Date(selectedAppointment.appointment_date)}
-            isOpen={isRescheduleOpen}
-            onClose={() => setIsRescheduleOpen(false)}
-            onReschedule={onReschedule}
-          /> */}
-          <StartAppointment
-            appointmentId={selectedAppointment.id}
-            patientName={selectedAppointment.patient.name}
-            isOpen={isStartAppointmentOpen}
-            onClose={() => setIsStartAppointmentOpen(false)}
-            onStart={onStartAppointment}
-          />
-        </>
+        <PatientDetails
+          patient={selectedAppointment.patient}
+          isOpen={isPatientDetailsOpen}
+          onClose={() => setIsPatientDetailsOpen(false)}
+        />
       )}
+    </div>
+  );
+}
+
+export default function AppointmentsList({ appointments }) {
+  return (
+    <DoctorSidebar header={'Appointments'}>
+      <Head title='Appointments' />
+      <h2 className="text-2xl font-bold mb-4">Janji Mendatang</h2>
+      <AppointmentsDataTable data={appointments} />
     </DoctorSidebar>
   );
 }

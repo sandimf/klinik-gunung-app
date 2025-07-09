@@ -45,7 +45,12 @@ class Patients extends Model
         'health_check_status',
         'payment_status',
         'screening_date',
+        'konsultasi_dokter',
+        'pendampingan',
         'queue',
+        'tinggi_badan',
+        'berat_badan',
+        'konsultasi_dokter_status',
     ];
 
     public function setEmailAttribute($value)

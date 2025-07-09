@@ -54,7 +54,12 @@ class PurchaseController extends Controller
                 if (! $product || $product->stock < $item['quantity']) {
                     DB::rollBack();
 
-                    return redirect()->back()->with(['error' => 'Stok tidak tersedia untuk '.$product->name]);
+                    // Untuk Inertia request, kirim flash message
+                    if ($request->expectsJson() || $request->header('X-Inertia')) {
+                        return back()->with('error', 'Stok tidak tersedia untuk '.$product->name);
+                    }
+
+                    return redirect()->back()->with('error', 'Stok tidak tersedia untuk '.$product->name);
                 }
 
                 // Hitung harga total untuk item
@@ -83,12 +88,21 @@ class PurchaseController extends Controller
 
             DB::commit();
 
+            // Untuk Inertia request, kirim flash message
+            if ($request->expectsJson() || $request->header('X-Inertia')) {
+                return back()->with('success', 'Berhasil Melakukan Checkout');
+            }
+
             // Redirect dengan pesan sukses
-            return redirect()->back()->with('message', 'Berhasil Melakukan Checkout');
+            return redirect()->back()->with('success', 'Berhasil Melakukan Checkout');
         } catch (\Exception $e) {
             DB::rollBack();
 
-            return redirect()->back()->withErrors(['error' => 'Gagal checkout. Silakan coba lagi.']);
+            if ($request->expectsJson() || $request->header('X-Inertia')) {
+                return back()->with('error', 'Gagal checkout. Silakan coba lagi.');
+            }
+
+            return redirect()->back()->with('error', 'Gagal checkout. Silakan coba lagi.');
         }
     }
 

@@ -14,7 +14,6 @@ import { Checkbox } from "@/Components/ui/checkbox";
 import { Textarea } from "@/Components/ui/textarea";
 import { Button } from "@/Components/ui/button";
 import PatientSidebar from "@/Layouts/Dashboard/PatientsSidebarLayout";
-import { toast, Toaster } from "sonner";
 
 export default function Index({ questions, patient }) {
     const user = usePage().props.auth.user;
@@ -65,7 +64,6 @@ export default function Index({ questions, patient }) {
                 newErrors[question.id] = "Pertanyaan ini wajib diisi";
             });
             setFormErrors(newErrors);
-            toast.error("Harap jawab semua pertanyaan sebelum mengirimkan.");
             return;
         }
 
@@ -84,16 +82,15 @@ export default function Index({ questions, patient }) {
             },
             {
                 onSuccess: () => {
-                    toast.success("Screening berhasil disimpan!");
+                    // No need to show success toast here, as it's handled by FlashToast
                 },
                 onError: (errors) => {
                     if (typeof errors === "string") {
-                        toast.error(errors);
+                        // No need to show error toast here, as it's handled by FlashToast
                     } else if (typeof errors === "object") {
-                        const errorMessages = Object.values(errors).flat();
-                        errorMessages.forEach((error) => toast.error(error));
+                        // No need to show error toast here, as it's handled by FlashToast
                     } else {
-                        toast.error("Terjadi kesalahan saat pengiriman.");
+                        // No need to show error toast here, as it's handled by FlashToast
                     }
                 },
             }
@@ -103,7 +100,6 @@ export default function Index({ questions, patient }) {
     return (
         <PatientSidebar header={"Screening Online"}>
             <div className="space-y-8">
-                <Toaster  position="top-center" />
                 <Head title="Screening" />
 
                 {questions.length === 1 ? (
@@ -122,7 +118,7 @@ export default function Index({ questions, patient }) {
                 ) : (
                     <form onSubmit={handleSubmit}>
                         {/* Patient Information Inputs */}
-                        <Card className="mb-4">
+                        <Card className="mb-4" hidden>
                             <CardHeader>
                                 <CardTitle>Informasi Pendaki</CardTitle>
                             </CardHeader>

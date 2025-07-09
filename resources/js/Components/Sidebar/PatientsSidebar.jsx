@@ -100,80 +100,59 @@ export function AppSidebar({ ...sidebarProps }) {
                     <SidebarMenu>
                         {data.navMain.map((item) => (
                             <SidebarMenuItem key={item.title}>
-                                <Collapsible
-                                    open={openItems.includes(item.title)}
-                                    onOpenChange={() => toggleItem(item.title)}
-                                    asChild
-                                    className="group/collapsible"
-                                >
-                                    <div>
+                                {item.items ? (
+                                    <Collapsible
+                                        open={openItems.includes(item.title)}
+                                        onOpenChange={() => toggleItem(item.title)}
+                                        className="group/collapsible"
+                                    >
                                         <CollapsibleTrigger asChild>
-                                            {item.items ? (
-                                                <SidebarMenuButton
-                                                    tooltip={item.title}
-                                                    isActive={isRouteActive(
-                                                        item.url
-                                                    )}
-                                                >
-                                                    {item.icon && (
-                                                        <item.icon className="size-4" />
-                                                    )}
-                                                    <span>{item.title}</span>
-                                                    <ChevronRight className="ml-auto size-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                                                </SidebarMenuButton>
-                                            ) : (
-                                                <Link href={item.url}>
-                                                    <SidebarMenuButton
-                                                        tooltip={item.title}
-                                                        isActive={isRouteActive(
-                                                            item.url
-                                                        )}
-                                                    >
-                                                        {item.icon && (
-                                                            <item.icon className="size-4" />
-                                                        )}
-                                                        <span>
-                                                            {item.title}
-                                                        </span>
-                                                    </SidebarMenuButton>
-                                                </Link>
-                                            )}
+                                            <SidebarMenuButton
+                                                tooltip={item.title}
+                                                isActive={isRouteActive(item.url)}
+                                                className={isRouteActive(item.url) ? "bg-muted text-primary" : ""}
+                                            >
+                                                {item.icon && <item.icon className="size-4" />}
+                                                <span>{item.title}</span>
+                                                <ChevronRight className="ml-auto size-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                                            </SidebarMenuButton>
                                         </CollapsibleTrigger>
-                                        {item.items && (
-                                            <CollapsibleContent>
-                                                <SidebarMenuSub>
-                                                    {item.items.map(
-                                                        (subItem) => (
-                                                            <SidebarMenuSubItem
-                                                                key={
-                                                                    subItem.title
-                                                                }
+                                        <CollapsibleContent>
+                                            <SidebarMenuSub>
+                                                {item.items.map((subItem) => (
+                                                    <SidebarMenuSubItem key={subItem.title}>
+                                                        <SidebarMenuSubButton
+                                                            isActive={isRouteActive(subItem.url)}
+                                                            asChild
+                                                        >
+                                                            <Link
+                                                                href={subItem.url}
+                                                                className={`flex items-center w-full ${isRouteActive(subItem.url) ? "bg-muted text-primary" : ""}`}
                                                             >
-                                                                <Link
-                                                                    href={
-                                                                        subItem.url
-                                                                    }
-                                                                >
-                                                                    <SidebarMenuSubButton
-                                                                        isActive={isRouteActive(
-                                                                            subItem.url
-                                                                        )}
-                                                                    >
-                                                                        <span>
-                                                                            {
-                                                                                subItem.title
-                                                                            }
-                                                                        </span>
-                                                                    </SidebarMenuSubButton>
-                                                                </Link>
-                                                            </SidebarMenuSubItem>
-                                                        )
-                                                    )}
-                                                </SidebarMenuSub>
-                                            </CollapsibleContent>
-                                        )}
-                                    </div>
-                                </Collapsible>
+                                                                <span>{subItem.title}</span>
+                                                            </Link>
+                                                        </SidebarMenuSubButton>
+                                                    </SidebarMenuSubItem>
+                                                ))}
+                                            </SidebarMenuSub>
+                                        </CollapsibleContent>
+                                    </Collapsible>
+                                ) : (
+                                    <SidebarMenuButton
+                                        tooltip={item.title}
+                                        isActive={isRouteActive(item.url)}
+                                        asChild
+                                        className={isRouteActive(item.url) ? "bg-muted text-primary" : ""}
+                                    >
+                                        <Link
+                                            href={item.url}
+                                            className="flex items-center w-full"
+                                        >
+                                            {item.icon && <item.icon className="size-4" />}
+                                            <span>{item.title}</span>
+                                        </Link>
+                                    </SidebarMenuButton>
+                                )}
                             </SidebarMenuItem>
                         ))}
                     </SidebarMenu>

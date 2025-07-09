@@ -1,27 +1,16 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Head, usePage } from "@inertiajs/react";
 import Sidebar from "@/Layouts/Dashboard/PatientsSidebarLayout";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/Components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
-import { CalendarDays, Activity, Pill, Phone, CircleCheck } from "lucide-react";
-import { toast, Toaster } from "sonner";
+import { CalendarDays, Activity, Pill, Phone } from "lucide-react";
 
 export default function Dashboard({ screening, visitCount, emergency }) {
     const user = usePage().props.auth.user;
 
-    const { flash } = usePage().props;
-    useEffect(() => {
-        if (flash.message) {
-            toast(flash.message, {
-                icon: <CircleCheck className="w-5 h-5 text-green-500" />,
-            });
-        }
-    }, [flash.message]);
-
     return (
         <Sidebar header={"Welcome"}>
             <Head title="Dashboard" />
-            <Toaster position="top-center" />
             <div className="overflow-x-auto pb-2 w-full">
                 <h1 className="mb-4 text-2xl font-bold tracking-tight">
                     Selamat Datang di Klinik Gunung,{user.name}{" "}

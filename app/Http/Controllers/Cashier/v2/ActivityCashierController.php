@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Cashier\v2;
 
-use Inertia\Inertia;
-use App\Models\Payments;
 use App\Http\Controllers\Controller;
+use App\Models\Payments;
+use Inertia\Inertia;
 
 class ActivityCashierController extends Controller
 {
@@ -27,21 +27,21 @@ class ActivityCashierController extends Controller
         // Ambil data detail pembayaran
         $cashierActivities = $payments->map(function ($payment) {
             return [
-                'id'             => $payment->id,
-                'patient_name'   => $payment->patient->name ?? 'Tidak Diketahui',
-                'gender'         => $payment->patient->gender ?? '-',
-                'amount_paid'    => 'Rp ' . number_format($payment->amount_paid, 0, ',', '.'),
+                'id' => $payment->id,
+                'patient_name' => $payment->patient->name ?? 'Tidak Diketahui',
+                'gender' => $payment->patient->gender ?? '-',
+                'amount_paid' => 'Rp '.number_format($payment->amount_paid, 0, ',', '.'),
                 'payment_method' => ucfirst($payment->payment_method),
-                'cashier_name'   => $payment->cashier->name ?? 'Tidak Diketahui',
-                'payment_proof'   => $payment->payment_proof ?? 'Tidak Diketahui',
-                'created_at'     => $payment->created_at->format('d-m-Y H:i'),
+                'cashier_name' => $payment->cashier->name ?? 'Tidak Diketahui',
+                'payment_proof' => $payment->payment_proof ?? 'Tidak Diketahui',
+                'created_at' => $payment->created_at->format('d-m-Y H:i'),
             ];
         });
 
         // Kirim data ke frontend
         return Inertia::render('Dashboard/Cashier/ActivityCashier/Index', [
             'cashierActivities' => $cashierActivities,
-            'totalPayment'      => 'Rp ' . $totalPayment,
+            'totalPayment' => 'Rp '.$totalPayment,
             'totalTransactions' => $totalTransactions,
             'paymentMethodsCount' => $paymentMethodsCount,
         ]);

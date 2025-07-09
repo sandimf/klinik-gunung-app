@@ -10,78 +10,184 @@ import {
     TableHeader,
     TableRow,
 } from "@/Components/ui/table";
-import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
-import PaginationComponent from "../_components/pagination";
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/Components/ui/dropdown-menu";
+import { ChevronDown, Eye } from "lucide-react";
 import { Badge } from "@/Components/ui/badge";
+import { Link } from "@inertiajs/inertia-react";
 
+function PatientsDataTable({ data }) {
+    const columns = React.useMemo(
+        () => [
+            {
+                id: "no",
+                header: "No.",
+                cell: ({ row }) => row.index + 1,
+            },
+            {
+                accessorKey: "name",
+                header: "Nama Pasien",
+            },
+            {
+                accessorKey: "date_of_birth",
+                header: "Tanggal Lahir",
+            },
+            {
+                accessorKey: "age",
+                header: "Umur",
+            },
+            {
+                accessorKey: "contact",
+                header: "Nomor Telepon",
+            },
+            {
+                accessorKey: "health_status",
+                header: "Kesehatan",
+                cell: ({ row }) => (
+                    <Badge
+                        variant={row.original.health_status === "Tidak_sehat" ? "destructive" : undefined}
+                        className={row.original.health_status === "Tidak_sehat" ? "text-white" : ""}
+                    >
+                        {row.original.health_status === "Sehat"
+                            ? "Sehat"
+                            : row.original.health_status === "Tidak_sehat"
+                                ? "Tidak Sehat"
+                                : "Status Tidak Diketahui/Belum Diperiksa"}
+                    </Badge>
+                ),
+            },
+            {
+                id: "aksi",
+                header: "Aksi",
+                cell: ({ row }) => (
+                    <Link href={route('patients.doctor.show', row.original.uuid)}>
+                        <Button size="sm">
+                            <Eye />
+                            Lihat Detail
+                        </Button>
+                    </Link>
+                ),
+            },
+        ],
+        []
+    );
+
+    const [globalFilter, setGlobalFilter] = React.useState("");
+    const table = useReactTable({
+        data,
+        columns,
+        state: { globalFilter },
+        onGlobalFilterChange: setGlobalFilter,
+        getCoreRowModel: getCoreRowModel(),
+        getFilteredRowModel: getFilteredRowModel(),
+        getSortedRowModel: getSortedRowModel(),
+        getPaginationRowModel: getPaginationRowModel(),
+    });
+
+    return (
+        <div className="w-full">
+            <div className="flex items-center py-4">
+                <Input
+                    placeholder="Cari nama pasien..."
+                    value={globalFilter ?? ""}
+                    onChange={e => setGlobalFilter(e.target.value)}
+                    className="max-w-sm"
+                />
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <button className="ml-auto border rounded px-3 py-2 flex items-center text-sm">
+                            Columns <ChevronDown className="ml-2 w-4 h-4" />
+                        </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        {table.getAllColumns().map(column => (
+                            <DropdownMenuCheckboxItem
+                                key={column.id}
+                                checked={column.getIsVisible()}
+                                onCheckedChange={value => column.toggleVisibility(!!value)}
+                            >
+                                {column.id}
+                            </DropdownMenuCheckboxItem>
+                        ))}
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            </div>
+            <div className="rounded-md border">
+                <Table>
+                    <TableHeader>
+                        {table.getHeaderGroups().map(headerGroup => (
+                            <TableRow key={headerGroup.id}>
+                                {headerGroup.headers.map(header => (
+                                    <TableHead key={header.id}>
+                                        {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                                    </TableHead>
+                                ))}
+                            </TableRow>
+                        ))}
+                    </TableHeader>
+                    <TableBody>
+                        {table.getRowModel().rows.length ? (
+                            table.getRowModel().rows.map(row => (
+                                <TableRow key={row.id}>
+                                    {row.getVisibleCells().map(cell => (
+                                        <TableCell key={cell.id}>
+                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                        </TableCell>
+                                    ))}
+                                </TableRow>
+                            ))
+                        ) : (
+                            <TableRow>
+                                <TableCell colSpan={columns.length} className="h-24 text-center">
+                                    Belum Ada Daftar Pasien.
+                                </TableCell>
+                            </TableRow>
+                        )}
+                    </TableBody>
+                </Table>
+            </div>
+            {/* Pagination Navigation */}
+            <div className="flex items-center justify-end space-x-2 py-4">
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => table.previousPage()}
+                    disabled={!table.getCanPreviousPage()}
+                >
+                    Previous
+                </Button>
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => table.nextPage()}
+                    disabled={!table.getCanNextPage()}
+                >
+                    Next
+                </Button>
+            </div>
+        </div>
+    );
+}
+
+import {
+    flexRender,
+    getCoreRowModel,
+    getFilteredRowModel,
+    getPaginationRowModel,
+    getSortedRowModel,
+    useReactTable,
+} from "@tanstack/react-table";
+import { Button } from "@/Components/ui/button";
 
 export default function PatientsList({ patients }) {
-    const [searchTerm, setSearchTerm] = useState("");
-    console.log(patients);
+    // Data dari Laravel paginator
+    const data = patients?.data || [];
     return (
         <DoctorSidebar header={"Screening"}>
             <Head title="Screening" />
-            <Card>
-                <CardHeader>
-                    <CardTitle>Daftar Pasien</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <div className="flex flex-col md:flex-row gap-4 mb-4">
-                        <Input
-                            placeholder="Cari nama pasien..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="max-w-sm"
-                        />
-                    </div>
-
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>No</TableHead>
-                                <TableHead>Nama Pasien</TableHead>
-                                <TableHead>Tanggal Lahir</TableHead>
-                                <TableHead>Umur</TableHead>
-                                <TableHead>Nomor Telepon</TableHead>
-                                <TableHead>Kesehatan</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {patients && patients.data.length > 0 ? (
-                                patients.data.map((patient, index) => (
-                                    <TableRow key={patient.id}>
-                                        <TableCell>{index + 1}</TableCell>
-                                        <TableCell>{patient.name}</TableCell>
-                                        <TableCell>{patient.date_of_birth}</TableCell>
-                                        <TableCell>{patient.age}</TableCell>
-                                        <TableCell>{patient.contact}</TableCell>
-                                        <TableCell><Badge>
-                                        {patient.health_status === "Healthy"
-                                            ? "Sehat"
-                                            : patient.health_status ===
-                                              "Butuh_dokter"
-                                            ? "Membutuhkan Dokter"
-                                            : patient.health_status ===
-                                              "Butuh_pendamping"
-                                            ? "Membutuhkan Pendamping"
-                                            : "Status Tidak Diketahui"}
-                                    </Badge></TableCell>
-                                    </TableRow>
-                                ))
-                            ) : (
-                                <TableRow>
-                                    <TableCell colSpan="4" className="text-center">
-                                        Belum Ada Daftar Pasien.
-                                    </TableCell>
-                                </TableRow>
-                            )}
-                        </TableBody>
-                    </Table>
-
-                    {/* Show pagination if there are patients */}
-                    {patients && patients.data.length > 0 && <PaginationComponent data={patients} />}
-                </CardContent>
-            </Card>
+            <h1 className="text-2xl font-bold mb-6">Daftar Pasien</h1>
+            <p className="text-muted-foreground mb-6">Berikut adalah daftar pasien yang telah melakukan screening di klinik.</p>
+            <PatientsDataTable data={data} />
+            {/* Pagination jika ada, bisa ditambahkan di sini */}
         </DoctorSidebar>
     );
 }

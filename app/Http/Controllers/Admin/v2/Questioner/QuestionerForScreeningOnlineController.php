@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Admin\v2\Questioner;
 
-use Inertia\Inertia;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Screenings\ScreeningOnlineQuestions;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class QuestionerForScreeningOnlineController extends Controller
 {
@@ -37,7 +37,7 @@ class QuestionerForScreeningOnlineController extends Controller
         // Format input menjadi huruf besar di awal setiap kata (Title Case)
         $formattedQuestionText = ucwords(strtolower($request->question_text));
         $formattedOptions = $request->options
-            ? array_map(fn($option) => ucwords(strtolower($option)), $request->options)
+            ? array_map(fn ($option) => ucwords(strtolower($option)), $request->options)
             : null;
 
         // Buat pertanyaan baru
@@ -63,7 +63,7 @@ class QuestionerForScreeningOnlineController extends Controller
         // Format input menjadi huruf besar di awal setiap kata (Title Case)
         $formattedQuestionText = ucwords(strtolower($request->question_text));
         $formattedOptions = $request->options
-            ? array_map(fn($option) => ucwords(strtolower($option)), $request->options)
+            ? array_map(fn ($option) => ucwords(strtolower($option)), $request->options)
             : null;
 
         // Cari dan perbarui data berdasarkan ID

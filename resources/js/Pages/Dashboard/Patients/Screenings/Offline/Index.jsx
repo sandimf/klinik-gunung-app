@@ -6,7 +6,6 @@ import ScreeningInfo from "@/Pages/Dashboard/Patients/Screenings/_components/Scr
 import NoScreeningData from "@/Pages/Dashboard/Patients/Screenings/_components/NoScreeningData";
 import { CheckCircle, CircleCheck } from "lucide-react";
 import { CardContent } from "@/Components/ui/card";
-import { toast, Toaster } from "sonner";
 
 export default function HistoryOffline({ screening }) {
     const user = usePage().props.auth.user;
@@ -15,19 +14,9 @@ export default function HistoryOffline({ screening }) {
     const isCompleted =
         hasScreening && screening.screening_status === "Completed";
 
-    const { flash } = usePage().props;
-    useEffect(() => {
-        if (flash.message) {
-            toast(flash.message, {
-                icon: <CircleCheck className="w-5 h-5 text-green-500" />,
-            });
-        }
-    }, [flash.message]);
-
     return (
         <SideBar header="Screening Now">
             <Head title="Screening Status" />
-            <Toaster position="top-center" />
             <div className="container px-4 py-6 mx-auto max-w-full">
                 {isCompleted && (
                     <Alert className="mb-6">

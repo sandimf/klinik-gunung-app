@@ -77,59 +77,67 @@ export default function ScreeningDetails({
     const healthcheckDetails =
         physicalExaminations && physicalExaminations.length > 0
             ? [
-                  {
-                      label: "Tekanan Darah",
-                      value:
-                          physicalExaminations[0].blood_pressure ||
-                          "Tidak ada data",
-                  },
-                  {
-                      label: "Detak Jantung",
-                      value:
-                          physicalExaminations[0].heart_rate ||
-                          "Tidak ada data",
-                  },
-                  {
-                      label: "Saturasi Oksigen",
-                      value:
-                          physicalExaminations[0].oxygen_saturation ||
-                          "Tidak ada data",
-                  },
-                  {
-                      label: "Tekanan Darah",
-                      value:
-                          physicalExaminations[0].respiratory_rate ||
-                          "Tidak ada data",
-                  },
-                  {
-                      label: "Suhu Tubuh",
-                      value:
-                          physicalExaminations[0].body_temperature ||
-                          "Tidak ada data",
-                  },
-                  {
-                      label: "Pemeriksaan Fisik",
-                      value:
-                          physicalExaminations[0].physical_assessment ||
-                          "Tidak ada data",
-                  },
-                  {
-                      label: "Alasan",
-                      value: physicalExaminations[0].reason || "Tidak ada data",
-                  },
-                  {
-                      label: "Saran Medis",
-                      value:
-                          physicalExaminations[0].medical_advice ||
-                          "Tidak ada data",
-                  },
-                  {
-                      label: "Status Kesehatan",
-                      value:
-                          physicalExaminations[0].health_status ||
-                          "Tidak ada data",
-                  },
-              ]
+                {
+                    label: "Tekanan Darah",
+                    value:
+                        physicalExaminations[0].blood_pressure ||
+                        "Tidak ada data",
+                },
+                {
+                    label: "Detak Jantung",
+                    value:
+                        physicalExaminations[0].heart_rate ||
+                        "Tidak ada data",
+                },
+                {
+                    label: "Saturasi Oksigen",
+                    value:
+                        physicalExaminations[0].oxygen_saturation ||
+                        "Tidak ada data",
+                },
+                {
+                    label: "Tekanan Darah",
+                    value:
+                        physicalExaminations[0].respiratory_rate ||
+                        "Tidak ada data",
+                },
+                {
+                    label: "Suhu Tubuh",
+                    value:
+                        physicalExaminations[0].body_temperature ||
+                        "Tidak ada data",
+                },
+                {
+                    label: "Penilaian Fisik",
+                    value:
+                        physicalExaminations[0].physical_assessment === 'sangat_baik'
+                            ? 'Sangat Baik'
+                            : physicalExaminations[0].physical_assessment === 'cukup_baik'
+                                ? 'Cukup Baik'
+                                : physicalExaminations[0].physical_assessment === 'tidak_direkomendasikan'
+                                    ? 'Tidak Direkomendasikan'
+                                    : 'Tidak ada data',
+                },
+                {
+                    label: "Alasan",
+                    value: physicalExaminations[0].reason || "Tidak ada data",
+                },
+                {
+                    label: "Saran Medis",
+                    value:
+                        physicalExaminations[0].medical_advice ||
+                        "Tidak ada data",
+                },
+                {
+                    label: "Status Kesehatan",
+                    value:
+                        physicalExaminations[0].health_status === 'tidak_sehat'
+                            ? 'Tidak Sehat'
+                            : physicalExaminations[0].health_status === 'sehat'
+                                ? 'Sehat'
+                                : 'Tidak ada data',
+                },
+            ]
             : [];
 
     // Update PropTypes
@@ -246,7 +254,7 @@ export default function ScreeningDetails({
                         <CardHeader>
                             <CardTitle className="flex gap-2 items-center">
                                 <User className="w-6 h-6" />
-                                Informasi Pribadi Pasien
+                                Informasi Pemeriksaan Fisik
                             </CardTitle>
                             <CardDescription>Detail Informasi</CardDescription>
                         </CardHeader>

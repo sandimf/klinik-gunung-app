@@ -28,4 +28,4 @@ class StoreAppointmentRequest extends FormRequest
             'is_scheduled' => 'required|boolean',
         ];
     }
-} 
+}

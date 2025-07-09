@@ -7,7 +7,6 @@ import { Pagination, PaginationContent, PaginationItem, PaginationLink, Paginati
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
 import { Button } from '@/Components/ui/button';
 import { CreditCard } from 'lucide-react';
-import { Toaster } from 'sonner';
 
 const ScreeningOfflineIndex = ({ screenings = [], medicines }) => {
     console.log(medicines);
@@ -30,7 +29,6 @@ const ScreeningOfflineIndex = ({ screenings = [], medicines }) => {
     return (
         <CashierSidebar header={'Daftar Screening Online'}>
             <Head title="Screening Online" />
-            <Toaster />
             <Card>
                 <CardHeader>
                     <CardTitle>Daftar Pembayaran Screening Online</CardTitle>

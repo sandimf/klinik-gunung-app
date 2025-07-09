@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class EmergecyContactModel extends Model
 {
-    protected $table = "emergency_contacts";
+    protected $table = 'emergency_contacts';
 
     protected $fillable = [
         'name',

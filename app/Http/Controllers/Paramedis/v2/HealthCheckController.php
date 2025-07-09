@@ -2,29 +2,30 @@
 
 namespace App\Http\Controllers\Paramedis\v2;
 
-use Inertia\Inertia;
-use Illuminate\Http\Request;
-use App\Models\Users\Patients;
-use App\Models\EMR\MedicalRecord;
 use App\Http\Controllers\Controller;
-use App\Jobs\SyncPatientsToAirtable;
-use Illuminate\Support\Facades\Auth;
 use App\Jobs\SendScreeningNotification;
+use App\Jobs\SyncPatientsToAirtable;
 use App\Models\Clinic\PhysicalExamination;
+use App\Models\EMR\MedicalRecord;
+use App\Models\Users\Patients;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class HealthCheckController extends Controller
 {
-
     protected function generateMedicalRecordNumber()
     {
         $lastRecord = MedicalRecord::latest()->first(); // Ambil rekam medis terakhir
         $lastNumber = $lastRecord ? intval(substr($lastRecord->medical_record_number, 2)) : 0; // Ambil angka terakhir
         $newNumber = $lastNumber + 1; // Tambah 1 untuk nomor baru
 
-        return 'MR' . str_pad($newNumber, 4, '0', STR_PAD_LEFT); // Format nomor: MR0001, MR0002, dst.
+        return 'MR'.str_pad($newNumber, 4, '0', STR_PAD_LEFT); // Format nomor: MR0001, MR0002, dst.
     }
+
     public function store(Request $request)
     {
+        \Log::info('Request data:', $request->all());
         $user = Auth::user(); // Get the authenticated user
 
         // Validate the request data
@@ -39,7 +40,9 @@ class HealthCheckController extends Controller
             'physical_assessment' => 'required|string',
             'reason' => 'nullable|string',
             'medical_advice' => 'nullable|string',
-            'health_status' => 'required|in:healthy,butuh_dokter,butuh_pendamping',
+            'health_status' => 'required|in:sehat,tidak_sehat_dengan_pendamping,tidak_sehat',
+            'consultation' => 'nullable|integer',
+            'medical_accompaniment' => 'nullable|in:pendampingan_perawat,pendampingan_paramedis,pendampingan_dokter',
         ]);
 
         // Create the physical examination record
@@ -54,7 +57,7 @@ class HealthCheckController extends Controller
             'physical_assessment' => $request->physical_assessment,
             'reason' => $request->reason,
             'medical_advice' => $request->medical_advice,
-            'health_status' => $request->health_status,
+
         ]);
 
         // Generate the medical record number
@@ -72,15 +75,20 @@ class HealthCheckController extends Controller
         $patient->screening_status = 'completed';
         $patient->health_status = $request->health_status;
         $patient->health_check_status = 'completed';
+        $patient->konsultasi_dokter = $request->konsultasi_dokter;
+        $patient->pendampingan = $request->pendampingan;
+        \Log::info('Patient after assignment:', $patient->toArray());
         $patient->save();
+        \Log::info('Patient after save:', $patient->fresh()->toArray());
 
         // Dispatch a notification
         SendScreeningNotification::dispatch($patient);
 
         SyncPatientsToAirtable::dispatch();
 
-        return back()->with('message', 'Pemeriksaan Fisik Berhasil Berhasil di Simpan!');
+        return back()->with('success', 'Pemeriksaan Fisik Berhasil Berhasil di Simpan!');
     }
+
     public function show($uuid)
     {
         $patient = Patients::with(['answers.question'])
@@ -93,7 +101,7 @@ class HealthCheckController extends Controller
                 'question' => $answer->question->question_text,
                 'answer' => $answer->answer_text,
                 'id' => $answer->id,
-                'queue' => $answer->queue, // Menambahkan nomor antrian
+                'queue' => $answer->queue,
             ];
         });
 
@@ -102,6 +110,7 @@ class HealthCheckController extends Controller
             'patient' => $patient,
             'questionsAndAnswers' => $questionsAndAnswers,
             'queue' => $patient->answers->max('queue'),
+            'ai_saran' => session('ai_saran'), // tambahkan ini
         ]);
     }
 
@@ -120,6 +129,8 @@ class HealthCheckController extends Controller
             'reason' => 'nullable|string',
             'medical_advice' => 'nullable|string',
             'health_status' => 'required|in:healthy,butuh_dokter,butuh_pendamping',
+            'tinggi_badan' => 'nullable|numeric|min:1',
+            'berat_badan' => 'nullable|numeric|min:1',
         ]);
 
         $examination = PhysicalExamination::findOrFail($id); // Find the record by ID
@@ -137,11 +148,23 @@ class HealthCheckController extends Controller
             'health_status' => $request->health_status,
         ]);
 
+        // Update tinggi/berat badan pasien jika ada
+        if ($request->filled('tinggi_badan') || $request->filled('berat_badan')) {
+            $patient = Patients::find($examination->patient_id);
+            if ($request->filled('tinggi_badan')) {
+                $patient->tinggi_badan = $request->tinggi_badan;
+            }
+            if ($request->filled('berat_badan')) {
+                $patient->berat_badan = $request->berat_badan;
+            }
+            $patient->save();
+        }
+
         // Update the related patient's health status
         $patient = Patients::find($examination->patient_id);
         $patient->health_status = $request->health_status;
         $patient->save();
 
-        return back()->with('message', 'Pemeriksaan Fisik berhasil diperbarui.');
+        return back()->with('success', 'Pemeriksaan Fisik berhasil diperbarui.');
     }
 }

@@ -29,6 +29,21 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        // Ambil semua flash dari session
+        $flash = [
+            'success' => fn () => $request->session()->get('success'),
+            'error' => fn () => $request->session()->get('error'),
+            'message' => fn () => $request->session()->get('message'),
+            'warning' => fn () => $request->session()->get('warning'),
+            'info' => fn () => $request->session()->get('info'),
+        ];
+        // Jika ada salah satu flash, tambahkan _ts unik
+        $hasFlash = collect(['success', 'error', 'message', 'warning', 'info'])
+            ->some(fn ($k) => $request->session()->has($k));
+        if ($hasFlash) {
+            $flash['_ts'] = now()->timestamp.uniqid();
+        }
+
         return [
             ...parent::share($request),
             'auth' => [
@@ -47,10 +62,7 @@ class HandleInertiaRequests extends Middleware
                     ? $request->user()->cashier->toArray()
                     : null,
             ],
-            'flash' => [
-                'message' => fn() => $request->session()->get('message'),
-                'error' => fn() => $request->session()->get('error'),
-            ],
+            'flash' => $flash,
         ];
     }
 }
