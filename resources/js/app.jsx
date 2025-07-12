@@ -4,7 +4,6 @@ import { createInertiaApp } from "@inertiajs/react";
 import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 import { createRoot } from "react-dom/client";
 import { ThemeProvider } from "@/Components/theme-provider";
-import { FlashToast } from "@/Components/ToastProvider";
 
 const appName = import.meta.env.VITE_APP_NAME || "Klinik Gunung";
 

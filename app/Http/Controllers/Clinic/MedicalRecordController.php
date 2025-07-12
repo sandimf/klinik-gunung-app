@@ -24,7 +24,7 @@ class MedicalRecordController extends Controller
 
     public function show($uuid)
     {
-        $medicalRecord = MedicalRecord::with(['patient', 'physicalExamination'])
+        $medicalRecord = MedicalRecord::with(['patient.answers.question', 'physicalExamination'])
             ->where('uuid', $uuid)
             ->firstOrFail();
 

@@ -138,13 +138,13 @@ export default function UpdateProfileInformation({ mustVerifyEmail, status }) {
                         <AlertCircle className="w-4 h-4" />
                         <AlertTitle>Email kamu belum diverifikasi.</AlertTitle>
                         <AlertDescription>
-                            Silakan cek email kamu untuk link verifikasi. Belum menerima email?
+
                             <Button
                                 variant="link"
-                                className="h-auto p-0 font-normal"
+                                className="h-auto p-0 font-normal text-xm"
                                 onClick={() => route("verification.send")}
                             >
-                                  Klik di sini untuk kirim ulang verifikasi.
+                                Klik di sini untuk kirim ulang verifikasi.
                             </Button>
                         </AlertDescription>
                     </Alert>

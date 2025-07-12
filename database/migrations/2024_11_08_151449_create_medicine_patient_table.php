@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('patient_id')->constrained()->onDelete('cascade');
             $table->foreignId('medicine_id')->constrained()->onDelete('cascade');
+            $table->integer('quantity')->default(0); // Tambahkan field quantity
             $table->timestamps();
         });
     }

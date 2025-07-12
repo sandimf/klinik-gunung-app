@@ -3,18 +3,16 @@
 import React, { useState } from "react";
 import {
     Command,
-    FileClock,
     Home,
     Settings2,
-    ShoppingBag,
-    Users,
+    SquareActivity,
     ChevronRight,
     Pill,
     CreditCard,
     ChartPie,
-    ChartArea,
     ShoppingBagIcon,
     ShoppingBasket,
+    Bot,
 } from "lucide-react";
 import { NavUser } from "@/Components/Nav/NavUser";
 import { TeamSwitcher } from "@/Components/Nav/TeamSwitcher";
@@ -39,7 +37,7 @@ import {
     CollapsibleContent,
     CollapsibleTrigger,
 } from "@/Components/ui/collapsible";
-import { TooltipProvider } from '@/Components/ui/tooltip';
+import { TooltipProvider } from "@/Components/ui/tooltip";
 
 export function AppSidebar({ ...sidebarProps }) {
     const { url, props } = usePage();
@@ -84,7 +82,6 @@ export function AppSidebar({ ...sidebarProps }) {
                     },
                 ],
             },
-            
 
             {
                 title: "Penjualan",
@@ -114,7 +111,6 @@ export function AppSidebar({ ...sidebarProps }) {
                         title: "Import Obat",
                         url: route("import.apotek"),
                     },
- 
                 ],
             },
             {
@@ -126,6 +122,16 @@ export function AppSidebar({ ...sidebarProps }) {
                 title: "Office",
                 url: route("office.index"),
                 icon: ChartPie,
+            },
+            {
+                title: "Medical Record",
+                url: route("medical-record.cashier"),
+                icon: SquareActivity,
+            },
+            {
+                title: "Chat AI",
+                url: route("chatbot.cashier"),
+                icon: Bot,
             },
             {
                 title: "Pengaturan",
@@ -159,14 +165,20 @@ export function AppSidebar({ ...sidebarProps }) {
                                 <SidebarMenuItem key={item.title}>
                                     {item.items ? (
                                         <Collapsible
-                                            open={openItems.includes(item.title)}
-                                            onOpenChange={() => toggleItem(item.title)}
+                                            open={openItems.includes(
+                                                item.title
+                                            )}
+                                            onOpenChange={() =>
+                                                toggleItem(item.title)
+                                            }
                                             className="group/collapsible"
                                         >
                                             <CollapsibleTrigger asChild>
                                                 <SidebarMenuButton
                                                     tooltip={item.title}
-                                                    isActive={isRouteActive(item.url)}
+                                                    isActive={isRouteActive(
+                                                        item.url
+                                                    )}
                                                 >
                                                     {item.icon && (
                                                         <item.icon className="size-4" />
@@ -177,21 +189,35 @@ export function AppSidebar({ ...sidebarProps }) {
                                             </CollapsibleTrigger>
                                             <CollapsibleContent>
                                                 <SidebarMenuSub>
-                                                    {item.items.map((subItem) => (
-                                                        <SidebarMenuSubItem key={subItem.title}>
-                                                            <SidebarMenuSubButton
-                                                                isActive={isRouteActive(subItem.url)}
-                                                                asChild
+                                                    {item.items.map(
+                                                        (subItem) => (
+                                                            <SidebarMenuSubItem
+                                                                key={
+                                                                    subItem.title
+                                                                }
                                                             >
-                                                                <Link
-                                                                    href={subItem.url}
-                                                                    className="flex items-center w-full"
+                                                                <SidebarMenuSubButton
+                                                                    isActive={isRouteActive(
+                                                                        subItem.url
+                                                                    )}
+                                                                    asChild
                                                                 >
-                                                                    <span>{subItem.title}</span>
-                                                                </Link>
-                                                            </SidebarMenuSubButton>
-                                                        </SidebarMenuSubItem>
-                                                    ))}
+                                                                    <Link
+                                                                        href={
+                                                                            subItem.url
+                                                                        }
+                                                                        className="flex items-center w-full"
+                                                                    >
+                                                                        <span>
+                                                                            {
+                                                                                subItem.title
+                                                                            }
+                                                                        </span>
+                                                                    </Link>
+                                                                </SidebarMenuSubButton>
+                                                            </SidebarMenuSubItem>
+                                                        )
+                                                    )}
                                                 </SidebarMenuSub>
                                             </CollapsibleContent>
                                         </Collapsible>

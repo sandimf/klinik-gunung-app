@@ -25,4 +25,14 @@ class MedicineBatch extends Model
     {
         return $this->hasMany(Payments::class, 'medicine_batch_id');
     }
+
+    public function deductStock($quantity)
+    {
+        if ($this->quantity >= $quantity) {
+            $this->quantity -= $quantity;
+            $this->save();
+            return true;
+        }
+        return false;
+    }
 }

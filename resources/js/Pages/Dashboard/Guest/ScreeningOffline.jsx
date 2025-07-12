@@ -20,7 +20,10 @@ import { toast, Toaster } from "sonner";
 import WebcamComponent from "./_components/Webcam";
 import { PatientInfoForm } from "./_components/PatientInfoForm";
 import { analyzeImage, parseTanggalLahir } from "./_components/Ai";
-import Header from "@/Components/Navbar";
+import { Navbar } from "@/Components/ui/navbar";
+import { Progress } from "@/Components/ui/progress";
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription } from "@/Components/ui/dialog";
+import { usePage } from "@inertiajs/react";
 
 export default function PatientDataEntry({ questions, apiKey }) {
     const [agreedToPrivacy, setAgreedToPrivacy] = useState(false);
@@ -33,7 +36,11 @@ export default function PatientDataEntry({ questions, apiKey }) {
     const [formErrors, setFormErrors] = useState({});
     const [answers, setAnswers] = useState({});
     const [isLoading, setIsLoading] = useState(false);
+    const [step, setStep] = useState(1); // stepper state
+    const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
+    const { auth } = usePage().props;
+    const user = auth?.user;
     const { data, setData, post, processing, errors, reset } = useForm({
         nik: "",
         name: "",
@@ -211,10 +218,24 @@ export default function PatientDataEntry({ questions, apiKey }) {
         }
     };
 
+    // Stepper data
+    const steps = [
+        {
+            label: "Data Pendaki",
+            description: step > 1 ? "Selesai" : step === 1 ? "Sedang Diisi" : "Menunggu",
+            status: step > 1 ? "completed" : step === 1 ? "current" : "pending",
+        },
+        {
+            label: "Screening",
+            description: step === 2 ? "Sedang Diisi" : "Menunggu",
+            status: step === 2 ? "current" : "pending",
+        },
+    ];
+
     return (
         <>
-            <Header />
             <Toaster position="top-center" />
+            <Navbar user={user} />
             {questions.length === 0 ? (
                 <div className="text-center">
                     <h1 className="text-2xl font-bold">Ups Maaf 😔</h1>
@@ -225,484 +246,591 @@ export default function PatientDataEntry({ questions, apiKey }) {
                 </div>
             ) : (
                 <div className="container p-4 mx-auto">
+                    {/* Stepper horizontal custom */}
+                    <div className="mb-8">
+                        <div className="w-full max-w-2xl mx-auto flex items-center px-8 py-6 rounded-xl">
+                            {steps.map((s, i) => (
+                                <React.Fragment key={i}>
+                                    <div className="flex flex-col items-center flex-1 min-w-0">
+                                        {/* Icon */}
+                                        <div
+                                            className={`flex items-center justify-center w-7 h-7 rounded-full border-2
+                                                ${s.status === "completed"
+                                                    ? "bg-green-500 border-green-500 text-white"
+                                                    : s.status === "current"
+                                                        ? "border-blue-500 text-blue-500 dark:bg-background bg-white"
+                                                        : "border-muted-foreground text-muted-foreground bg-muted"}
+                                                transition-colors`}
+                                        >
+                                            {s.status === "completed" ? (
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                                </svg>
+                                            ) : (
+                                                <span className="font-bold text-sm">{i + 1}</span>
+                                            )}
+                                        </div>
+                                        {/* Garis */}
+                                        {i < steps.length - 1 && (
+                                            <div
+                                                className={`h-1 w-full mt-1 mb-1
+                                                    ${steps[i + 1].status === "completed" || s.status === "completed"
+                                                        ? "bg-green-500"
+                                                        : s.status === "current"
+                                                            ? "bg-blue-500"
+                                                            : "bg-muted-foreground/30"}
+                                                    transition-colors`}
+                                            />
+                                        )}
+                                        {/* Label */}
+                                        <div className="mt-1 text-xs font-semibold text-center"
+                                            style={{ color: s.status === "current" ? "#2563eb" : undefined }}>
+                                            {s.label}
+                                        </div>
+                                        {/* Description */}
+                                        <div className={`text-xs ${s.status === "completed" ? "text-green-600" : s.status === "current" ? "text-blue-500" : "text-muted-foreground"}`}>
+                                            {s.description}
+                                        </div>
+                                    </div>
+                                </React.Fragment>
+                            ))}
+                        </div>
+                    </div>
                     <Card className="mb-6">
                         <Head title="Screening" />
                         <CardHeader>
+                            {/* Progress bar shadcn/ui di tengah atas */}
+
                             <CardTitle className="text-2xl font-bold">
-                                Informasi Pendaki
+                                {step === 1 ? "Informasi Pendaki" : "Screening"}
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <Tabs
-                                value={entryMethod}
-                                onValueChange={setEntryMethod}
-                                className="mb-4"
-                            >
-                                <TabsList className="grid grid-cols-3 w-full">
-                                    <TabsTrigger value="manual">
-                                        Input Manual
-                                    </TabsTrigger>
-                                    <TabsTrigger value="upload">
-                                        Upload KTP
-                                    </TabsTrigger>
-                                    <TabsTrigger value="camera">
-                                        Scan KTP
-                                    </TabsTrigger>
-                                </TabsList>
-                                <TabsContent value="upload">
-                                    <div className="space-y-4">
-                                        <div className="flex justify-center items-center w-full">
-                                            <Label
-                                                htmlFor="dropzone-file"
-                                                className="flex flex-col justify-center items-center w-full h-64 bg-gray-50 rounded-lg border-2 border-gray-300 border-dashed cursor-pointer dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
-                                            >
-                                                <div className="flex flex-col justify-center items-center pt-5 pb-6">
-                                                    <Upload className="mb-4 w-8 h-8 text-gray-500 dark:text-gray-400" />
-                                                    <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                                                        <span className="font-semibold">
-                                                            Klik untuk Unggah
-                                                        </span>{" "}
-                                                        atau seret dan lepas
-                                                        gambar di sini.
-                                                    </p>
-                                                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                                                        Format: SVG, PNG, JPG,
-                                                        atau GIF (Maks.
-                                                        800x400px)
-                                                    </p>
-                                                </div>
-                                                <Input
-                                                    id="dropzone-file"
-                                                    type="file"
-                                                    className="hidden"
-                                                    accept="image/*"
-                                                    onChange={handleFileChange}
-                                                    ref={fileInputRef}
-                                                />
-                                            </Label>
-                                        </div>
-                                        {imageFile && (
-                                            <div className="mt-4">
-                                                <p className="text-sm text-gray-500">
-                                                    Selected file:{" "}
-                                                    {imageFile.name}
-                                                </p>
-                                            </div>
-                                        )}
-                                        <Button
-                                            onClick={() =>
-                                                fileInputRef.current?.click()
+                            {/* Stepper indicator */}
+                            {/* <div className="flex items-center mb-6 gap-2">
+                                <div className={`w-8 h-8 flex items-center justify-center rounded-full border-2 ${step === 1 ? 'border-blue-500 bg-blue-100' : 'border-gray-300 bg-white'}`}>1</div>
+                                <span className={step === 1 ? 'font-bold text-blue-600' : 'text-gray-500'}>Data Pendaki</span>
+                                <div className="w-8 h-0.5 bg-gray-300 mx-2" />
+                                <div className={`w-8 h-8 flex items-center justify-center rounded-full border-2 ${step === 2 ? 'border-blue-500 bg-blue-100' : 'border-gray-300 bg-white'}`}>2</div>
+                                <span className={step === 2 ? 'font-bold text-blue-600' : 'text-gray-500'}>Screening</span>
+                            </div> */}
+                            {step === 1 && (
+                                <>
+                                    <form
+                                        onSubmit={e => {
+                                            e.preventDefault();
+                                            // Validasi data pasien minimal (misal: nama, nik, gender, tanggal lahir)
+                                            const requiredFields = [
+                                                { key: 'nik', label: 'NIK' },
+                                                { key: 'name', label: 'Nama' },
+                                                { key: 'gender', label: 'Jenis Kelamin' },
+                                                { key: 'date_of_birth', label: 'Tanggal Lahir' },
+                                            ];
+                                            const missing = requiredFields.filter(f => !data[f.key]);
+                                            if (missing.length > 0) {
+                                                toast.error(`Harap lengkapi Data Pendaki Terlebih Dahulu.`);
+                                                return;
                                             }
-                                            disabled={isAnalyzing}
-                                            className="w-full"
-                                        >
-                                            {isAnalyzing
-                                                ? "Mengupload..."
-                                                : "Pilih Foto KTP"}
-                                        </Button>
-                                        {analysisError && (
-                                            <Alert variant="destructive">
-                                                <AlertDescription>
-                                                    {analysisError}
-                                                </AlertDescription>
-                                            </Alert>
-                                        )}
-                                    </div>
-                                </TabsContent>
-                                <TabsContent value="camera">
-                                    <div className="space-y-4">
-                                        <WebcamComponent
-                                            onCapture={handleCameraCapture}
-                                            isActive={isCameraActive}
-                                            setIsActive={setIsCameraActive}
-                                        />
-                                        <Button
-                                            onClick={() =>
-                                                setIsCameraActive(
-                                                    !isCameraActive
-                                                )
-                                            }
-                                            className="w-full"
-                                        >
-                                            {isCameraActive
-                                                ? "Hentikan Kamera"
-                                                : "Mulai Kamera"}
-                                        </Button>
-                                        {analysisError && (
-                                            <Alert variant="destructive">
-                                                <AlertDescription>
-                                                    {analysisError}
-                                                </AlertDescription>
-                                            </Alert>
-                                        )}
-                                    </div>
-                                </TabsContent>
-                            </Tabs>
-
-                            <form onSubmit={handleSubmit} className="space-y-4">
-                                <PatientInfoForm
-                                    data={data}
-                                    setData={setData}
-                                    errors={errors}
-                                />
-                            </form>
-                        </CardContent>
-                    </Card>
-
-                    <Card className="mb-6">
-                        <CardHeader>
-                            <CardTitle className="text-2xl font-bold">
-                                Screening
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <form onSubmit={handleSubmit} className="space-y-4">
-                                {questions?.map((question) => (
-                                    <div
-                                        key={question.id}
-                                        className="rounded-lg mb-6"
+                                            setShowConfirmDialog(true);
+                                        }}
+                                        className="space-y-4"
                                     >
-                                        <h3 className="mb-3 text-lg font-semibold">
-                                            {question.question_text}
-                                        </h3>
-                                        <div className="space-y-1">
-                                            {question.answer_type ===
-                                                "text" && (
-                                                    <div>
-                                                        <Input
-                                                            type="text"
-                                                            value={
-                                                                answers[
-                                                                question.id
-                                                                ] || ""
-                                                            }
-                                                            onChange={(e) =>
-                                                                handleAnswerChange(
-                                                                    question.id,
-                                                                    e.target.value
-                                                                )
-                                                            }
-                                                            placeholder="Masukkan jawaban Anda"
-                                                        />
-                                                        {formErrors[
-                                                            question.id
-                                                        ] && (
-                                                                <p className="mt-2 text-sm text-red-500">
-                                                                    {
-                                                                        formErrors[
-                                                                        question.id
-                                                                        ]
-                                                                    }
+                                        {/* Alert pemberitahuan cek ulang data AI */}
+                                        <Alert variant="warning">
+                                            <AlertDescription>
+                                                <b>Perhatian:</b> Jika menggunakan AI (scan/upload KTP), mohon cek ulang data yang terisi otomatis. Data hasil AI kadang tidak sesuai, pastikan semua data sudah benar sebelum lanjut.
+                                            </AlertDescription>
+                                        </Alert>
+                                        <Tabs
+                                            value={entryMethod}
+                                            onValueChange={setEntryMethod}
+                                            className="mb-4"
+                                        >
+                                            <TabsList className="grid grid-cols-3 w-full">
+                                                <TabsTrigger value="manual">
+                                                    Input Manual
+                                                </TabsTrigger>
+                                                <TabsTrigger value="upload">
+                                                    Upload KTP
+                                                </TabsTrigger>
+                                                <TabsTrigger value="camera">
+                                                    Scan KTP
+                                                </TabsTrigger>
+                                            </TabsList>
+                                            <TabsContent value="upload">
+                                                <div className="space-y-4">
+                                                    <div className="flex justify-center items-center w-full">
+                                                        <Label
+                                                            htmlFor="dropzone-file"
+                                                            className="flex flex-col justify-center items-center w-full h-64 bg-gray-50 rounded-lg border-2 border-gray-300 border-dashed cursor-pointer dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
+                                                        >
+                                                            <div className="flex flex-col justify-center items-center pt-5 pb-6">
+                                                                <Upload className="mb-4 w-8 h-8 text-gray-500 dark:text-gray-400" />
+                                                                <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                                                                    <span className="font-semibold">
+                                                                        Klik untuk Unggah
+                                                                    </span>{" "}
+                                                                    atau seret dan lepas
+                                                                    gambar di sini.
                                                                 </p>
-                                                            )}
+                                                                <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                                    Format: PNG atau JPG (Maks. 800x400px)
+                                                                </p>
+
+                                                            </div>
+                                                            <Input
+                                                                id="dropzone-file"
+                                                                type="file"
+                                                                className="hidden"
+                                                                accept="image/*"
+                                                                onChange={handleFileChange}
+                                                                ref={fileInputRef}
+                                                            />
+                                                        </Label>
                                                     </div>
-                                                )}
-                                            {question.answer_type ===
-                                                "checkbox" && (
-                                                    <div className="space-y-1">
-                                                        {Array.isArray(
-                                                            question.options
-                                                        ) &&
-                                                            question.options.map(
-                                                                (option, index) => (
+                                                    {imageFile && (
+                                                        <div className="mt-4">
+                                                            <p className="text-sm text-gray-500">
+                                                                Selected file:{" "}
+                                                                {imageFile.name}
+                                                            </p>
+                                                        </div>
+                                                    )}
+                                                    <Button
+                                                        onClick={() =>
+                                                            fileInputRef.current?.click()
+                                                        }
+                                                        disabled={isAnalyzing}
+                                                        className="w-full"
+                                                    >
+                                                        {isAnalyzing
+                                                            ? "Mengupload..."
+                                                            : "Pilih Foto KTP"}
+                                                    </Button>
+                                                    {analysisError && (
+                                                        <Alert variant="destructive">
+                                                            <AlertDescription>
+                                                                {analysisError}
+                                                            </AlertDescription>
+                                                        </Alert>
+                                                    )}
+                                                </div>
+                                            </TabsContent>
+                                            <TabsContent value="camera">
+                                                <div className="space-y-4">
+                                                    <WebcamComponent
+                                                        onCapture={handleCameraCapture}
+                                                        isActive={isCameraActive}
+                                                        setIsActive={setIsCameraActive}
+                                                    />
+                                                    <Button
+                                                        onClick={() =>
+                                                            setIsCameraActive(
+                                                                !isCameraActive
+                                                            )
+                                                        }
+                                                        className="w-full"
+                                                    >
+                                                        {isCameraActive
+                                                            ? "Hentikan Kamera"
+                                                            : "Mulai Kamera"}
+                                                    </Button>
+                                                    {analysisError && (
+                                                        <Alert variant="destructive">
+                                                            <AlertDescription>
+                                                                {analysisError}
+                                                            </AlertDescription>
+                                                        </Alert>
+                                                    )}
+                                                </div>
+                                            </TabsContent>
+                                        </Tabs>
+                                        <PatientInfoForm
+                                            data={data}
+                                            setData={setData}
+                                            errors={errors}
+                                        />
+                                        <Button type="submit" className="w-full">
+                                            Lanjut ke Screening
+                                        </Button>
+                                    </form>
+                                    {/* Dialog konfirmasi shadcn/ui */}
+                                    <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+                                        <DialogContent>
+                                            <DialogHeader>
+                                                <DialogTitle>Konfirmasi Data Pendaki</DialogTitle>
+                                                <DialogDescription>
+                                                    Apakah Anda sudah yakin data pendaki sudah benar? Pastikan data sudah dicek sebelum melanjutkan ke screening.
+                                                </DialogDescription>
+                                            </DialogHeader>
+                                            <DialogFooter>
+                                                <Button variant="outline" onClick={() => setShowConfirmDialog(false)}>
+                                                    Batal
+                                                </Button>
+                                                <Button onClick={() => { setShowConfirmDialog(false); setStep(2); }}>
+                                                    Yakin &amp; Lanjut
+                                                </Button>
+                                            </DialogFooter>
+                                        </DialogContent>
+                                    </Dialog>
+                                </>
+                            )}
+                            {step === 2 && (
+                                <form onSubmit={handleSubmit} className="space-y-4">
+                                    <Button
+                                        type="button"
+                                        className="w-full mb-2"
+                                        variant="outline"
+                                        onClick={() => setStep(1)}
+                                    >
+                                        Kembali ke Data Pendaki
+                                    </Button>
+                                    {questions?.map((question) => (
+                                        <div
+                                            key={question.id}
+                                            className="rounded-lg mb-6"
+                                        >
+                                            <h3 className="mb-3 text-lg font-semibold">
+                                                {question.question_text}
+                                            </h3>
+                                            <div className="space-y-1">
+                                                {question.answer_type ===
+                                                    "text" && (
+                                                        <div>
+                                                            <Input
+                                                                type="text"
+                                                                value={
+                                                                    answers[
+                                                                    question.id
+                                                                    ] || ""
+                                                                }
+                                                                onChange={(e) =>
+                                                                    handleAnswerChange(
+                                                                        question.id,
+                                                                        e.target.value
+                                                                    )
+                                                                }
+                                                                placeholder="Masukkan jawaban Anda"
+                                                            />
+                                                            {formErrors[
+                                                                question.id
+                                                            ] && (
+                                                                    <p className="mt-2 text-sm text-red-500">
+                                                                        {
+                                                                            formErrors[
+                                                                            question.id
+                                                                            ]
+                                                                        }
+                                                                    </p>
+                                                                )}
+                                                        </div>
+                                                    )}
+                                                {question.answer_type ===
+                                                    "checkbox" && (
+                                                        <div className="space-y-1">
+                                                            {Array.isArray(
+                                                                question.options
+                                                            ) &&
+                                                                question.options.map(
+                                                                    (option, index) => (
+                                                                        <div
+                                                                            key={index}
+                                                                            className="flex items-center space-x-2"
+                                                                        >
+                                                                            <Checkbox
+                                                                                checked={answers[
+                                                                                    question
+                                                                                        .id
+                                                                                ]?.includes(
+                                                                                    option
+                                                                                )}
+                                                                                onCheckedChange={(
+                                                                                    checked
+                                                                                ) => {
+                                                                                    const updatedAnswers =
+                                                                                        checked
+                                                                                            ? [
+                                                                                                ...(answers[
+                                                                                                    question
+                                                                                                        .id
+                                                                                                ] ||
+                                                                                                    []),
+                                                                                                option,
+                                                                                            ]
+                                                                                            : (
+                                                                                                answers[
+                                                                                                question
+                                                                                                    .id
+                                                                                                ] ||
+                                                                                                []
+                                                                                            ).filter(
+                                                                                                (
+                                                                                                    answer
+                                                                                                ) =>
+                                                                                                    answer !==
+                                                                                                    option
+                                                                                            );
+                                                                                    handleAnswerChange(
+                                                                                        question.id,
+                                                                                        updatedAnswers
+                                                                                    );
+                                                                                }}
+                                                                            />
+                                                                            <span>
+                                                                                {option}
+                                                                            </span>
+                                                                        </div>
+                                                                    )
+                                                                )}
+                                                            {formErrors[
+                                                                question.id
+                                                            ] && (
+                                                                    <p className="mt-2 text-sm text-red-500">
+                                                                        {
+                                                                            formErrors[
+                                                                            question.id
+                                                                            ]
+                                                                        }
+                                                                    </p>
+                                                                )}
+                                                        </div>
+                                                    )}
+                                                {question.answer_type ===
+                                                    "checkbox_textarea" && (
+                                                        <div className="space-y-1">
+                                                            {Array.isArray(question.options) &&
+                                                                question.options.map((option, index) => (
                                                                     <div
                                                                         key={index}
                                                                         className="flex items-center space-x-2"
                                                                     >
                                                                         <Checkbox
-                                                                            checked={answers[
-                                                                                question
-                                                                                    .id
-                                                                            ]?.includes(
-                                                                                option
-                                                                            )}
-                                                                            onCheckedChange={(
-                                                                                checked
-                                                                            ) => {
-                                                                                const updatedAnswers =
-                                                                                    checked
-                                                                                        ? [
-                                                                                            ...(answers[
-                                                                                                question
-                                                                                                    .id
-                                                                                            ] ||
-                                                                                                []),
-                                                                                            option,
-                                                                                        ]
-                                                                                        : (
-                                                                                            answers[
-                                                                                            question
-                                                                                                .id
-                                                                                            ] ||
-                                                                                            []
-                                                                                        ).filter(
-                                                                                            (
-                                                                                                answer
-                                                                                            ) =>
-                                                                                                answer !==
-                                                                                                option
-                                                                                        );
-                                                                                handleAnswerChange(
-                                                                                    question.id,
-                                                                                    updatedAnswers
-                                                                                );
+                                                                            checked={
+                                                                                Array.isArray(answers[question.id]?.options) &&
+                                                                                answers[question.id]?.options.includes(option)
+                                                                            }
+                                                                            onCheckedChange={(checked) => {
+                                                                                let updatedAnswers = {
+                                                                                    ...answers[question.id],
+                                                                                };
+                                                                                if (checked) {
+                                                                                    updatedAnswers.options = [option];
+                                                                                    if (option === 'Tidak') {
+                                                                                        updatedAnswers.textarea = '';
+                                                                                    }
+                                                                                } else {
+                                                                                    updatedAnswers.options = [];
+                                                                                    if (option === 'Tidak') {
+                                                                                        updatedAnswers.textarea = '';
+                                                                                    }
+                                                                                }
+                                                                                handleAnswerChange(question.id, updatedAnswers);
                                                                             }}
                                                                         />
-                                                                        <span>
-                                                                            {option}
-                                                                        </span>
+                                                                        <span>{option}</span>
                                                                     </div>
-                                                                )
+                                                                ))}
+                                                            {answers[question.id]?.options?.includes('Ya') && (
+                                                                <Textarea
+                                                                    value={answers[question.id]?.textarea || ""}
+                                                                    onChange={(e) => {
+                                                                        const updatedAnswers = {
+                                                                            ...answers[question.id],
+                                                                            textarea: e.target.value,
+                                                                        };
+                                                                        handleAnswerChange(question.id, updatedAnswers);
+                                                                    }}
+                                                                    placeholder="Jelaskan"
+                                                                />
                                                             )}
-                                                        {formErrors[
-                                                            question.id
-                                                        ] && (
+                                                            {formErrors[question.id] && (
                                                                 <p className="mt-2 text-sm text-red-500">
-                                                                    {
-                                                                        formErrors[
-                                                                        question.id
-                                                                        ]
-                                                                    }
+                                                                    {formErrors[question.id]}
                                                                 </p>
                                                             )}
-                                                    </div>
-                                                )}
-                                            {question.answer_type ===
-                                                "checkbox_textarea" && (
-                                                    <div className="space-y-1">
-                                                        {Array.isArray(question.options) &&
-                                                            question.options.map((option, index) => (
-                                                                <div
-                                                                    key={index}
-                                                                    className="flex items-center space-x-2"
-                                                                >
-                                                                    <Checkbox
-                                                                        checked={
-                                                                            Array.isArray(answers[question.id]?.options) &&
-                                                                            answers[question.id]?.options.includes(option)
-                                                                        }
-                                                                        onCheckedChange={(checked) => {
-                                                                            let updatedAnswers = {
-                                                                                ...answers[question.id],
-                                                                            };
-                                                                            if (checked) {
-                                                                                updatedAnswers.options = [option];
-                                                                                if (option === 'Tidak') {
-                                                                                    updatedAnswers.textarea = '';
-                                                                                }
-                                                                            } else {
-                                                                                updatedAnswers.options = [];
-                                                                                if (option === 'Tidak') {
-                                                                                    updatedAnswers.textarea = '';
-                                                                                }
-                                                                            }
-                                                                            handleAnswerChange(question.id, updatedAnswers);
-                                                                        }}
-                                                                    />
-                                                                    <span>{option}</span>
-                                                                </div>
-                                                            ))}
-                                                        {answers[question.id]?.options?.includes('Ya') && (
-                                                            <Textarea
-                                                                value={answers[question.id]?.textarea || ""}
-                                                                onChange={(e) => {
-                                                                    const updatedAnswers = {
-                                                                        ...answers[question.id],
-                                                                        textarea: e.target.value,
-                                                                    };
-                                                                    handleAnswerChange(question.id, updatedAnswers);
-                                                                }}
-                                                                placeholder="Jelaskan"
-                                                            />
-                                                        )}
-                                                        {formErrors[question.id] && (
-                                                            <p className="mt-2 text-sm text-red-500">
-                                                                {formErrors[question.id]}
-                                                            </p>
-                                                        )}
-                                                    </div>
-                                                )}
-                                            {question.answer_type ===
-                                                "select" && (
-                                                    <div>
-                                                        <Select
-                                                            value={
-                                                                answers[
-                                                                question.id
-                                                                ] || ""
-                                                            }
-                                                            onValueChange={(
-                                                                value
-                                                            ) =>
-                                                                handleAnswerChange(
-                                                                    question.id,
+                                                        </div>
+                                                    )}
+                                                {question.answer_type ===
+                                                    "select" && (
+                                                        <div>
+                                                            <Select
+                                                                value={
+                                                                    answers[
+                                                                    question.id
+                                                                    ] || ""
+                                                                }
+                                                                onValueChange={(
                                                                     value
-                                                                )
-                                                            }
-                                                        >
-                                                            <SelectTrigger>
-                                                                <SelectValue placeholder="Jawaban Anda" />
-                                                            </SelectTrigger>
-                                                            <SelectContent>
-                                                                {Array.isArray(
-                                                                    question.options
-                                                                ) &&
-                                                                    question.options.map(
-                                                                        (
-                                                                            option,
-                                                                            index
-                                                                        ) => (
-                                                                            <SelectItem
-                                                                                key={
-                                                                                    index
-                                                                                }
-                                                                                value={
-                                                                                    option
-                                                                                }
-                                                                            >
-                                                                                {
-                                                                                    option
-                                                                                }
-                                                                            </SelectItem>
-                                                                        )
-                                                                    )}
-                                                            </SelectContent>
-                                                        </Select>
-                                                        {formErrors[
-                                                            question.id
-                                                        ] && (
-                                                                <p className="mt-2 text-sm text-red-500">
-                                                                    {
-                                                                        formErrors[
-                                                                        question.id
-                                                                        ]
-                                                                    }
-                                                                </p>
-                                                            )}
-                                                    </div>
-                                                )}
-                                            {question.answer_type ===
-                                                "textarea" && (
-                                                    <div>
-                                                        <Textarea
-                                                            value={
-                                                                answers[
+                                                                ) =>
+                                                                    handleAnswerChange(
+                                                                        question.id,
+                                                                        value
+                                                                    )
+                                                                }
+                                                            >
+                                                                <SelectTrigger>
+                                                                    <SelectValue placeholder="Jawaban Anda" />
+                                                                </SelectTrigger>
+                                                                <SelectContent>
+                                                                    {Array.isArray(
+                                                                        question.options
+                                                                    ) &&
+                                                                        question.options.map(
+                                                                            (
+                                                                                option,
+                                                                                index
+                                                                            ) => (
+                                                                                <SelectItem
+                                                                                    key={
+                                                                                        index
+                                                                                    }
+                                                                                    value={
+                                                                                        option
+                                                                                    }
+                                                                                >
+                                                                                    {
+                                                                                        option
+                                                                                    }
+                                                                                </SelectItem>
+                                                                            )
+                                                                        )}
+                                                                </SelectContent>
+                                                            </Select>
+                                                            {formErrors[
                                                                 question.id
-                                                                ] || ""
-                                                            }
-                                                            onChange={(e) =>
-                                                                handleAnswerChange(
-                                                                    question.id,
-                                                                    e.target.value
-                                                                )
-                                                            }
-                                                            placeholder="Masukkan jawaban Anda"
-                                                        />
-                                                        {formErrors[
-                                                            question.id
-                                                        ] && (
-                                                                <p className="mt-2 text-sm text-red-500">
-                                                                    {
-                                                                        formErrors[
-                                                                        question.id
-                                                                        ]
-                                                                    }
-                                                                </p>
-                                                            )}
-                                                    </div>
-                                                )}
-                                            {question.answer_type ===
-                                                "number" && (
-                                                    <div>
-                                                        <Input
-                                                            type="number"
-                                                            value={
-                                                                answers[
+                                                            ] && (
+                                                                    <p className="mt-2 text-sm text-red-500">
+                                                                        {
+                                                                            formErrors[
+                                                                            question.id
+                                                                            ]
+                                                                        }
+                                                                    </p>
+                                                                )}
+                                                        </div>
+                                                    )}
+                                                {question.answer_type ===
+                                                    "textarea" && (
+                                                        <div>
+                                                            <Textarea
+                                                                value={
+                                                                    answers[
+                                                                    question.id
+                                                                    ] || ""
+                                                                }
+                                                                onChange={(e) =>
+                                                                    handleAnswerChange(
+                                                                        question.id,
+                                                                        e.target.value
+                                                                    )
+                                                                }
+                                                                placeholder="Masukkan jawaban Anda"
+                                                            />
+                                                            {formErrors[
                                                                 question.id
-                                                                ] || ""
-                                                            }
-                                                            onChange={(e) =>
-                                                                handleAnswerChange(
-                                                                    question.id,
-                                                                    e.target.value
-                                                                )
-                                                            }
-                                                            placeholder="Masukkan jawaban Anda"
-                                                        />
-                                                        {formErrors[
-                                                            question.id
-                                                        ] && (
-                                                                <p className="mt-2 text-sm text-red-500">
-                                                                    {
-                                                                        formErrors[
-                                                                        question.id
-                                                                        ]
-                                                                    }
-                                                                </p>
-                                                            )}
-                                                    </div>
-                                                )}
-                                            {question.answer_type ===
-                                                "date" && (
-                                                    <div>
-                                                        <Input
-                                                            type="date"
-                                                            value={
-                                                                answers[
+                                                            ] && (
+                                                                    <p className="mt-2 text-sm text-red-500">
+                                                                        {
+                                                                            formErrors[
+                                                                            question.id
+                                                                            ]
+                                                                        }
+                                                                    </p>
+                                                                )}
+                                                        </div>
+                                                    )}
+                                                {question.answer_type ===
+                                                    "number" && (
+                                                        <div>
+                                                            <Input
+                                                                type="number"
+                                                                value={
+                                                                    answers[
+                                                                    question.id
+                                                                    ] || ""
+                                                                }
+                                                                onChange={(e) =>
+                                                                    handleAnswerChange(
+                                                                        question.id,
+                                                                        e.target.value
+                                                                    )
+                                                                }
+                                                                placeholder="Masukkan jawaban Anda"
+                                                            />
+                                                            {formErrors[
                                                                 question.id
-                                                                ] || ""
-                                                            }
-                                                            onChange={(e) =>
-                                                                handleAnswerChange(
-                                                                    question.id,
-                                                                    e.target.value
-                                                                )
-                                                            }
-                                                            placeholder="Masukkan jawaban Anda"
-                                                        />
-                                                        {formErrors[
-                                                            question.id
-                                                        ] && (
-                                                                <p className="mt-2 text-sm text-red-500">
-                                                                    {
-                                                                        formErrors[
-                                                                        question.id
-                                                                        ]
-                                                                    }
-                                                                </p>
-                                                            )}
-                                                    </div>
-                                                )}
+                                                            ] && (
+                                                                    <p className="mt-2 text-sm text-red-500">
+                                                                        {
+                                                                            formErrors[
+                                                                            question.id
+                                                                            ]
+                                                                        }
+                                                                    </p>
+                                                                )}
+                                                        </div>
+                                                    )}
+                                                {question.answer_type ===
+                                                    "date" && (
+                                                        <div>
+                                                            <Input
+                                                                type="date"
+                                                                value={
+                                                                    answers[
+                                                                    question.id
+                                                                    ] || ""
+                                                                }
+                                                                onChange={(e) =>
+                                                                    handleAnswerChange(
+                                                                        question.id,
+                                                                        e.target.value
+                                                                    )
+                                                                }
+                                                                placeholder="Masukkan jawaban Anda"
+                                                            />
+                                                            {formErrors[
+                                                                question.id
+                                                            ] && (
+                                                                    <p className="mt-2 text-sm text-red-500">
+                                                                        {
+                                                                            formErrors[
+                                                                            question.id
+                                                                            ]
+                                                                        }
+                                                                    </p>
+                                                                )}
+                                                        </div>
+                                                    )}
+                                            </div>
+                                        </div>
+                                    ))}
+                                    <div className="flex items-start gap-3 mt-8 mb-4">
+                                        <Checkbox id="privacyAgreement" checked={agreedToPrivacy} onCheckedChange={setAgreedToPrivacy} />
+                                        <div className="grid gap-2">
+                                            <Label htmlFor="privacyAgreement" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                                Saya menyetujui Kebijakan Privasi.
+                                            </Label>
+                                            <p className="text-muted-foreground text-sm">
+                                                Saya setuju data ini digunakan oleh Klinik Gunung Semeru untuk keperluan medis dan keselamatan pendakian, sesuai kebijakan privasi.
+                                            </p>
                                         </div>
                                     </div>
-                                ))}
-
-                                <div className="flex items-start gap-3 mt-8 mb-4">
-                                    <Checkbox id="privacyAgreement" checked={agreedToPrivacy} onCheckedChange={setAgreedToPrivacy} />
-                                    <div className="grid gap-2">
-                                        <Label htmlFor="privacyAgreement" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                                            Saya menyetujui Kebijakan Privasi.
-                                        </Label>
-                                        <p className="text-muted-foreground text-sm">
-                                            Saya setuju data ini digunakan oleh Klinik Gunung Semeru untuk keperluan medis dan keselamatan pendakian, sesuai kebijakan privasi.
-                                        </p>
-                                    </div>
-                                </div>
-                                <Button
-                                    type="submit"
-                                    className="w-full"
-                                    disabled={processing || !agreedToPrivacy}
-                                >
-                                    {isLoading ? (
-                                        <>
-                                            <Loader2 className="mr-2 w-4 h-4 animate-spin" />
-                                            Tunggu Sebentar
-                                        </>
-                                    ) : (
-                                        <>Kirim</>
-                                    )}
-                                </Button>
-                            </form>
+                                    <Button
+                                        type="submit"
+                                        className="w-full"
+                                        disabled={processing || !agreedToPrivacy}
+                                    >
+                                        {isLoading ? (
+                                            <>
+                                                <Loader2 className="mr-2 w-4 h-4 animate-spin" />
+                                                Tunggu Sebentar
+                                            </>
+                                        ) : (
+                                            <>Kirim</>
+                                        )}
+                                    </Button>
+                                </form>
+                            )}
                         </CardContent>
                     </Card>
                 </div>

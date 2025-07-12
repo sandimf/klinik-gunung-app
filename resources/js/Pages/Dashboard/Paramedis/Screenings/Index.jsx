@@ -119,109 +119,35 @@ const ScreeningOfflineIndex = ({ screenings_offline }) => {
 
       <ScreeningDataTable data={filtered} onHealthCheck={handleExamine} />
 
-      {/* Pagination yang diperbaiki */}
-      {screenings_offline && screenings_offline.links && screenings_offline.links.length > 3 && (
-        <Pagination className="mt-4">
-          <PaginationContent>
-            {/* Previous Button */}
-            <PaginationItem>
-              {screenings_offline.prev_page_url ? (
-                <PaginationPrevious
-                  href={screenings_offline.prev_page_url}
-                  className="cursor-pointer"
-                />
-              ) : (
-                <PaginationPrevious className="cursor-not-allowed opacity-50" />
-              )}
-            </PaginationItem>
-
-            {/* Page Numbers */}
-            {(() => {
-              const currentPage = screenings_offline.current_page;
-              const lastPage = screenings_offline.last_page;
-              const links = screenings_offline.links;
-              const pageNumbers = [];
-
-              // Always show first page
-              if (lastPage > 0) {
-                pageNumbers.push(
-                  <PaginationItem key={1}>
-                    <PaginationLink
-                      href={links[1]?.url || '#'}
-                      isActive={currentPage === 1}
-                      disabled={currentPage === 1}
-                    >
-                      1
-                    </PaginationLink>
-                  </PaginationItem>
-                );
-              }
-
-              // Show dots if current page is far from first page
-              if (currentPage > 4) {
-                pageNumbers.push(
-                  <PaginationItem key="dots1">
-                    <span className="px-3 py-2">...</span>
-                  </PaginationItem>
-                );
-              }
-
-              // Show pages around current page
-              const startPage = Math.max(2, currentPage - 1);
-              const endPage = Math.min(lastPage - 1, currentPage + 1);
-
-              for (let i = startPage; i <= endPage; i++) {
-                if (i !== 1 && i !== lastPage) {
-                  pageNumbers.push(
-                    <PaginationItem key={i}>
-                      <PaginationLink
-                        href={links[i]?.url}
-                        isActive={currentPage === i}
-                      >
-                        {i}
-                      </PaginationLink>
-                    </PaginationItem>
-                  );
-                }
-              }
-
-              if (currentPage < lastPage - 3) {
-                pageNumbers.push(
-                  <PaginationItem key="dots2">
-                    <span className="px-3 py-2">...</span>
-                  </PaginationItem>
-                );
-              }
-
-              if (lastPage > 1) {
-                pageNumbers.push(
-                  <PaginationItem key={lastPage}>
-                    <PaginationLink
-                      href={links[links.length - 2]?.url || '#'}
-                      isActive={currentPage === lastPage}
-                      disabled={currentPage === lastPage}
-                    >
-                      {lastPage}
-                    </PaginationLink>
-                  </PaginationItem>
-                );
-              }
-
-              return pageNumbers;
-            })()}
-
-            <PaginationItem>
-              {screenings_offline.next_page_url ? (
-                <PaginationNext
-                  href={screenings_offline.next_page_url}
-                  className="cursor-pointer"
-                />
-              ) : (
-                <PaginationNext className="cursor-not-allowed opacity-50" />
-              )}
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
+      {/* Pagination sederhana ala shadcn/ui */}
+      {screenings_offline && (
+        <div className="flex items-center justify-between space-x-2 py-4">
+          <div className="text-muted-foreground text-sm">
+            Page {screenings_offline.current_page} of {screenings_offline.last_page}
+          </div>
+          <div className="space-x-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                if (screenings_offline.prev_page_url) window.location.href = screenings_offline.prev_page_url;
+              }}
+              disabled={!screenings_offline.prev_page_url}
+            >
+              Previous
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                if (screenings_offline.next_page_url) window.location.href = screenings_offline.next_page_url;
+              }}
+              disabled={!screenings_offline.next_page_url}
+            >
+              Next
+            </Button>
+          </div>
+        </div>
       )}
 
       <ScreeningDialog

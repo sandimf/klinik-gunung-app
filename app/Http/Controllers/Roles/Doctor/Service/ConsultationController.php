@@ -9,6 +9,7 @@ use Inertia\Inertia;
 class ConsultationController extends Controller
 {
 public function show($uuid)
+
 {
     $patient = Patients::with([
         'physicalExaminations',
@@ -17,9 +18,39 @@ public function show($uuid)
 
     // Siapkan data pertanyaan dan jawaban screening
     $questionsAndAnswers = $patient->answers->map(function ($answer) {
+        $answerText = $answer->answer_text;
+        
+        // Parse JSON jika jawaban adalah JSON string (untuk checkbox_textarea)
+        if (is_string($answerText) && (str_starts_with($answerText, '{') || str_starts_with($answerText, '['))) {
+            try {
+                $parsed = json_decode($answerText, true);
+                if (json_last_error() === JSON_ERROR_NONE) {
+                    // Jika berhasil parse JSON, format sesuai struktur
+                    if (isset($parsed['options']) && isset($parsed['textarea'])) {
+                        $options = $parsed['options'];
+                        $textarea = $parsed['textarea'];
+                        
+                        if ($options === 'N/A' && empty($textarea)) {
+                            $answerText = 'Tidak';
+                        } else if ($options === 'N/A') {
+                            $answerText = $textarea;
+                        } else if (empty($textarea)) {
+                            $answerText = $options;
+                        } else {
+                            $answerText = $options . ' - ' . $textarea;
+                        }
+                    } else {
+                        $answerText = is_array($parsed) ? implode(', ', $parsed) : $parsed;
+                    }
+                }
+            } catch (\Exception $e) {
+                // Jika gagal parse, gunakan string asli
+            }
+        }
+        
         return [
             'question' => $answer->question->question_text ?? '-',
-            'answer' => $answer->answer_text ?? '-',
+            'answer' => $answerText ?? '-',
             'id' => $answer->id,
             'queue' => $answer->queue,
         ];

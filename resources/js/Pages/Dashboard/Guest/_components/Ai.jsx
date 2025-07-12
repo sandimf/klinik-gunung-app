@@ -21,7 +21,7 @@ export const analyzeImage = async (file, apiKey) => {
     - Name (Name)
     - Place of Birth (Place of Birth)
     - Date of Birth (Date of Birth in the format "DD Maret YYYY")
-    - Gender (Gender female, male, other)
+    - Gender (Gender Perempuan, Laki-laki, lainnya)
     - Address (Address)
     - RT/RW (Neighborhood/Community Unit)
     - Village/Village (Village)

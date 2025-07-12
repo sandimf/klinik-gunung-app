@@ -46,7 +46,6 @@ export function PatientInfoForm({ data, setData, errors }) {
                 />
                 {errors.nik && <p className="text-red-600">{errors.nik}</p>}
             </div>
-
             {/* Name field */}
             <div>
                 <Label htmlFor="name">Nama Lengkap</Label>
@@ -58,9 +57,6 @@ export function PatientInfoForm({ data, setData, errors }) {
                 />
                 {errors.name && <p className="text-red-600">{errors.name}</p>}
             </div>
-
-            {/* Email field */}
-
             {/* Place of Birth field */}
             <div>
                 <Label htmlFor="place_of_birth">Tempat Lahir</Label>
@@ -71,7 +67,6 @@ export function PatientInfoForm({ data, setData, errors }) {
                     onChange={(e) => setData("place_of_birth", e.target.value)}
                 />
             </div>
-
             {/* Date of Birth field */}
             <div>
                 <Label htmlFor="date_of_birth">Tanggal Lahir</Label>
@@ -84,11 +79,10 @@ export function PatientInfoForm({ data, setData, errors }) {
                 />
                 {data.date_of_birth && (
                     <div className="text-sm text-muted-foreground mt-1">
-                        Umur: {calculateAge(data.date_of_birth)} tahun
+                        Umur hasil hitung: {calculateAge(data.date_of_birth)} tahun
                     </div>
                 )}
             </div>
-
             {/* Gender field */}
             <div>
                 <Label htmlFor="gender">Jenis Kelamin</Label>
@@ -101,7 +95,7 @@ export function PatientInfoForm({ data, setData, errors }) {
                     </SelectTrigger>
                     <SelectContent>
                         <SelectGroup>
-                            <SelectLabel>Select Gender</SelectLabel>
+                            <SelectLabel>Jenis Kelamin</SelectLabel>
                             <SelectItem value="laki-laki">Laki-Laki</SelectItem>
                             <SelectItem value="perempuan">Perempuan</SelectItem>
                             <SelectItem value="lainnya">Lainnya</SelectItem>
@@ -112,7 +106,6 @@ export function PatientInfoForm({ data, setData, errors }) {
                     <p className="text-red-600">{errors.gender}</p>
                 )}
             </div>
-
             {/* Address field */}
             <div>
                 <Label htmlFor="address">Alamat</Label>
@@ -123,7 +116,6 @@ export function PatientInfoForm({ data, setData, errors }) {
                     onChange={(e) => setData("address", e.target.value)}
                 />
             </div>
-
             {/* RT/RW field */}
             <div>
                 <Label htmlFor="rt_rw">RT/RW</Label>
@@ -134,7 +126,6 @@ export function PatientInfoForm({ data, setData, errors }) {
                     onChange={(e) => setData("rt_rw", e.target.value)}
                 />
             </div>
-
             {/* Village field */}
             <div>
                 <Label htmlFor="village">Kel/Desa</Label>
@@ -145,7 +136,6 @@ export function PatientInfoForm({ data, setData, errors }) {
                     onChange={(e) => setData("village", e.target.value)}
                 />
             </div>
-
             {/* District field */}
             <div>
                 <Label htmlFor="district">Kecamatan</Label>
@@ -156,7 +146,6 @@ export function PatientInfoForm({ data, setData, errors }) {
                     onChange={(e) => setData("district", e.target.value)}
                 />
             </div>
-
             {/* Religion field */}
             <div>
                 <Label htmlFor="religion">Agama</Label>
@@ -167,7 +156,6 @@ export function PatientInfoForm({ data, setData, errors }) {
                     onChange={(e) => setData("religion", e.target.value)}
                 />
             </div>
-
             {/* Marital Status field */}
             <div>
                 <Label htmlFor="marital_status">Status Perkawinan</Label>
@@ -178,7 +166,6 @@ export function PatientInfoForm({ data, setData, errors }) {
                     onChange={(e) => setData("marital_status", e.target.value)}
                 />
             </div>
-
             {/* Occupation field */}
             <div>
                 <Label htmlFor="occupation">Pekerjaan</Label>
@@ -189,7 +176,6 @@ export function PatientInfoForm({ data, setData, errors }) {
                     onChange={(e) => setData("occupation", e.target.value)}
                 />
             </div>
-
             {/* Nationality field */}
             <div>
                 <Label htmlFor="nationality">Kewarganegaraan</Label>
@@ -200,7 +186,6 @@ export function PatientInfoForm({ data, setData, errors }) {
                     onChange={(e) => setData("nationality", e.target.value)}
                 />
             </div>
-
             {/* Valid Until field */}
             <div>
                 <Label htmlFor="valid_until">Berlaku Hingga</Label>
@@ -211,7 +196,6 @@ export function PatientInfoForm({ data, setData, errors }) {
                     onChange={(e) => setData("valid_until", e.target.value)}
                 />
             </div>
-
             {/* Blood Type field */}
             <div>
                 <Label htmlFor="blood_type">Golongan Darah</Label>
@@ -222,17 +206,46 @@ export function PatientInfoForm({ data, setData, errors }) {
                     onChange={(e) => setData("blood_type", e.target.value)}
                 />
             </div>
-
-            {/* Age field */}
+            {/* Tinggi Badan field */}
+            <div>
+                <Label htmlFor="tinggi_badan">Tinggi Badan (cm)</Label>
+                <Input
+                    id="tinggi_badan"
+                    value={data.tinggi_badan}
+                    placeholder="Tinggi Badan dalam cm"
+                    onChange={(e) => setData("tinggi_badan", e.target.value)}
+                />
+                {errors.tinggi_badan && (
+                    <p className="text-red-600">{errors.tinggi_badan}</p>
+                )}
+            </div>
+            {/* Berat Badan field */}
+            <div>
+                <Label htmlFor="berat_badan">Berat Badan (kg)</Label>
+                <Input
+                    id="berat_badan"
+                    value={data.berat_badan}
+                    placeholder="Berat Badan dalam kg"
+                    onChange={(e) => setData("berat_badan", e.target.value)}
+                />
+                {errors.berat_badan && (
+                    <p className="text-red-600">{errors.berat_badan}</p>
+                )}
+            </div>
+            {/* Age field (editable, auto-calculated) */}
             <div>
                 <Label htmlFor="age">Umur</Label>
                 <Input
                     id="age"
                     value={data.age}
                     placeholder="Umur"
+                    onChange={(e) => setData("age", e.target.value)}
                 />
+                {errors.age && (
+                    <p className="text-red-600">{errors.age}</p>
+                )}
             </div>
-
+            {/* Email field */}
             <div>
                 <Label htmlFor="email">Email</Label>
                 <Input
@@ -244,7 +257,6 @@ export function PatientInfoForm({ data, setData, errors }) {
                 />
                 {errors.email && <p className="text-red-600">{errors.email}</p>}
             </div>
-
             {/* Contact field */}
             <div>
                 <Label htmlFor="contact">Nomor Telepon</Label>
@@ -258,30 +270,6 @@ export function PatientInfoForm({ data, setData, errors }) {
                 />
                 {errors.contact && (
                     <p className="text-red-600">{errors.contact}</p>
-                )}
-            </div>
-            <div>
-                <Label htmlFor="tinggi_badan">Tinggi Badan</Label>
-                <Input
-                    id="tinggi_badan"
-                    value={data.tinggi_badan}
-                    placeholder="Tinggi Badan"
-                    onChange={(e) => setData("tinggi_badan", e.target.value)}
-                />
-                {errors.tinggi_badan && (
-                    <p className="text-red-600">{errors.tinggi_badan}</p>
-                )}
-            </div>
-            <div>
-                <Label htmlFor="berat_badan">Berat Badan</Label>
-                <Input
-                    id="berat_badan"
-                    value={data.berat_badan}
-                    placeholder="Tinggi Badan"
-                    onChange={(e) => setData("berat_badan", e.target.value)}
-                />
-                {errors.berat_badan && (
-                    <p className="text-red-600">{errors.berat_badan}</p>
                 )}
             </div>
         </div>

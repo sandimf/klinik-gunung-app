@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import {
     Dialog,
@@ -18,7 +18,7 @@ import {
 import { Button } from "@/Components/ui/button";
 import { Checkbox } from "@/Components/ui/checkbox";
 import { Input } from "@/Components/ui/input";
-import { useForm, usePage } from "@inertiajs/react";
+import { useForm, usePage, router } from "@inertiajs/react";
 import { CheckCircle2 } from "lucide-react";
 import ReactSelect from 'react-select';
 import { Popover, PopoverContent, PopoverTrigger } from "@/Components/ui/popover";
@@ -37,20 +37,24 @@ export default function PaymentDialog({
 
     const { auth } = usePage().props;
 
+
+
     const cashier = auth.cashier;
 
     const [hasPurchasedProduct, setHasPurchasedProduct] = useState(false);
     const [selectedBatchId, setSelectedBatchId] = useState(null);
+    const [dialogOpen, setDialogOpen] = useState(isOpen);
+    const dialogRef = useRef(null);
 
     const { data, setData, post, processing, errors } = useForm({
         cashier_id: cashier[0].id,
         patient_id: screening.id,
         payment_method: "",
         amount_paid: "",
-        quantity_product: "",
         total_price_product: "",
         payment_proof: null,
-        selected_medicine_id: null,
+        selected_medicine_id: "",
+        medicine_batch_id: "", // Tambahkan field batch
         medicine_quantity: 1,
         selectedOptions: [],
     });
@@ -59,6 +63,8 @@ export default function PaymentDialog({
     const selectedMedicineDetails = medicines.find(
         (m) => m.id === parseInt(data.selected_medicine_id)
     );
+    // Dapatkan daftar batch untuk obat yang dipilih
+    const medicineBatches = selectedMedicineDetails?.batches || [];
 
     // Only calculate the total price if selectedMedicineDetails exists
     const medicineTotalPrice = selectedMedicineDetails
@@ -71,6 +77,16 @@ export default function PaymentDialog({
         // Validasi tambahan
         if (hasPurchasedProduct && !data.selected_medicine_id) {
             toast.error("Silakan pilih obat terlebih dahulu.");
+            return;
+        }
+
+        if (hasPurchasedProduct && (!data.medicine_quantity || data.medicine_quantity <= 0)) {
+            toast.error("Jumlah obat harus lebih dari 0.");
+            return;
+        }
+
+        if (hasPurchasedProduct && !data.medicine_batch_id) {
+            toast.error("Silakan pilih batch obat.");
             return;
         }
 
@@ -92,20 +108,27 @@ export default function PaymentDialog({
             amount_paid: data.amount_paid,
             payment_proof: data.payment_proof,
             selectedOptions: data.selectedOptions,
-            quantity_product: hasPurchasedProduct ? parseInt(data.medicine_quantity) : null,
+            medicine_quantity: hasPurchasedProduct ? Number(data.medicine_quantity) : null, // Kirim medicine_quantity
             selected_medicine_id: hasPurchasedProduct ? data.selected_medicine_id : null,
+            medicine_batch_id: hasPurchasedProduct ? data.medicine_batch_id : null, // Kirim batch
         };
 
+        // Debug: Log data yang akan dikirim
         console.log('Data yang akan dikirim:', submitData);
+        console.log('medicine_quantity value:', submitData.medicine_quantity);
+        console.log('medicine_batch_id value:', submitData.medicine_batch_id);
 
         post(route("payments.store"), submitData, {
             preserveState: true,
             preserveScroll: true,
             onSuccess: () => {
-                onClose(); // Tutup dialog lebih awal
+                // Tampilkan toast
                 toast.success(`Pembayaran Berhasil di Proses`, {
                     icon: <CheckCircle2 />,
                 });
+
+                // Redirect ke halaman screening
+                window.location.href = window.location.href;
             },
             onError: (errors) => {
                 Object.keys(errors).forEach((key) => {
@@ -194,8 +217,27 @@ export default function PaymentDialog({
         setData("amount_paid", finalTotalScreening);
     }, [totalScreening, totalObat]);
 
+    // Update dialog state when isOpen prop changes
+    useEffect(() => {
+        setDialogOpen(isOpen);
+    }, [isOpen]);
+
+    // Effect untuk menutup dialog ketika dialogOpen = false
+    useEffect(() => {
+        if (!dialogOpen) {
+            onClose();
+        }
+    }, [dialogOpen, onClose]);
+
+
+
     return (
-        <Dialog open={isOpen} onOpenChange={onClose}>
+        <Dialog open={dialogOpen} onOpenChange={(open) => {
+            setDialogOpen(open);
+            if (!open) {
+                onClose();
+            }
+        }}>
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
                     <DialogTitle className="text-2xl font-bold text-center">
@@ -291,12 +333,10 @@ export default function PaymentDialog({
                                 ) : (
                                     <Select
                                         value={data.selected_medicine_id}
-                                        onValueChange={(value) =>
-                                            setData(
-                                                "selected_medicine_id",
-                                                value
-                                            )
-                                        }
+                                        onValueChange={(value) => {
+                                            setData("selected_medicine_id", value);
+                                            setData("medicine_batch_id", ""); // Reset batch saat ganti obat
+                                        }}
                                     >
                                         <SelectTrigger id="medicine">
                                             <SelectValue placeholder="Pilih Obat" />
@@ -313,20 +353,32 @@ export default function PaymentDialog({
                                         </SelectContent>
                                     </Select>
                                 )}
-
-                                {selectedMedicineDetails && (
-                                    <div className="mt-4 space-y-2">
-                                        <p>
-                                            <strong>Stok Tersedia:</strong>{" "}
-                                            {selectedMedicineDetails.quantity}
-                                        </p>
-                                        <p>
-                                            <strong>Harga OTC:</strong>{" "}
-                                            {otcPrice.toLocaleString("id-ID", {
-                                                style: "currency",
-                                                currency: "IDR",
-                                            })}
-                                        </p>
+                                {/* Pilih Batch jika ada batch untuk obat */}
+                                {medicineBatches.length > 0 && (
+                                    <div className="mt-2">
+                                        <Label htmlFor="medicine-batch" className="text-base font-semibold">
+                                            Pilih Batch Obat
+                                        </Label>
+                                        <Select
+                                            value={data.medicine_batch_id}
+                                            onValueChange={value => setData("medicine_batch_id", value)}
+                                        >
+                                            <SelectTrigger id="medicine-batch">
+                                                <SelectValue placeholder="Pilih Batch" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {medicineBatches.map(batch => (
+                                                    <SelectItem key={batch.id} value={batch.id.toString()}>
+                                                        {batch.batch_number} (Stok: {batch.quantity})
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                        {errors.medicine_batch_id && (
+                                            <p className="text-red-500 text-sm">
+                                                {errors.medicine_batch_id}
+                                            </p>
+                                        )}
                                     </div>
                                 )}
                             </div>

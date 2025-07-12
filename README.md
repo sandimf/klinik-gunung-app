@@ -30,7 +30,11 @@ A comprehensive medical clinic management system designed for mountain clinics, 
 - **PDF Generation** - Medical reports and documentation
 - **Email Notifications** - Automated alerts and confirmations
 - **Screening Result PDF to Email** - Screening results are now automatically sent to the patient's email as a PDF attachment (using the health_check template)
-- **Inventory Management** - Medicine and equipment tracking
+- **Inventory Management** - Medicine and equipment tracking with batch management
+  - **Dual Stock System**: Manages both batch inventory (`medicine_batches`) and main inventory (`medicines`)
+  - **Automatic Stock Reduction**: Automatically reduces stock when patients purchase medicines
+  - **Batch Tracking**: Track medicine batches with expiration dates and supplier information
+  - **Stock Validation**: Prevents overselling with real-time stock validation
 - **Community Platform** - Patient community and health information sharing
 
 ### 🌐 Online Services
@@ -280,6 +284,7 @@ After seeding, you can use these default accounts:
 - **Image Optimization** - Automated image compression
 - **Lazy Loading** - On-demand resource loading
 - **Queue Processing** - Background job handling
+- **Stock Management Optimization** - Efficient dual-stock system with batch tracking
 
 ## 🧪 Testing
 
@@ -292,6 +297,9 @@ php artisan test --testsuite=Feature
 
 # Generate test coverage
 php artisan test --coverage
+
+# Test medicine stock functionality
+php artisan tinker --execute="echo 'Testing Medicine Stock:'; \$batch = \App\Models\Medicines\MedicineBatch::first(); if(\$batch) { echo 'Before: ' . \$batch->quantity; \$batch->deductStock(1); echo 'After: ' . \$batch->quantity; }"
 ```
 
 ## 📦 Deployment
@@ -419,11 +427,46 @@ POST /api/patients
 }
 ```
 
+### Medicine Inventory
+```bash
+# List medicines with batches
+GET /api/medicines?include=batches
+
+# Create medicine batch
+POST /api/medicine-batches
+{
+  "medicine_id": 1,
+  "batch_number": "BATCH-001",
+  "quantity": 100,
+  "expiration_date": "2025-12-31",
+  "supplier": "Supplier Name"
+}
+
+# Process medicine purchase (reduces stock)
+POST /api/payments
+{
+  "patient_id": 1,
+  "medicine_batch_id": 1,
+  "quantity_product": 5,
+  "payment_method": "cash",
+  "amount_paid": 50000
+}
+```
+
 ## 🐛 Troubleshooting
 
 ### Common Issues
 
-**1. Permission Errors**
+**1. Medicine Stock Issues**
+```bash
+# Check medicine stock status
+php artisan tinker --execute="echo 'Medicine Stock Check:'; \$batch = \App\Models\Medicines\MedicineBatch::first(); if(\$batch) { echo 'Batch: ' . \$batch->batch_number . ' - Stock: ' . \$batch->quantity; }"
+
+# Reset medicine stock if needed
+php artisan tinker --execute="\$batch = \App\Models\Medicines\MedicineBatch::first(); if(\$batch) { \$batch->quantity = 10; \$batch->save(); echo 'Stock reset to 10'; }"
+```
+
+**2. Permission Errors**
 ```bash
 sudo chown -R www-data:www-data storage bootstrap/cache
 chmod -R 775 storage bootstrap/cache
@@ -441,7 +484,16 @@ nvm use 18
 - Ensure database server is running
 - Verify firewall settings
 
-**4. Queue Jobs Not Processing**
+**4. Medicine Stock Not Updating**
+```bash
+# Check payment logs
+tail -f storage/logs/laravel.log | grep "STOCK"
+
+# Verify medicine batch data
+php artisan tinker --execute="echo 'Batch Check:'; \App\Models\Medicines\MedicineBatch::all()->each(function(\$b) { echo \$b->batch_number . ': ' . \$b->quantity . PHP_EOL; });"
+```
+
+**5. Queue Jobs Not Processing**
 ```bash
 # Check queue status
 php artisan queue:work --verbose

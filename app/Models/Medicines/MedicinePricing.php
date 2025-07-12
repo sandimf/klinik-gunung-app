@@ -17,15 +17,4 @@ class MedicinePricing extends Model
     {
         return $this->belongsTo(Medicine::class);
     }
-
-    public function batches()
-    {
-        return $this->hasMany(MedicineBatch::class);
-    }
-
-    // Relasi ke pricing obat
-    public function pricing()
-    {
-        return $this->hasOne(MedicinePricing::class);
-    }
 }

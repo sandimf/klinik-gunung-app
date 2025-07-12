@@ -76,9 +76,39 @@ export default function ScreeningDetails({ screening }) {
                         <TableRow key={answer.id}>
                           <TableCell className="font-medium">{answer.question.question_text}</TableCell>
                           <TableCell>
-                            {typeof answer.answer_text === 'object'
-                              ? JSON.stringify(answer.answer_text)
-                              : answer.answer_text}
+                            {(() => {
+                              let displayText = answer.answer_text;
+
+                              // Parse JSON jika jawaban adalah JSON string (untuk checkbox_textarea)
+                              if (typeof answer.answer_text === 'string' && (answer.answer_text.startsWith('{') || answer.answer_text.startsWith('['))) {
+                                try {
+                                  const parsed = JSON.parse(answer.answer_text);
+                                  if (parsed && typeof parsed === 'object') {
+                                    if (parsed.options && parsed.textarea !== undefined) {
+                                      const options = parsed.options;
+                                      const textarea = parsed.textarea;
+
+                                      if (options === 'N/A' && !textarea) {
+                                        displayText = 'Tidak';
+                                      } else if (options === 'N/A') {
+                                        displayText = textarea;
+                                      } else if (!textarea) {
+                                        displayText = options;
+                                      } else {
+                                        displayText = options + ' - ' + textarea;
+                                      }
+                                    } else {
+                                      displayText = Array.isArray(parsed) ? parsed.join(', ') : JSON.stringify(parsed);
+                                    }
+                                  }
+                                } catch (e) {
+                                  // Jika gagal parse, gunakan string asli
+                                  displayText = answer.answer_text;
+                                }
+                              }
+
+                              return displayText;
+                            })()}
                           </TableCell>
                         </TableRow>
                       ))}

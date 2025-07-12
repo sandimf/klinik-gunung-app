@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { Head, usePage } from '@inertiajs/react';
+import { Head, usePage, Link, router } from '@inertiajs/react';
 import CashierSidebar from "@/Layouts/Dashboard/CashierSidebarLayout";
 import { Input } from "@/Components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/Components/ui/table";
-import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/Components/ui/pagination";
 import {
     flexRender,
     getCoreRowModel,
@@ -13,39 +12,48 @@ import {
     useReactTable,
 } from "@tanstack/react-table";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/Components/ui/dropdown-menu";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Search } from "lucide-react";
 import { Button } from '@/Components/ui/button';
 import { CreditCard, Printer } from 'lucide-react';
 import PaymentDialog from './Payments/OfflinePayments';
-import { Link } from '@inertiajs/react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/Components/ui/select';
 
 const ScreeningIndex = ({
-    screenings_offline = [],
-    screenings_online = [],
+    screenings_offline = {},
+    screenings_online = {},
     medicines,
     amounts = [],
+    filters = {},
 }) => {
-    const [searchTerm, setSearchTerm] = useState('');
-    const [filter, setFilter] = useState('offline');
-    const [currentPage, setCurrentPage] = useState(1);
+    // Inisialisasi hanya sekali dari props
+    const [searchTerm, setSearchTerm] = useState(() => filters.search || "");
+    const [filter, setFilter] = useState(() => filters.type || 'offline');
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [paymentScreening, setPaymentScreening] = useState(null);
 
-    const itemsPerPage = 10;
-
     // Pilih data sesuai filter
     const screenings = filter === 'offline' ? screenings_offline : screenings_online;
+    const data = screenings.data || [];
 
-    const filteredScreenings = screenings.filter(screening =>
-        screening.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
 
-    const totalPages = Math.ceil(filteredScreenings.length / itemsPerPage);
-    const paginatedScreenings = filteredScreenings.slice(
-        (currentPage - 1) * itemsPerPage,
-        currentPage * itemsPerPage
-    );
+    // Pagination handler
+    const handlePageChange = (url) => {
+        if (url) {
+            router.get(url, { search: searchTerm, type: filter }, { preserveState: true, replace: true });
+        }
+    };
+
+    // Search handler
+    const handleSearch = (e) => {
+        e.preventDefault();
+        router.get(route('cashier.screening'), { search: searchTerm, type: filter }, { preserveState: true, replace: true });
+    };
+
+    // Filter handler
+    const handleFilterChange = (value) => {
+        setFilter(value);
+        router.get(route('cashier.screening'), { search: searchTerm, type: value }, { preserveState: true, replace: true });
+    };
 
     const handlePayment = (screening) => {
         setPaymentScreening(screening);
@@ -56,6 +64,8 @@ const ScreeningIndex = ({
         setIsDialogOpen(false);
         setPaymentScreening(null);
     };
+
+
 
     function ScreeningDataTable({ data, filter, onPayment }) {
         const columns = React.useMemo(
@@ -89,14 +99,14 @@ const ScreeningIndex = ({
                             id: "aksi",
                             header: "Aksi/Status",
                             cell: ({ row }) => {
-                                if (row.original.screening_status === "Pending") {
+                                if (row.original.screening_status === "pending") {
                                     return <span className="text-yellow-600 font-semibold">Sedang Diperiksa</span>;
                                 }
-                                if (row.original.payment_status === "Completed") {
+                                if (row.original.payment_status === "completed") {
                                     return <span className="text-green-600 font-semibold">Dibayar</span>;
                                 }
                                 return (
-                                    <Button onClick={() => onPayment(row.original)}>
+                                    <Button onClick={() => onPayment(row.original)} variant="ghost">
                                         <CreditCard className="h-4 w-4 mr-2" />
                                         Bayar
                                     </Button>
@@ -107,7 +117,7 @@ const ScreeningIndex = ({
                             id: "pdf",
                             header: "PDF",
                             cell: ({ row }) =>
-                                row.original.screening_status === "Completed" ? (
+                                row.original.screening_status === "completed" ? (
                                     <a
                                         href={route("pdf.healthcheck.cashier", row.original.uuid)}
                                     >
@@ -123,6 +133,7 @@ const ScreeningIndex = ({
             ],
             [filter, onPayment]
         );
+        console.log(screenings);
 
         const [globalFilter, setGlobalFilter] = React.useState("");
         const table = useReactTable({
@@ -139,12 +150,17 @@ const ScreeningIndex = ({
         return (
             <div className="w-full">
                 <div className="flex items-center py-4 gap-2">
-                    <Input
-                        placeholder="Cari nama pasien..."
-                        value={globalFilter ?? ""}
-                        onChange={e => setGlobalFilter(e.target.value)}
-                        className="max-w-sm"
-                    />
+                    <div className="flex items-center py-4 gap-4">
+                        <form onSubmit={handleSearch} className="flex gap-2">
+                            <Input
+                                placeholder="Cari nama pasien..."
+                                value={searchTerm}
+                                onChange={e => setSearchTerm(e.target.value)}
+                                className="max-w-sm"
+                            />
+                            <Button type="submit" variant='ghost'> <Search /> </Button>
+                        </form>
+                    </div>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button variant="outline" className="ml-auto">
@@ -163,7 +179,7 @@ const ScreeningIndex = ({
                             ))}
                         </DropdownMenuContent>
                     </DropdownMenu>
-                    <Select value={filter} onValueChange={setFilter}>
+                    <Select value={filter} onValueChange={handleFilterChange}>
                         <SelectTrigger className="w-[120px]">
                             <SelectValue placeholder="Tipe" />
                         </SelectTrigger>
@@ -215,35 +231,34 @@ const ScreeningIndex = ({
         <CashierSidebar header={'Daftar Screening'}>
             <Head title="Screening" />
             <h2 className='text-2xl font-bold tracking-tight'>Screening</h2>
-            <ScreeningDataTable data={paginatedScreenings} filter={filter} onPayment={handlePayment} />
+            <p className="text-muted-foreground">Daftar seluruh hasil screening pasien yang telah membayar dan belum.</p>
+            <ScreeningDataTable data={data} filter={filter} onPayment={handlePayment} />
 
-            {filteredScreenings.length > 0 && (
-                <Pagination className="mt-4">
-                    <PaginationContent>
-                        <PaginationItem>
-                            <PaginationPrevious
-                                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                                disabled={currentPage === 1}
-                            />
-                        </PaginationItem>
-                        {[...Array(totalPages)].map((_, i) => (
-                            <PaginationItem key={i}>
-                                <PaginationLink
-                                    onClick={() => setCurrentPage(i + 1)}
-                                    isActive={currentPage === i + 1}
-                                >
-                                    {i + 1}
-                                </PaginationLink>
-                            </PaginationItem>
-                        ))}
-                        <PaginationItem>
-                            <PaginationNext
-                                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                                disabled={currentPage === totalPages}
-                            />
-                        </PaginationItem>
-                    </PaginationContent>
-                </Pagination>
+            {/* Pagination dari backend */}
+            {screenings && (
+                <div className="flex items-center justify-between space-x-2 py-4">
+                    <div className="text-muted-foreground text-sm">
+                        Page {screenings.current_page} of {screenings.last_page}
+                    </div>
+                    <div className="space-x-2">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handlePageChange(screenings.prev_page_url)}
+                            disabled={!screenings.prev_page_url}
+                        >
+                            Previous
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handlePageChange(screenings.next_page_url)}
+                            disabled={!screenings.next_page_url}
+                        >
+                            Next
+                        </Button>
+                    </div>
+                </div>
             )}
 
             <PaymentDialog

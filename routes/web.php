@@ -1,60 +1,63 @@
 <?php
 
-use App\Http\Controllers\Admin\v2\AdminPanelController as V2AdminPanelController;
-use App\Http\Controllers\Admin\v2\ApikeyController as v2ApikeyController;
-use App\Http\Controllers\Admin\v2\LoginSettingController;
-use App\Http\Controllers\Admin\v2\Questioner\QuestionerForScreeningController;
-use App\Http\Controllers\Admin\v2\Questioner\QuestionerForScreeningOnlineController;
-use App\Http\Controllers\Appointments\AppointmentController;
-use App\Http\Controllers\Appointments\AppointmentDoctorController;
-use App\Http\Controllers\Auth\ProviderController;
-use App\Http\Controllers\Cashier\v2\ActivityCashierController;
-use App\Http\Controllers\Cashier\v2\CompanionController;
-use App\Http\Controllers\Clinic\MedicalRecordController;
-use App\Http\Controllers\Clinic\OfficeController;
-use App\Http\Controllers\Roles\Paramedis\PhysicalExaminations\PhysicalExaminationController;
-use App\Http\Controllers\Clinic\PhysicalExaminationOnlineController;
-use App\Http\Controllers\Community\CommunityController;
-use App\Http\Controllers\Community\CreateAccountController;
-use App\Http\Controllers\Community\ProfileAccountController;
-use App\Http\Controllers\Dashboard\ManagerPanelController;
-use App\Http\Controllers\Dashboard\PatientsPanelController;
-use App\Http\Controllers\Data\PatientsDataController;
-use App\Http\Controllers\Data\QrcodeController;
-use App\Http\Controllers\Medicines\MedicineController;
-use App\Http\Controllers\Paramedis\v2\HealthCheckController;
-use App\Http\Controllers\Paramedis\v2\HistoryHealthCheckController;
-use App\Http\Controllers\Paramedis\v2\MedicalServiceController;
-use App\Http\Controllers\Payments\PaymentsController;
-use App\Http\Controllers\Payments\PaymentsOnlineController;
-use App\Http\Controllers\Pdf\CustomPdfController;
-use App\Http\Controllers\Product\ProductController;
+use Inertia\Inertia;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\Report\CashierReportController;
-use App\Http\Controllers\Report\ManagerReportController;
-use App\Http\Controllers\Report\ParamedisReportController;
-use App\Http\Controllers\Roles\Admin\Dashboard\DashboardController;
-use App\Http\Controllers\Roles\Admin\Management\AmountScreeningController;
-use App\Http\Controllers\Roles\Admin\Management\EmergencyContactController;
-use App\Http\Controllers\Roles\Admin\Management\StaffController;
-use App\Http\Controllers\Roles\Admin\Scanner\ScanController;
-use App\Http\Controllers\Roles\Cashier\CashierDashboardController;
-use App\Http\Controllers\Roles\Cashier\Profile\ProfileCashierController;
-use App\Http\Controllers\Roles\Doctor\DoctorDashboardController;
-use App\Http\Controllers\Roles\Doctor\Managements\PatientsListController;
-use App\Http\Controllers\Roles\Doctor\Profile\DoctorProfileController;
-use App\Http\Controllers\Roles\Doctor\Screenings\DoctorScreeningController;
-use App\Http\Controllers\Roles\Doctor\Service\ConsultationController;
-use App\Http\Controllers\Screening\GuestScreeningController;
-use App\Http\Controllers\Screening\InClinicScreeningController;
-use App\Http\Controllers\Screening\RemoteScreeningController;
-use App\Http\Controllers\Transaction\PurchaseController;
+use App\Http\Controllers\Data\QrcodeController;
+use App\Http\Controllers\Auth\ProviderController;
+use App\Http\Controllers\Clinic\OfficeController;
+use App\Http\Controllers\Pdf\CustomPdfController;
 use App\Http\Controllers\Users\CashierController;
 use App\Http\Controllers\Users\ManagerController;
+use App\Http\Controllers\Chatbot\ChatbotController;
+use App\Http\Controllers\Product\ProductController;
 use App\Http\Controllers\Users\ParamedisController;
 use App\Http\Controllers\Users\WarehouseController;
-use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
+use App\Http\Controllers\Data\PatientsDataController;
+use App\Http\Controllers\Payments\PaymentsController;
+use App\Http\Controllers\Medicines\MedicineController;
+use App\Http\Controllers\Community\CommunityController;
+use App\Http\Controllers\Cashier\v2\CompanionController;
+use App\Http\Controllers\Clinic\MedicalRecordController;
+use App\Http\Controllers\Report\CashierReportController;
+use App\Http\Controllers\Report\ManagerReportController;
+use App\Http\Controllers\Transaction\PurchaseController;
+use App\Http\Controllers\Admin\v2\LoginSettingController;
+use App\Http\Controllers\Dashboard\ManagerPanelController;
+use App\Http\Controllers\Report\ParamedisReportController;
+use App\Http\Controllers\Community\CreateAccountController;
+use App\Http\Controllers\Dashboard\PatientsPanelController;
+use App\Http\Controllers\Payments\PaymentsOnlineController;
+use App\Http\Controllers\Appointments\AppointmentController;
+use App\Http\Controllers\Community\ProfileAccountController;
+use App\Http\Controllers\Paramedis\v2\HealthCheckController;
+use App\Http\Controllers\Roles\Admin\Scanner\ScanController;
+use App\Http\Controllers\Screening\GuestScreeningController;
+use App\Http\Controllers\Screening\RemoteScreeningController;
+use App\Http\Controllers\Cashier\v2\ActivityCashierController;
+use App\Http\Controllers\Paramedis\v2\MedicalServiceController;
+use App\Http\Controllers\Screening\InClinicScreeningController;
+use App\Http\Controllers\Roles\Admin\Management\StaffController;
+use App\Http\Controllers\Roles\Doctor\DoctorDashboardController;
+use App\Http\Controllers\Appointments\AppointmentDoctorController;
+use App\Http\Controllers\Roles\Cashier\CashierDashboardController;
+use App\Http\Controllers\Paramedis\v2\HistoryHealthCheckController;
+use App\Http\Controllers\Roles\Admin\Dashboard\DashboardController;
+use App\Http\Controllers\Clinic\PhysicalExaminationOnlineController;
+use App\Http\Controllers\Roles\Doctor\Service\ConsultationController;
+use App\Http\Controllers\Roles\Doctor\Profile\DoctorProfileController;
+use App\Http\Controllers\Roles\Cashier\Profile\ProfileCashierController;
+use App\Http\Controllers\Admin\v2\ApikeyController as v2ApikeyController;
+use App\Http\Controllers\Roles\Doctor\Managements\PatientsListController;
+use App\Http\Controllers\Roles\Admin\Management\AmountScreeningController;
+use App\Http\Controllers\Roles\Admin\Management\EmergencyContactController;
+use App\Http\Controllers\Roles\Doctor\Screenings\DoctorScreeningController;
+use App\Http\Controllers\Admin\v2\Questioner\QuestionerForScreeningController;
+use App\Http\Controllers\Admin\v2\AdminPanelController as V2AdminPanelController;
+use App\Http\Controllers\Admin\v2\Questioner\QuestionerForScreeningOnlineController;
+use App\Http\Controllers\Roles\Cashier\MedicalRecord\CashierMedicalRecordController;
+use App\Http\Controllers\Roles\Paramedis\MedicalRecord\ParamedisMedicalRecordController;
+use App\Http\Controllers\Roles\Paramedis\PhysicalExaminations\PhysicalExaminationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -92,6 +95,7 @@ Route::middleware(['auth'])->group(function () {
     // ===================================================================
     // SHARED AUTHENTICATED ROUTES
     // ===================================================================
+    Route::post('chatbot', [ChatbotController::class, 'post'])->name('chatbot.post');
 
     Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
@@ -141,6 +145,8 @@ Route::middleware(['auth'])->group(function () {
         // Dashboard
         Route::get('/', [DoctorDashboardController::class, 'index'])->name('doctor.dashboard');
         // Profile
+        Route::get('chatbot', [ChatbotController::class, 'doctor'])->name('chatbot.doctor');
+
         Route::get('profile', [DoctorProfileController::class, 'index'])->name('doctor.profile');
         // Core Features
         Route::get('screening', [DoctorScreeningController::class, 'index'])->name('doctor.screening');
@@ -172,7 +178,11 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/', [ParamedisController::class, 'index'])->name('paramedis.dashboard');
         Route::get('profile', [ParamedisController::class, 'profile'])->name('paramedis.profile');
         Route::get('screenings', [ParamedisController::class, 'showScreenings'])->name('paramedis.screenings');
+        Route::get('chatbot', [ChatbotController::class, 'paramedis'])->name('chatbot.paramedis');
 
+
+        Route::get('medical-record', [ParamedisMedicalRecordController::class, 'index'])->name('medical-record.paramedis');
+        Route::get('medical-record/{uuid}', [ParamedisMedicalRecordController::class, 'show'])->name('show.medical-record.paramedis');
         // Screening Management
         Route::get('screening/detail/{uuid}', [HealthCheckController::class, 'show'])->name('paramedis.detail');
         Route::get('screening/history/detail/{uuid}', [HistoryHealthCheckController::class, 'show'])->name('history.healthcheck');
@@ -213,6 +223,8 @@ Route::middleware(['auth'])->group(function () {
         // Dashboard & Profile
         Route::get('/', [CashierDashboardController::class, 'index'])->name('cashier.dashboard');
         Route::get('profile', [ProfileCashierController::class, 'index'])->name('cashier.profile');
+
+        Route::get('chatbot', [ChatbotController::class, 'cashier'])->name('chatbot.cashier');
 
         // Screening Management
         Route::get('screening', [CashierController::class, 'screenings'])->name('cashier.screening');
@@ -265,6 +277,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('activity-cashier', [ActivityCashierController::class, 'index'])->name('acitivity-cashier.index');
 
         Route::get('report/health-check/{uuid}', [ParamedisReportController::class, 'generatePDFHealthCheck'])->name('pdf.healthcheck.cashier');
+        Route::get('medical-record', [CashierMedicalRecordController::class, 'index'])->name('medical-record.cashier');
+        Route::get('medical-record/{uuid}', [CashierMedicalRecordController::class, 'show'])->name('show.medical-record.cashier');
     });
 
     // ===================================================================
@@ -275,6 +289,9 @@ Route::middleware(['auth'])->group(function () {
         // Dashboard & Profile
         Route::get('/', [DashboardController::class, 'index'])->name('admin.dashboard');
         Route::get('profile', [V2AdminPanelController::class, 'profile'])->name('admin.profile');
+
+        Route::get('chatbot', [ChatbotController::class, 'index'])->name('chatbot.admin');
+
 
         // Staff Management
         Route::resource('staff', StaffController::class)
@@ -384,7 +401,7 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/patients/{id}/physical', [ParamedisController::class, 'updatePhysicalAttributes'])
         ->name('patients.updatePhysical');
 
-    Route::post('/paramedis/screenings/ai-saran', [\App\Http\Controllers\Paramedis\ScreeningAiSuggestionController::class, 'aiSaran'])->name('paramedis.screenings.ai-saran');
+    Route::post('/screening/ai-suggestion', [\App\Http\Controllers\Paramedis\ScreeningAiSuggestionController::class, 'suggest'])->name('screening.ai.suggestion');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

@@ -26,14 +26,34 @@ public function store(Request $request)
         'quantity_product' => 'nullable|integer|min:1',
         'payment_proof' => 'nullable|file|image|max:2048',
         'selected_medicine_id' => 'nullable|exists:medicines,id', // Ganti ke medicines table
+        'medicine_batch_id' => 'nullable|exists:medicine_batches,id', // Tambahkan validasi batch
         'selectedOptions' => 'nullable|array',
     ]);
 
     // Menyiapkan data untuk disimpan
-    $data = $request->all();
+    $data = $request->only([
+        'cashier_id',
+        'patient_id',
+        'payment_method',
+        'amount_paid',
+        'payment_proof',
+        'selectedOptions',
+        'selected_medicine_id',
+        'medicine_batch_id',
+    ]);
+    
+    // Ambil quantity_product dari medicine_quantity jika ada
+    $data['quantity_product'] = $request->input('medicine_quantity');
 
     // Log data yang diterima untuk debugging
-    \Log::info('DATA RECEIVED:', $data);
+    \Log::info('REQUEST ALL DATA:', $request->all());
+    \Log::info('MEDICINE_QUANTITY FROM REQUEST:', ['medicine_quantity' => $request->input('medicine_quantity')]);
+    \Log::info('DEBUG DATA', [
+        'quantity_product' => $data['quantity_product'] ?? null,
+        'selected_medicine_id' => $data['selected_medicine_id'] ?? null,
+        'medicine_batch_id' => $data['medicine_batch_id'] ?? null,
+        'all_data' => $data,
+    ]);
 
     // Jika ada file bukti pembayaran, simpan file tersebut
     if ($request->hasFile('payment_proof')) {
@@ -44,64 +64,71 @@ public function store(Request $request)
     $data['payment_status'] = 1;
 
     // Proses pengurangan stok obat SEBELUM menyimpan pembayaran
-    if (!empty($data['quantity_product']) && !empty($data['selected_medicine_id'])) {
+    if (isset($data['quantity_product']) && $data['quantity_product'] > 0 && !empty($data['medicine_batch_id'])) {
         \Log::info('PROCESSING MEDICINE STOCK REDUCTION', [
             'quantity_product' => $data['quantity_product'],
-            'selected_medicine_id' => $data['selected_medicine_id']
+            'medicine_batch_id' => $data['medicine_batch_id']
         ]);
-        
         try {
-            // Cari medicine berdasarkan selected_medicine_id
-            $medicine = \App\Models\Medicines\Medicine::findOrFail($data['selected_medicine_id']);
-            \Log::info('MEDICINE FOUND', [
-                'medicine_name' => $medicine->medicine_name,
-                'current_quantity' => $medicine->quantity
+            // Cari batch berdasarkan medicine_batch_id
+            $batch = \App\Models\Medicines\MedicineBatch::findOrFail($data['medicine_batch_id']);
+            \Log::info('BATCH FOUND', [
+                'batch_id' => $batch->id,
+                'batch_number' => $batch->batch_number,
+                'current_quantity' => $batch->quantity
             ]);
-            
-            // Cek apakah stok mencukupi
-            if ($medicine->quantity >= $data['quantity_product']) {
-                $oldQuantity = $medicine->quantity;
-                $medicine->quantity -= $data['quantity_product'];
-                $medicine->save();
-                
-                \Log::info('STOCK REDUCED SUCCESSFULLY', [
-                    'medicine_name' => $medicine->medicine_name,
-                    'old_quantity' => $oldQuantity,
-                    'new_quantity' => $medicine->quantity,
+            // Cek apakah stok mencukupi dan kurangi stok
+            $oldBatchQty = $batch->quantity;
+            if ($batch->deductStock($data['quantity_product'])) {
+                // Kurangi stok utama juga
+                $medicine = $batch->medicine;
+                if ($medicine) {
+                    $medicine->deductStock($data['quantity_product']);
+                }
+                \Log::info('BATCH STOCK REDUCED SUCCESSFULLY', [
+                    'batch_id' => $batch->id,
+                    'batch_number' => $batch->batch_number,
+                    'old_quantity' => $oldBatchQty,
+                    'new_quantity' => $batch->quantity,
                     'reduced_by' => $data['quantity_product']
                 ]);
             } else {
-                \Log::error('INSUFFICIENT STOCK', [
-                    'medicine_name' => $medicine->medicine_name,
+                \Log::error('INSUFFICIENT BATCH STOCK', [
+                    'batch_id' => $batch->id,
                     'required' => $data['quantity_product'],
-                    'available' => $medicine->quantity
+                    'available' => $batch->quantity
                 ]);
-                
                 return redirect()->back()->withErrors([
-                    'quantity_product' => "Stok tidak mencukupi untuk obat {$medicine->medicine_name}. Stok tersedia: {$medicine->quantity}"
+                    'quantity_product' => "Stok batch tidak mencukupi. Stok tersedia: {$batch->quantity}"
                 ]);
             }
         } catch (\Exception $e) {
-            \Log::error('ERROR REDUCING STOCK', [
+            \Log::error('ERROR REDUCING BATCH STOCK', [
                 'error' => $e->getMessage(),
-                'selected_medicine_id' => $data['selected_medicine_id']
+                'medicine_batch_id' => $data['medicine_batch_id']
             ]);
-            
             return redirect()->back()->withErrors([
-                'quantity_product' => 'Terjadi error saat memproses obat: ' . $e->getMessage()
+                'quantity_product' => 'Terjadi error saat memproses stok batch: ' . $e->getMessage()
             ]);
         }
     } else {
         \Log::info('NO MEDICINE STOCK REDUCTION', [
             'quantity_product' => $data['quantity_product'] ?? 'null',
-            'selected_medicine_id' => $data['selected_medicine_id'] ?? 'null'
+            'medicine_batch_id' => $data['medicine_batch_id'] ?? 'null',
+            'reason' => !isset($data['quantity_product']) ? 'quantity_product not set' : 
+                       ($data['quantity_product'] <= 0 ? 'quantity_product <= 0' : 'medicine_batch_id empty')
         ]);
     }
 
     // Membuat data pembayaran setelah stok berhasil dikurangi
     try {
-        $payment = Payments::create($data);
-        \Log::info('PAYMENT CREATED', ['payment_id' => $payment->id]);
+        $payment = Payments::create($data); // medicine_batch_id akan ikut tersimpan jika ada kolomnya di tabel
+        \Log::info('PAYMENT CREATED', [
+            'payment_id' => $payment->id,
+            'quantity_product' => $payment->quantity_product,
+            'medicine_batch_id' => $payment->medicine_batch_id,
+            'selected_medicine_id' => $payment->selected_medicine_id
+        ]);
     } catch (\Exception $e) {
         \Log::error('ERROR CREATING PAYMENT', ['error' => $e->getMessage()]);
         return redirect()->back()->withErrors(['payment' => 'Terjadi error saat menyimpan pembayaran.']);

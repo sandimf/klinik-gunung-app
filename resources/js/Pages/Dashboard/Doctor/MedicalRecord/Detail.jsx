@@ -15,7 +15,7 @@ import { Head } from "@inertiajs/react";
 export default function MedicalRecordDetail({ medicalRecord }) {
     return (
         <DoctorSidebar header={`Medical Record ${medicalRecord.patient?.name}`}>
-            <Head title="Medical Record"/>
+            <Head title="Medical Record" />
             <Card>
                 <CardHeader className="flex flex-row items-center gap-4">
                     <Avatar className="h-8 w-8 rounded-lg">
@@ -23,8 +23,8 @@ export default function MedicalRecordDetail({ medicalRecord }) {
                             src={
                                 medicalRecord.patient?.user?.avatar
                                     ? medicalRecord.patient?.user.avatar.startsWith(
-                                          "http"
-                                      )
+                                        "http"
+                                    )
                                         ? medicalRecord.patient.user.avatar
                                         : `/storage/${user.avatar}`
                                     : "/storage/avatar/avatar.svg"
@@ -51,8 +51,8 @@ export default function MedicalRecordDetail({ medicalRecord }) {
                                 {medicalRecord.patient?.gender === "Male"
                                     ? "Laki-laki"
                                     : medicalRecord.patient?.gender === "Female"
-                                    ? "Perempuan"
-                                    : "Tidak Diketahui"}
+                                        ? "Perempuan"
+                                        : "Tidak Diketahui"}
                             </span>
                             <Badge>{medicalRecord.patient.bloodType}</Badge>
                         </div>
@@ -211,6 +211,25 @@ export default function MedicalRecordDetail({ medicalRecord }) {
                     {/* Informasi Pasien */}
 
                     <Separator />
+                    {/* Kuesioner Screening Pasien */}
+                    {medicalRecord.patient?.answers?.length > 0 && (
+                        <>
+                            <div>
+                                <h3 className="font-semibold mb-2">Kuesioner Screening Pasien</h3>
+                                <div className="space-y-2">
+                                    {medicalRecord.patient.answers.map((answer, idx) => (
+                                        <div key={idx} className="p-2 rounded">
+                                            <div className="text-sm text-muted-foreground">
+                                                {answer.question?.question_text || "Pertanyaan"}
+                                            </div>
+                                            <div className="font-medium">{answer.answer_text}</div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                            <Separator />
+                        </>
+                    )}
                 </CardContent>
             </Card>
         </DoctorSidebar>

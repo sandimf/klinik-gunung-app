@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Head } from "@inertiajs/react";
+import { Head, Link, router } from "@inertiajs/react";
 import DoctorSidebar from "@/Layouts/Dashboard/DoctorSidebarLayout";
 import { Input } from "@/Components/ui/input";
 import {
@@ -11,11 +11,11 @@ import {
     TableRow,
 } from "@/Components/ui/table";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/Components/ui/dropdown-menu";
-import { ChevronDown, Eye } from "lucide-react";
+import { ChevronDown, Eye, Search } from "lucide-react";
 import { Badge } from "@/Components/ui/badge";
-import { Link } from "@inertiajs/inertia-react";
+import { Button } from "@/Components/ui/button";
 
-function PatientsDataTable({ data }) {
+function PatientsDataTable({ data, searchTerm, setSearchTerm, handleSearch }) {
     const columns = React.useMemo(
         () => [
             {
@@ -85,13 +85,18 @@ function PatientsDataTable({ data }) {
 
     return (
         <div className="w-full">
+            {/* Form search di atas dropdown column */}
+
             <div className="flex items-center py-4">
-                <Input
-                    placeholder="Cari nama pasien..."
-                    value={globalFilter ?? ""}
-                    onChange={e => setGlobalFilter(e.target.value)}
-                    className="max-w-sm"
-                />
+                <form onSubmit={handleSearch} className="flex gap-2 mb-2">
+                    <Input
+                        placeholder="Cari nama pasien..."
+                        value={searchTerm}
+                        onChange={e => setSearchTerm(e.target.value)}
+                        className="max-w-sm"
+                    />
+                    <Button type="submit" variant="ghost"><Search /></Button>
+                </form>
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <button className="ml-auto border rounded px-3 py-2 flex items-center text-sm">
@@ -145,25 +150,6 @@ function PatientsDataTable({ data }) {
                     </TableBody>
                 </Table>
             </div>
-            {/* Pagination Navigation */}
-            <div className="flex items-center justify-end space-x-2 py-4">
-                <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => table.previousPage()}
-                    disabled={!table.getCanPreviousPage()}
-                >
-                    Previous
-                </Button>
-                <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => table.nextPage()}
-                    disabled={!table.getCanNextPage()}
-                >
-                    Next
-                </Button>
-            </div>
         </div>
     );
 }
@@ -176,18 +162,57 @@ import {
     getSortedRowModel,
     useReactTable,
 } from "@tanstack/react-table";
-import { Button } from "@/Components/ui/button";
 
-export default function PatientsList({ patients }) {
+export default function PatientsList({ patients = {}, filters = {} }) {
     // Data dari Laravel paginator
     const data = patients?.data || [];
+    const [searchTerm, setSearchTerm] = useState(() => filters.search || "");
+
+    // Pagination handler
+    const handlePageChange = (url) => {
+        if (url) {
+            router.get(url, { search: searchTerm }, { preserveState: true, replace: true });
+        }
+    };
+
+    // Search handler
+    const handleSearch = (e) => {
+        e.preventDefault();
+        router.get(route('patients.doctor'), { search: searchTerm }, { preserveState: true, replace: true });
+    };
+
     return (
         <DoctorSidebar header={"Screening"}>
             <Head title="Screening" />
             <h1 className="text-2xl font-bold mb-6">Daftar Pasien</h1>
             <p className="text-muted-foreground mb-6">Berikut adalah daftar pasien yang telah melakukan screening di klinik.</p>
-            <PatientsDataTable data={data} />
-            {/* Pagination jika ada, bisa ditambahkan di sini */}
+            <PatientsDataTable data={data} searchTerm={searchTerm} setSearchTerm={setSearchTerm} handleSearch={handleSearch} />
+            {/* Pagination sederhana ala shadcn/ui */}
+            {patients && (
+                <div className="flex items-center justify-between space-x-2 py-4">
+                    <div className="text-muted-foreground text-sm">
+                        Page {patients.current_page} of {patients.last_page}
+                    </div>
+                    <div className="space-x-2">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handlePageChange(patients.prev_page_url)}
+                            disabled={!patients.prev_page_url}
+                        >
+                            Previous
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handlePageChange(patients.next_page_url)}
+                            disabled={!patients.next_page_url}
+                        >
+                            Next
+                        </Button>
+                    </div>
+                </div>
+            )}
         </DoctorSidebar>
     );
 }

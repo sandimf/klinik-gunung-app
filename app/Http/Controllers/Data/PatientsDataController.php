@@ -41,7 +41,7 @@ class PatientsDataController extends Controller
         }
 
         return redirect()
-            ->route('dashboard')
-            ->with('success', 'Profil pasien berhasil disimpan.');
+            ->route('screening.create')
+            ->with('success', 'Data kamu berhasil disimpan');
     }
 }

@@ -5,6 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title inertia>{{ config('app.name', 'Klinik Gunung') }}</title>
         <!-- Fonts -->
+          <meta name="csrf-token" content="{{ csrf_token() }}">
         <link rel="stylesheet" href="https://rsms.me/inter/inter.css"> <!-- fallback Inter -->
         <style>
           @font-face {

@@ -167,10 +167,10 @@ function HistoryAppointmentsDataTable({ data }) {
 
 export default function Appointments({ appointments }) {
   return (
-    <Sidebar header={'Riwayat Appoitments'}>
-      <Head title="Riwayat Appointments" />
+    <Sidebar header={'Riwayat Janji Mendatang'}>
+      <Head title="Riwayat janji Mendatang" />
       <Toaster position="top-center" />
-      <h2 className="text-2xl font-bold mb-4">Riwayat Appointments</h2>
+      <h2 className="text-2xl font-bold mb-4">Riwayat Janji Mendatang</h2>
       <HistoryAppointmentsDataTable data={appointments} />
     </Sidebar>
   );

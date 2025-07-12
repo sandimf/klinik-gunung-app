@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Head, usePage, Link } from "@inertiajs/react";
+import { Head, usePage, Link, router } from "@inertiajs/react";
 import ParamedisSidebar from "@/Layouts/Dashboard/ParamedisSidebarLayout";
 import { Input } from "@/Components/ui/input";
 import {
@@ -19,17 +19,19 @@ import {
     useReactTable,
 } from "@tanstack/react-table";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/Components/ui/dropdown-menu";
-import { ChevronDown, Book, Pen, Printer } from "lucide-react";
+import { ChevronDown, Book, Pen, Printer, Search } from "lucide-react";
 import ScreeningDialog from "../_components/PhysicalExamination";
 import { Badge } from "@/Components/ui/badge";
 import { Button } from "@/Components/ui/button";
 
-const ScreeningHistoryIndex = ({ screenings = [] }) => {
+const ScreeningHistoryIndex = ({ screenings = {}, filters = {} }) => {
     const { errors } = usePage().props;
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [examiningScreening, setExaminingScreening] = useState(null);
+    const [searchTerm, setSearchTerm] = useState(() => filters.search || "");
 
-    const [globalFilter, setGlobalFilter] = useState("");
+    // Ambil data dari pagination backend
+    const data = screenings.data || [];
 
     const columns = React.useMemo(
         () => [
@@ -49,8 +51,8 @@ const ScreeningHistoryIndex = ({ screenings = [] }) => {
                 accessorKey: "jenis_screening",
                 header: "Jenis Screening",
                 cell: ({ row }) => (
-                    <Badge variant={row.original.answers?.[0]?.isOnline === 1 ? "default" : "secondary"}>
-                        {row.original.answers?.[0]?.isOnline === 1 ? "Screening Online" : "Screening Offline"}
+                    <Badge variant={row.original.is_online === 1 ? "default" : "secondary"}>
+                        {row.original.is_online === 1 ? "Screening Online" : "Screening Offline"}
                     </Badge>
                 ),
             },
@@ -115,8 +117,9 @@ const ScreeningHistoryIndex = ({ screenings = [] }) => {
         []
     );
 
+    const [globalFilter, setGlobalFilter] = useState("");
     const table = useReactTable({
-        data: screenings,
+        data,
         columns,
         state: { globalFilter },
         onGlobalFilterChange: setGlobalFilter,
@@ -126,6 +129,19 @@ const ScreeningHistoryIndex = ({ screenings = [] }) => {
         getPaginationRowModel: getPaginationRowModel(),
     });
 
+    // Search handler
+    const handleSearch = (e) => {
+        e.preventDefault();
+        router.get(route('paramedis.history'), { search: searchTerm }, { preserveState: true, replace: true });
+    };
+
+    // Pagination handler
+    const handlePageChange = (url) => {
+        if (url) {
+            router.get(url, { search: searchTerm }, { preserveState: true, replace: true });
+        }
+    };
+
     return (
         <ParamedisSidebar header={"Riwayat Screening"}>
             <Head title="Riwayat Screening" />
@@ -133,12 +149,16 @@ const ScreeningHistoryIndex = ({ screenings = [] }) => {
             <h1 className="text-2xl font-bold mb-6">Riwayat Screening</h1>
             <p className="text-muted-foreground mb-6">Daftar seluruh hasil screening pasien yang telah dilakukan.</p>
             <div className="flex items-center py-4 gap-4">
-                <Input
-                    placeholder="Cari nama pasien..."
-                    value={globalFilter ?? ""}
-                    onChange={e => setGlobalFilter(e.target.value)}
-                    className="max-w-sm"
-                />
+                <form onSubmit={handleSearch} className="flex gap-2">
+                    <Input
+                        placeholder="Cari nama pasien..."
+                        value={searchTerm}
+                        onChange={e => setSearchTerm(e.target.value)}
+                        className="max-w-sm"
+                    />
+                    <Button variant="ghost" type="submit">
+                        <Search /> </Button>
+                </form>
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="outline" className="ml-auto">
@@ -192,6 +212,32 @@ const ScreeningHistoryIndex = ({ screenings = [] }) => {
                     </TableBody>
                 </Table>
             </div>
+            {/* Pagination sederhana ala shadcn/ui */}
+            {screenings && (
+                <div className="flex items-center justify-between space-x-2 py-4">
+                    <div className="text-muted-foreground text-sm">
+                        Page {screenings.current_page} of {screenings.last_page}
+                    </div>
+                    <div className="space-x-2">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handlePageChange(screenings.prev_page_url)}
+                            disabled={!screenings.prev_page_url}
+                        >
+                            Previous
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handlePageChange(screenings.next_page_url)}
+                            disabled={!screenings.next_page_url}
+                        >
+                            Next
+                        </Button>
+                    </div>
+                </div>
+            )}
             <ScreeningDialog
                 isOpen={isDialogOpen}
                 setIsOpen={setIsDialogOpen}

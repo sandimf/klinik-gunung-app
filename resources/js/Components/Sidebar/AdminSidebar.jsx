@@ -8,6 +8,7 @@ import {
     NotebookPen,
     Scan,
     Ghost,
+    Bot,
     Key,
     Contact,
     DollarSign
@@ -114,9 +115,17 @@ export function AppSidebar({ ...sidebarProps }) {
                 items: [
                     {
                         title: "Social Login",
-                        url: route("auth-settings.index"),
+                        url: route("apikey.index"),
+                        icon: Key,
+
                     },
                 ],
+            },
+            {
+                title: "Chat AI",
+                url: route("chatbot.admin"),
+                icon: Bot,
+
             },
             {
                 title: "Pengaturan",

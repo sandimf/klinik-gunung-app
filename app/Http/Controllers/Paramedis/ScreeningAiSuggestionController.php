@@ -4,54 +4,40 @@ namespace App\Http\Controllers\Paramedis;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
-use Inertia\Inertia;
+use OpenAI\Laravel\Facades\OpenAI;
+use App\Models\Users\Patients;
 
 class ScreeningAiSuggestionController extends Controller
 {
-    public function aiSaran(Request $request)
+    public function suggest(Request $request)
     {
-        $answers = $request->input('answers');
-        $patient = $request->input('patient');
+        $screeningId = $request->input('screening_id');
+        $screening = Patients::with(['answers.question'])->findOrFail($screeningId);
 
-        $prompt = "Berdasarkan data pasien berikut:\n";
-        $prompt .= "- Nama: {$patient['name']}\n";
-        $prompt .= "- Umur: {$patient['age']}\n";
-        $prompt .= "- Gender: {$patient['gender']}\n";
-        $prompt .= "- Tinggi: {$patient['tinggi_badan']} cm\n";
-        $prompt .= "- Berat: {$patient['berat_badan']} kg\n";
-        $prompt .= "\nJawaban kuesioner:\n";
-        foreach ($answers as $qa) {
-            $prompt .= "- {$qa['question']}: {$qa['answer']}\n";
+        $answers = $screening->answers->map(function($answer) {
+            return [
+                'pertanyaan' => $answer->question->question_text ?? '',
+                'jawaban' => $answer->answer_text,
+            ];
+        })->toArray();
+
+        $prompt = "Berdasarkan hasil screening berikut, berikan saran medis singkat, edukasi, atau tindak lanjut yang sesuai untuk pasien (jawab dalam bahasa Indonesia, singkat, dan profesional):\n\n";
+        foreach ($answers as $item) {
+            $prompt .= "- {$item['pertanyaan']}: {$item['jawaban']}\n";
         }
-        $prompt .= "\nApakah pasien ini layak untuk melakukan pendakian gunung? Berikan jawaban langsung tanpa pengantar, maksimal 3 kalimat. Gunakan bahasa profesional yang jelas dan mudah dimengerti. Fokus pada saran medis atau rekomendasi singkat.";
 
-
-        $apiKey = env('GEMINI_API_KEY');
-        $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={$apiKey}";
-
-        $response = Http::post($url, [
-            'contents' => [
-                [
-                    'parts' => [
-                        ['text' => $prompt]
-                    ]
-                ]
-            ]
+        $result = OpenAI::chat()->create([
+            'model' => 'gpt-4o',
+            'messages' => [
+                ['role' => 'system', 'content' => 'Kamu adalah asisten medis klinik. Jawab singkat, jelas, dan profesional.'],
+                ['role' => 'user', 'content' => $prompt],
+            ],
+            'temperature' => 0.3,
+            'max_tokens' => 256,
         ]);
 
-        // Log response untuk debugging
-        \Log::info('Gemini response:', $response->json());
+        $saran = $result->choices[0]->message->content ?? 'Tidak ada saran.';
 
-        if ($response->successful()) {
-            $saran = $response->json('candidates.0.content.parts.0.text');
-            if (!$saran) {
-                $saran = "Gemini tidak mengembalikan jawaban. Silakan cek log untuk detail.";
-            }
-        } else {
-            $saran = "Gagal mendapatkan saran dari Gemini: " . $response->body();
-        }
-
-        return redirect()->back()->with('ai_saran', $saran);
+        return response()->json(['suggestion' => $saran]);
     }
 } 

@@ -1,12 +1,13 @@
 import { Link } from "@inertiajs/react";
 import Header from "@/Components/Navbar";
-import { Head } from "@inertiajs/react";
+import { Navbar } from "@/Components/ui/navbar";
+import { usePage } from "@inertiajs/react";
 
 export default function Welcome() {
+    const { auth } = usePage().props;
+    const user = auth?.user;
     return (
-        <div className="flex flex-col min-h-[100dvh]">
-            <Head title="Welcome" />
-            <Header />
+        <Navbar user={user}>
             <main className="flex-1">
                 <section className="py-12 w-full md:py-24 lg:py-32">
                     <div className="flex flex-col justify-center items-center space-y-4 text-center">
@@ -37,28 +38,8 @@ export default function Welcome() {
                     </div>
                 </section>
             </main>
-            <footer className="flex flex-col gap-2 items-center px-4 py-6 w-full border-t sm:flex-row shrink-0 md:px-6">
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                    &copy; 2025 Acme Inc. All rights reserved.
-                </p>
-                <nav className="flex gap-4 sm:ml-auto sm:gap-6">
-                    <Link
-                        href="#"
-                        className="text-xs hover:underline underline-offset-4"
-                        prefetch={false}
-                    >
-                        Terms of Service
-                    </Link>
-                    <Link
-                        href="#"
-                        className="text-xs hover:underline underline-offset-4"
-                        prefetch={false}
-                    >
-                        Privacy
-                    </Link>
-                </nav>
-            </footer>
-        </div>
+
+        </Navbar>
     );
 }
 

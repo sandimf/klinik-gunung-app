@@ -14,6 +14,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Changelog tracking
 - Email hasil screening otomatis ke pasien dengan PDF (template health_check) terlampir
 
+### Fixed
+- **Medicine Stock Management**: Fixed stock reduction system for medicine batches and main inventory
+  - Resolved issue where medicine stock was not decreasing when patients purchased medicines
+  - Implemented proper stock deduction for both batch inventory (`medicine_batches.quantity`) and main inventory (`medicines.quantity`)
+  - Added comprehensive validation and error handling for stock management
+  - Enhanced logging system for better debugging of stock transactions
+  - Fixed frontend form submission to properly send `quantity_product` field to backend
+
 ### Changed
 - Improved project structure documentation
 - Enhanced development workflow

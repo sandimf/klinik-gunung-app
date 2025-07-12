@@ -5,16 +5,25 @@ namespace App\Http\Controllers\Roles\Doctor\Managements;
 use App\Http\Controllers\Controller;
 use App\Models\Users\Patients;
 use Inertia\Inertia;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PatientsListController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // Use paginate() directly on the query builder
-        $patients = Patients::paginate(10);
-
+        $search = $request->input('search');
+        $query = DB::table('patients')
+            ->select('id', 'uuid', 'name', 'date_of_birth', 'age', 'contact', 'health_status');
+        if ($search) {
+            $query->where('name', 'like', '%'.$search.'%');
+        }
+        $patients = $query->orderBy('name')->paginate(10);
         return Inertia::render('Dashboard/Doctor/Patients/Index', [
             'patients' => $patients,
+            'filters' => [
+                'search' => $search,
+            ],
         ]);
     }
 

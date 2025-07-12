@@ -4,7 +4,6 @@ import {
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuLabel,
-    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/Components/ui/dropdown-menu";
 import { Button } from "@/Components/ui/button";
@@ -65,10 +64,10 @@ export default function MedicalRecord({ medicalRecords }) {
                                     src={
                                         medicalRecords.patient?.user?.avatar
                                             ? medicalRecords.patient?.user.avatar.startsWith(
-                                                  "http"
-                                              )
+                                                "http"
+                                            )
                                                 ? medicalRecords.patient.user
-                                                      .avatar
+                                                    .avatar
                                                 : `/storage/${user.avatar}`
                                             : "/storage/avatar/avatar.svg"
                                     }

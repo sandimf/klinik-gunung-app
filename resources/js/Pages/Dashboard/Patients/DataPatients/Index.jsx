@@ -28,6 +28,9 @@ import {
 } from "@/Components/ui/select";
 import WebcamComponent from "./_components/webcam";
 import Sidebar from "@/Layouts/Dashboard/PatientsSidebarLayout";
+import { PhoneInput } from "@/Components/ui/phone-input";
+import { parseTanggalLahir } from "@/Pages/Dashboard/Guest/_components/Ai";
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription } from "@/Components/ui/dialog";
 
 export default function PatientDataEntry({ patient, apiKey }) {
     const user = usePage().props.auth.user;
@@ -42,6 +45,7 @@ export default function PatientDataEntry({ patient, apiKey }) {
     const [isCameraActive, setIsCameraActive] = useState(false);
     const fileInputRef = useRef(null);
     const [agreedToPrivacy, setAgreedToPrivacy] = useState(false);
+    const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
     const { data, setData, post, processing, errors, error } = useForm({
         nik: patient?.nik || "",
@@ -63,6 +67,8 @@ export default function PatientDataEntry({ patient, apiKey }) {
         valid_until: patient?.valid_until || "",
         blood_type: patient?.blood_type || "",
         ktp_images: null,
+        tinggi_badan: patient?.tinggi_badan || "",
+        berat_badan: patient?.berat_badan || "",
     });
 
     const isReadOnly = Boolean(patient);
@@ -76,7 +82,13 @@ export default function PatientDataEntry({ patient, apiKey }) {
             return;
         }
 
+        setShowConfirmDialog(true);
+    };
+
+    const handleConfirmSubmit = () => {
+        setShowConfirmDialog(false);
         post(route("information.store"), {
+            forceFormData: true,
             onSuccess: () => {
                 toast.success(`Berhasil`, {
                     icon: <CheckCircle2 className="w-5 h-5 text-green-500" />,
@@ -126,25 +138,26 @@ export default function PatientDataEntry({ patient, apiKey }) {
             const base64Image = await fileToBase64(file);
 
             const prompt = `
-        Analyze this KTP (Indonesian ID card) image and extract the following information:
-        - NIK (ID Number)
-        - Nama (Name)
-        - Tempat Lahir (Place of Birth)
-        - Tanggal Lahir (Date of Birth in the format "DD Month YYYY")
-        - Jenis Kelamin (Gender female, male, other)
-        - Alamat (Address)
-        - RT/RW (Neighborhood/Community Unit)
-        - Kelurahan/Desa (Village)
-        - Kecamatan (District)
-        - Agama (Religion)
-        - Status Perkawinan (Marital Status)
-        - Pekerjaan (Occupation)
-        - Kewarganegaraan (Nationality)
-        - Berlaku Hingga (Valid Until)
-        - Golongan Darah (Blood Type)
+            Analyze this KTP (Indonesian ID card) image and extract the following information:
+            - NIK (ID Number)
+            - Nama (Name)
+            - Tempat Lahir (Place of Birth)
+            - Tanggal Lahir (Date of Birth in the format "DD Month YYYY")
+            - Gender (Gender Perempuan, Laki-laki, lainnya)
+            - Alamat (Address)
+            - RT/RW (Neighborhood/Community Unit)
+            - Kelurahan/Desa (Village)
+            - Kecamatan (District)
+            - Agama (Religion)
+            - Status Perkawinan (Marital Status)
+            - Pekerjaan (Occupation)
+            - Kewarganegaraan (Nationality)
+            - Berlaku Hingga (Valid Until)
+            - Golongan Darah (Blood Type)
 
-        Present the extracted information in a JSON format with these fields as keys.
-      `;
+            Present the extracted information in a JSON format with these fields as keys.
+            Pastikan nama bulan pada tanggal lahir selalu diawali huruf besar dan sisanya huruf kecil (contoh: "Maret").
+        `;
             const result = await model.generateContent([
                 prompt,
                 {
@@ -176,9 +189,7 @@ export default function PatientDataEntry({ patient, apiKey }) {
                 place_of_birth: capitalizeWords(
                     parsedData["Tempat Lahir"] || ""
                 ),
-                date_of_birth: capitalizeWords(
-                    parsedData["Tanggal Lahir"] || ""
-                ),
+                date_of_birth: parseTanggalLahir(parsedData["Tanggal Lahir"] || ""),
                 gender: capitalizeWords(parsedData["Jenis Kelamin"] || ""),
                 address: capitalizeWords(parsedData.Alamat || ""),
                 rt_rw: capitalizeWords(parsedData["RT/RW"] || ""),
@@ -214,6 +225,27 @@ export default function PatientDataEntry({ patient, apiKey }) {
         }
     }, [flash.message]);
 
+    function calculateAge(dateString) {
+        if (!dateString) return "";
+        const today = new Date();
+        const birthDate = new Date(dateString);
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const m = today.getMonth() - birthDate.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+        return age;
+    }
+
+    // Update age automatically when date_of_birth changes
+    React.useEffect(() => {
+        if (data.date_of_birth) {
+            setData("age", calculateAge(data.date_of_birth));
+        } else {
+            setData("age", "");
+        }
+    }, [data.date_of_birth]);
+
     return (
         <Sidebar header={"Formulir Data Pribadi"}>
             <Toaster position="top-center" />
@@ -229,8 +261,8 @@ export default function PatientDataEntry({ patient, apiKey }) {
                         <InfoIcon className="w-4 h-4" />
                         <AlertTitle>Informasi</AlertTitle>
                         <AlertDescription>
-                            Mohon masukan data diri anda terlebih dahulu sebelum
-                            melakukan screening.
+                            <b>Perhatian:</b> Mohon masukan data diri anda terlebih dahulu sebelum
+                            melakukan screening &  Jika menggunakan AI (scan/upload KTP), mohon cek ulang data yang terisi otomatis. Data hasil AI kadang tidak sesuai, pastikan semua data sudah benar sebelum lanjut.
                         </AlertDescription>
                     </Alert>
 
@@ -263,8 +295,7 @@ export default function PatientDataEntry({ patient, apiKey }) {
                                                 sini.
                                             </p>
                                             <p className="text-xs text-gray-500 dark:text-gray-400">
-                                                Format: SVG, PNG, JPG, atau GIF
-                                                (Maks. 800x400px)
+                                                Format: PNG atau JPG (Maks. 800x400px)
                                             </p>
                                         </div>
                                         <Input
@@ -400,17 +431,34 @@ export default function PatientDataEntry({ patient, apiKey }) {
                                 </Label>
                                 <Input
                                     id="date_of_birth"
-                                    placeholder="23 maret 2000"
+                                    type="date"
                                     value={data.date_of_birth}
-                                    onChange={(e) =>
-                                        setData("date_of_birth", e.target.value)
-                                    }
+                                    onChange={(e) => setData("date_of_birth", e.target.value)}
+                                    placeholder="Tanggal Lahir"
                                     readOnly={isReadOnly}
-                                />{" "}
+                                />
+                                {data.date_of_birth && (
+                                    <div className="text-sm text-muted-foreground mt-1">
+                                        Umur hasil hitung: {calculateAge(data.date_of_birth)} tahun
+                                    </div>
+                                )}
                                 {errors.date_of_birth && (
                                     <p className="text-sm text-red-600">
                                         {errors.date_of_birth}
                                     </p>
+                                )}
+                            </div>
+                            <div>
+                                <Label htmlFor="age">Umur</Label>
+                                <Input
+                                    id="age"
+                                    value={data.age}
+                                    placeholder="Umur"
+                                    onChange={(e) => setData("age", e.target.value)}
+                                    readOnly={isReadOnly}
+                                />
+                                {errors.age && (
+                                    <p className="text-sm text-red-600">{errors.age}</p>
                                 )}
                             </div>
                             <div>
@@ -482,11 +530,11 @@ export default function PatientDataEntry({ patient, apiKey }) {
                                 )}
                             </div>
                             <div>
-                                <Label htmlFor="village">Desa</Label>
+                                <Label htmlFor="village">Kel/Desa</Label>
                                 <Input
                                     id="village"
                                     value={data.village}
-                                    placeholder="Desa"
+                                    placeholder="Kel/Desa"
                                     onChange={(e) =>
                                         setData("village", e.target.value)
                                     }
@@ -639,22 +687,44 @@ export default function PatientDataEntry({ patient, apiKey }) {
                                 )}
                             </div>
                             <div>
+                                <Label htmlFor="tinggi_badan">Tinggi Badan (cm)</Label>
+                                <Input
+                                    id="tinggi_badan"
+                                    value={data.tinggi_badan}
+                                    placeholder="Tinggi Badan dalam cm"
+                                    onChange={(e) => setData("tinggi_badan", e.target.value)}
+                                />
+                                {errors.tinggi_badan && (
+                                    <p className="text-red-600">{errors.tinggi_badan}</p>
+                                )}
+                            </div>
+                            <div>
+                                <Label htmlFor="berat_badan">Berat Badan (kg)</Label>
+                                <Input
+                                    id="berat_badan"
+                                    value={data.berat_badan}
+                                    placeholder="Berat Badan dalam kg"
+                                    onChange={(e) => setData("berat_badan", e.target.value)}
+                                />
+                                {errors.berat_badan && (
+                                    <p className="text-red-600">{errors.berat_badan}</p>
+                                )}
+                            </div>
+                            {/* Age field (read-only, auto-calculated) */}
+                            {/* <div>
                                 <Label htmlFor="age">Umur</Label>
                                 <Input
                                     id="age"
                                     value={data.age}
                                     placeholder="Umur"
-                                    onChange={(e) =>
-                                        setData("age", e.target.value)
-                                    }
-                                    readOnly={isReadOnly}
+                                    readOnly
                                 />
                                 {errors.age && (
                                     <p className="text-sm text-red-600">
                                         {errors.age}
                                     </p>
                                 )}
-                            </div>
+                            </div> */}
                             <div>
                                 <Label htmlFor="email">Email</Label>
                                 <Input
@@ -675,51 +745,67 @@ export default function PatientDataEntry({ patient, apiKey }) {
                             </div>
                             <div>
                                 <Label htmlFor="contact">Nomor Telepon</Label>
-                                <Input
+                                <PhoneInput
                                     id="contact"
                                     value={data.contact}
-                                    placeholder="Nomor Telepon"
-                                    onChange={(e) =>
-                                        setData("contact", e.target.value)
-                                    }
+                                    defaultCountry="ID"
+                                    onChange={val => setData("contact", val)}
+                                    international
+                                    countryCallingCodeEditable={false}
                                     readOnly={isReadOnly}
                                 />
                                 {errors.contact && (
-                                    <p className="text-sm text-red-600">
-                                        {errors.contact}
-                                    </p>
+                                    <p className="text-sm text-red-600">{errors.contact}</p>
                                 )}
                             </div>
 
-                            <div className="flex items-center mt-4 space-x-2">
-                                <Checkbox
-                                    id="privacyAgreement"
-                                    checked={agreedToPrivacy}
-                                    onCheckedChange={setAgreedToPrivacy}
-                                />
-                                <label
-                                    htmlFor="privacyAgreement"
-                                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                >
-                                    Saya menyetujui Kebijakan Privasi.
-                                </label>
+                            <div className="flex items-start gap-3 mt-8 mb-4">
+                                <Checkbox id="privacyAgreement" checked={agreedToPrivacy} onCheckedChange={setAgreedToPrivacy} />
+                                <div className="grid gap-2">
+                                    <Label htmlFor="privacyAgreement" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                        Saya menyetujui Kebijakan Privasi.
+                                    </Label>
+                                    <p className="text-muted-foreground text-sm">
+                                        Saya setuju data ini digunakan oleh Klinik Gunung Semeru untuk keperluan medis dan keselamatan pendakian, sesuai kebijakan privasi.
+                                    </p>
+                                </div>
                             </div>
                         </div>
                         {!isReadOnly && (
-                            <Button
-                                type="submit"
-                                className="w-full"
-                                disabled={processing || !agreedToPrivacy}
-                            >
-                                {processing ? (
-                                    <>
-                                        <Loader2 className="mr-2 w-4 h-4 animate-spin" />
-                                        Please wait...
-                                    </>
-                                ) : (
-                                    <>Submit</>
-                                )}
-                            </Button>
+                            <>
+                                <Button
+                                    type="submit"
+                                    className="w-full"
+                                    disabled={processing || !agreedToPrivacy}
+                                >
+                                    {processing ? (
+                                        <>
+                                            <Loader2 className="mr-2 w-4 h-4 animate-spin" />
+                                            Sedang Mengirim...
+                                        </>
+                                    ) : (
+                                        <>Kirim</>
+                                    )}
+                                </Button>
+                                <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+                                    <DialogContent>
+                                        <DialogHeader>
+                                            <DialogTitle>Konfirmasi Data Pribadi</DialogTitle>
+                                            <DialogDescription>
+                                                Apakah Anda sudah yakin data pribadi sudah benar? Pastikan data sudah dicek sebelum mengirimkan.
+                                            </DialogDescription>
+                                        </DialogHeader>
+                                        <DialogFooter>
+                                            <Button variant="outline" onClick={() => setShowConfirmDialog(false)}>
+                                                Batal
+                                            </Button>
+                                            <Button onClick={handleConfirmSubmit}>
+                                                Yakin &amp; Kirim
+                                            </Button>
+                                        </DialogFooter>
+                                    </DialogContent>
+                                </Dialog>
+                            </>
                         )}
                         {isReadOnly && (
                             <p className="text-gray-600">

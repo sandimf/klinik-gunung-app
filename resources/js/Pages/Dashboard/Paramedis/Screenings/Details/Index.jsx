@@ -177,7 +177,76 @@ export default function ScreeningDetails({ patient, questionsAndAnswers, queue }
                                     {qaState.map((qa) => (
                                         <TableRow key={qa.id}>
                                             <TableCell>{qa.question}</TableCell>
-                                            <TableCell>{qa.answer || "-"}</TableCell>
+                                            <TableCell>
+                                                {Array.isArray(qa.answer)
+                                                    ? qa.answer.map((ans, idx) => {
+                                                        const isRed = [
+                                                            "Penyakit jantung",
+                                                            "Asma",
+                                                            "Hipertensi (tekanan darah tinggi)",
+                                                            "Hipotensi (tekanan darah rendah)",
+                                                            "Diabetes",
+                                                            "Masalah paru-paru lainnya",
+                                                            "Cedera sendi/lutut/pergelangan kaki",
+                                                            "Ya"
+                                                        ].includes(ans);
+                                                        const isGreen = [
+                                                            "Tidak ada dari yang disebutkan",
+                                                            "Tidak ada masalah di atas",
+                                                            "Kurang dari 6 bulan yang lalu",
+                                                            "6 bulan - 1 tahun yang lalu",
+                                                            "Lebih dari 1 tahun yang lalu",
+                                                            "Tidak",
+                                                            "Baik"
+                                                        ].includes(ans);
+                                                        return (
+                                                            <span
+                                                                key={idx}
+                                                                className={
+                                                                    isRed
+                                                                        ? "text-red-600 font-semibold"
+                                                                        : isGreen
+                                                                            ? "text-green-600 font-semibold"
+                                                                            : ""
+                                                                }
+                                                            >
+                                                                {ans}
+                                                                {idx < qa.answer.length - 1 ? ", " : ""}
+                                                            </span>
+                                                        );
+                                                    })
+                                                    : (
+                                                        <span
+                                                            className={
+                                                                [
+                                                                    "Penyakit jantung",
+                                                                    "Asma",
+                                                                    "Hipertensi (tekanan darah tinggi)",
+                                                                    "Hipotensi (tekanan darah rendah)",
+                                                                    "Diabetes",
+                                                                    "Masalah paru-paru lainnya",
+                                                                    "Cedera sendi/lutut/pergelangan kaki"
+                                                                ].includes(qa.answer)
+                                                                    ? "text-red-600 font-semibold"
+                                                                    : [
+                                                                        "Tidak ada dari yang disebutkan",
+                                                                        "Tidak ada masalah di atas",
+                                                                        "Kurang dari 6 bulan yang lalu",
+                                                                        "6 bulan - 1 tahun yang lalu",
+                                                                        "Lebih dari 1 tahun yang lalu",
+                                                                        "Tidak",
+                                                                        "Baik",
+                                                                        "Ya",
+                                                                    ].includes(qa.answer)
+                                                                        ? "text-green-600 font-semibold"
+                                                                        : ""
+                                                            }
+                                                        >
+                                                            {qa.answer || "-"}
+                                                        </span>
+                                                    )
+                                                }
+                                            </TableCell>
                                             <TableCell>
                                                 <EditAnswerDialog
                                                     id={qa.id}

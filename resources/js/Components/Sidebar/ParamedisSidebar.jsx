@@ -7,6 +7,8 @@ import {
     Users,
     ChevronRight,
     History,
+    SquareActivity,
+    Bot,
 } from "lucide-react";
 import { NavUser } from "@/Components/Nav/NavUser";
 import { TeamSwitcher } from "@/Components/Nav/TeamSwitcher";
@@ -90,7 +92,17 @@ export function AppSidebar({ ...sidebarProps }) {
                     },
                 ],
             },
+            {
+                title: "Medical Record",
+                url: route("medical-record.paramedis"),
+                icon: SquareActivity,
+            },
 
+            {
+                title: "Chat AI",
+                url: route("chatbot.paramedis"),
+                icon: Bot,
+            },
 
             {
                 title: "Pengaturan",
@@ -124,16 +136,26 @@ export function AppSidebar({ ...sidebarProps }) {
                                 {item.items ? (
                                     <Collapsible
                                         open={openItems.includes(item.title)}
-                                        onOpenChange={() => toggleItem(item.title)}
+                                        onOpenChange={() =>
+                                            toggleItem(item.title)
+                                        }
                                         className="group/collapsible"
                                     >
                                         <CollapsibleTrigger asChild>
                                             <SidebarMenuButton
                                                 tooltip={item.title}
-                                                isActive={isRouteActive(item.url)}
-                                                className={isRouteActive(item.url) ? "bg-muted text-primary" : ""}
+                                                isActive={isRouteActive(
+                                                    item.url
+                                                )}
+                                                className={
+                                                    isRouteActive(item.url)
+                                                        ? "bg-muted text-primary"
+                                                        : ""
+                                                }
                                             >
-                                                {item.icon && <item.icon className="size-4" />}
+                                                {item.icon && (
+                                                    <item.icon className="size-4" />
+                                                )}
                                                 <span>{item.title}</span>
                                                 <ChevronRight className="ml-auto size-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                                             </SidebarMenuButton>
@@ -141,16 +163,32 @@ export function AppSidebar({ ...sidebarProps }) {
                                         <CollapsibleContent>
                                             <SidebarMenuSub>
                                                 {item.items.map((subItem) => (
-                                                    <SidebarMenuSubItem key={subItem.title}>
+                                                    <SidebarMenuSubItem
+                                                        key={subItem.title}
+                                                    >
                                                         <SidebarMenuSubButton
-                                                            isActive={isRouteActive(subItem.url)}
+                                                            isActive={isRouteActive(
+                                                                subItem.url
+                                                            )}
                                                             asChild
                                                         >
                                                             <Link
-                                                                href={subItem.url}
-                                                                className={`flex items-center w-full ${isRouteActive(subItem.url) ? "bg-muted text-primary" : ""}`}
+                                                                href={
+                                                                    subItem.url
+                                                                }
+                                                                className={`flex items-center w-full ${
+                                                                    isRouteActive(
+                                                                        subItem.url
+                                                                    )
+                                                                        ? "bg-muted text-primary"
+                                                                        : ""
+                                                                }`}
                                                             >
-                                                                <span>{subItem.title}</span>
+                                                                <span>
+                                                                    {
+                                                                        subItem.title
+                                                                    }
+                                                                </span>
                                                             </Link>
                                                         </SidebarMenuSubButton>
                                                     </SidebarMenuSubItem>
@@ -163,13 +201,19 @@ export function AppSidebar({ ...sidebarProps }) {
                                         tooltip={item.title}
                                         isActive={isRouteActive(item.url)}
                                         asChild
-                                        className={isRouteActive(item.url) ? "bg-muted text-primary" : ""}
+                                        className={
+                                            isRouteActive(item.url)
+                                                ? "bg-muted text-primary"
+                                                : ""
+                                        }
                                     >
                                         <Link
                                             href={item.url}
                                             className="flex items-center w-full"
                                         >
-                                            {item.icon && <item.icon className="size-4" />}
+                                            {item.icon && (
+                                                <item.icon className="size-4" />
+                                            )}
                                             <span>{item.title}</span>
                                         </Link>
                                     </SidebarMenuButton>

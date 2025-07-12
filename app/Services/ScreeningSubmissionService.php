@@ -24,7 +24,12 @@ class ScreeningSubmissionService
 
             $newQueueNumber = $lastQueue + 1;
 
-            $patient = Patients::firstOrNew(['nik' => $data['nik']]);
+            // Cari pasien berdasarkan email untuk menghindari duplikasi email
+            $patient = Patients::where('email', $data['email'])->first();
+
+            if (!$patient) {
+                $patient = new Patients();
+            }
 
             $patient->fill([
                 'user_id' => $user->id,
