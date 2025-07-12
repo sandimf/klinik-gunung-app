@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
+use App\Events\NewScreeningEvent;
 use App\Jobs\NotifyClinicStaffOfNewScreening;
+use App\Models\Notifications\Notification;
 use App\Models\Screenings\ScreeningAnswers;
 use App\Models\User;
 use App\Models\Users\Patients;
@@ -80,6 +82,42 @@ class ScreeningSubmissionService
             // 2. LOGIKA KOMPLEKS: Integrasi dengan proses lain via background Job.
             // Memberi notifikasi pada staf klinik tanpa memperlambat response user.
             NotifyClinicStaffOfNewScreening::dispatch($patient)->onQueue('high');
+
+            // 3. REALTIME NOTIFICATION: Kirim notifikasi realtime ke paramedis
+            $this->sendRealtimeNotification($patient);
         });
+    }
+
+    /**
+     * Send realtime notification to paramedics
+     */
+    private function sendRealtimeNotification(Patients $patient): void
+    {
+        try {
+            // Get all paramedics
+            $paramedics = \App\Models\Users\Paramedis::all();
+
+            foreach ($paramedics as $paramedic) {
+                // Create notification record
+                Notification::create([
+                    'user_id' => $paramedic->user_id,
+                    'type' => 'new_screening',
+                    'title' => 'Screening Baru',
+                    'message' => "Pasien baru: {$patient->name} (Antrian: {$patient->queue})",
+                    'data' => [
+                        'patient_id' => $patient->id,
+                        'patient_name' => $patient->name,
+                        'queue_number' => $patient->queue,
+                        'screening_date' => $patient->screening_date,
+                        'screening_id' => $patient->id,
+                    ],
+                ]);
+
+                // Broadcast realtime event
+                broadcast(new NewScreeningEvent($patient))->toOthers();
+            }
+        } catch (\Exception $e) {
+            \Log::error('Error sending realtime notification: ' . $e->getMessage());
+        }
     }
 }

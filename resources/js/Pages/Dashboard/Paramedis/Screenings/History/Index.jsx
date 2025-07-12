@@ -18,7 +18,12 @@ import {
     getSortedRowModel,
     useReactTable,
 } from "@tanstack/react-table";
-import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/Components/ui/dropdown-menu";
+import {
+    DropdownMenu,
+    DropdownMenuCheckboxItem,
+    DropdownMenuContent,
+    DropdownMenuTrigger,
+} from "@/Components/ui/dropdown-menu";
 import { ChevronDown, Book, Pen, Printer, Search } from "lucide-react";
 import ScreeningDialog from "../_components/PhysicalExamination";
 import { Badge } from "@/Components/ui/badge";
@@ -51,8 +56,16 @@ const ScreeningHistoryIndex = ({ screenings = {}, filters = {} }) => {
                 accessorKey: "jenis_screening",
                 header: "Jenis Screening",
                 cell: ({ row }) => (
-                    <Badge variant={row.original.is_online === 1 ? "default" : "secondary"}>
-                        {row.original.is_online === 1 ? "Screening Online" : "Screening Offline"}
+                    <Badge
+                        variant={
+                            row.original.is_online === 1
+                                ? "default"
+                                : "secondary"
+                        }
+                    >
+                        {row.original.is_online === 1
+                            ? "Screening Online"
+                            : "Screening Offline"}
                     </Badge>
                 ),
             },
@@ -72,11 +85,11 @@ const ScreeningHistoryIndex = ({ screenings = {}, filters = {} }) => {
                 header: "Status Kesehatan",
                 cell: ({ row }) => (
                     <Badge>
-                        {row.original.health_status === "Sehat"
+                        {row.original.health_status === "sehat"
                             ? "Sehat"
-                            : row.original.health_status === "Tidak_sehat"
-                                ? "Tidak Sehat"
-                                : "Status Tidak Diketahui"}
+                            : row.original.health_status === "tidak_sehat"
+                            ? "Tidak Sehat"
+                            : "Status Tidak Diketahui"}
                     </Badge>
                 ),
             },
@@ -84,7 +97,12 @@ const ScreeningHistoryIndex = ({ screenings = {}, filters = {} }) => {
                 id: "sertifikat",
                 header: "Sertifikat",
                 cell: ({ row }) => (
-                    <a href={route("pdf.healthcheck.paramedis", row.original.uuid)}>
+                    <a
+                        href={route(
+                            "pdf.healthcheck.paramedis",
+                            row.original.uuid
+                        )}
+                    >
                         <Button variant="outline">
                             <Printer className="w-4 h-4" />
                         </Button>
@@ -95,7 +113,11 @@ const ScreeningHistoryIndex = ({ screenings = {}, filters = {} }) => {
                 id: "kuesioner",
                 header: "Kuesioner",
                 cell: ({ row }) => (
-                    <Link href={route("history.healthcheck", { uuid: row.original.uuid })}>
+                    <Link
+                        href={route("history.healthcheck", {
+                            uuid: row.original.uuid,
+                        })}
+                    >
                         <Button variant="outline" className="mb-4">
                             <Book className="mr-2 w-4 h-4" /> Kuesioner
                         </Button>
@@ -106,7 +128,11 @@ const ScreeningHistoryIndex = ({ screenings = {}, filters = {} }) => {
                 id: "aksi",
                 header: "Aksi",
                 cell: ({ row }) => (
-                    <Link href={route("edit.screening", { uuid: row.original.id })}>
+                    <Link
+                        href={route("edit.screening", {
+                            uuid: row.original.id,
+                        })}
+                    >
                         <Button variant="outline" className="mb-4">
                             <Pen className="mr-2 w-4 h-4" /> Edit
                         </Button>
@@ -132,13 +158,21 @@ const ScreeningHistoryIndex = ({ screenings = {}, filters = {} }) => {
     // Search handler
     const handleSearch = (e) => {
         e.preventDefault();
-        router.get(route('paramedis.history'), { search: searchTerm }, { preserveState: true, replace: true });
+        router.get(
+            route("paramedis.history"),
+            { search: searchTerm },
+            { preserveState: true, replace: true }
+        );
     };
 
     // Pagination handler
     const handlePageChange = (url) => {
         if (url) {
-            router.get(url, { search: searchTerm }, { preserveState: true, replace: true });
+            router.get(
+                url,
+                { search: searchTerm },
+                { preserveState: true, replace: true }
+            );
         }
     };
 
@@ -147,17 +181,20 @@ const ScreeningHistoryIndex = ({ screenings = {}, filters = {} }) => {
             <Head title="Riwayat Screening" />
             {/* Judul utama */}
             <h1 className="text-2xl font-bold mb-6">Riwayat Screening</h1>
-            <p className="text-muted-foreground mb-6">Daftar seluruh hasil screening pasien yang telah dilakukan.</p>
+            <p className="text-muted-foreground mb-6">
+                Daftar seluruh hasil screening pasien yang telah dilakukan.
+            </p>
             <div className="flex items-center py-4 gap-4">
                 <form onSubmit={handleSearch} className="flex gap-2">
                     <Input
                         placeholder="Cari nama pasien..."
                         value={searchTerm}
-                        onChange={e => setSearchTerm(e.target.value)}
+                        onChange={(e) => setSearchTerm(e.target.value)}
                         className="max-w-sm"
                     />
                     <Button variant="ghost" type="submit">
-                        <Search /> </Button>
+                        <Search />{" "}
+                    </Button>
                 </form>
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -166,11 +203,13 @@ const ScreeningHistoryIndex = ({ screenings = {}, filters = {} }) => {
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                        {table.getAllColumns().map(column => (
+                        {table.getAllColumns().map((column) => (
                             <DropdownMenuCheckboxItem
                                 key={column.id}
                                 checked={column.getIsVisible()}
-                                onCheckedChange={value => column.toggleVisibility(!!value)}
+                                onCheckedChange={(value) =>
+                                    column.toggleVisibility(!!value)
+                                }
                             >
                                 {column.id}
                             </DropdownMenuCheckboxItem>
@@ -181,11 +220,17 @@ const ScreeningHistoryIndex = ({ screenings = {}, filters = {} }) => {
             <div className="rounded-md border">
                 <Table>
                     <TableHeader>
-                        {table.getHeaderGroups().map(headerGroup => (
+                        {table.getHeaderGroups().map((headerGroup) => (
                             <TableRow key={headerGroup.id}>
-                                {headerGroup.headers.map(header => (
+                                {headerGroup.headers.map((header) => (
                                     <TableHead key={header.id}>
-                                        {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                                        {header.isPlaceholder
+                                            ? null
+                                            : flexRender(
+                                                  header.column.columnDef
+                                                      .header,
+                                                  header.getContext()
+                                              )}
                                     </TableHead>
                                 ))}
                             </TableRow>
@@ -193,18 +238,24 @@ const ScreeningHistoryIndex = ({ screenings = {}, filters = {} }) => {
                     </TableHeader>
                     <TableBody>
                         {table.getRowModel().rows.length ? (
-                            table.getRowModel().rows.map(row => (
+                            table.getRowModel().rows.map((row) => (
                                 <TableRow key={row.id}>
-                                    {row.getVisibleCells().map(cell => (
+                                    {row.getVisibleCells().map((cell) => (
                                         <TableCell key={cell.id}>
-                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                            {flexRender(
+                                                cell.column.columnDef.cell,
+                                                cell.getContext()
+                                            )}
                                         </TableCell>
                                     ))}
                                 </TableRow>
                             ))
                         ) : (
                             <TableRow>
-                                <TableCell colSpan={columns.length} className="h-24 text-center">
+                                <TableCell
+                                    colSpan={columns.length}
+                                    className="h-24 text-center"
+                                >
                                     Belum ada data
                                 </TableCell>
                             </TableRow>
@@ -222,7 +273,9 @@ const ScreeningHistoryIndex = ({ screenings = {}, filters = {} }) => {
                         <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => handlePageChange(screenings.prev_page_url)}
+                            onClick={() =>
+                                handlePageChange(screenings.prev_page_url)
+                            }
                             disabled={!screenings.prev_page_url}
                         >
                             Previous
@@ -230,7 +283,9 @@ const ScreeningHistoryIndex = ({ screenings = {}, filters = {} }) => {
                         <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => handlePageChange(screenings.next_page_url)}
+                            onClick={() =>
+                                handlePageChange(screenings.next_page_url)
+                            }
                             disabled={!screenings.next_page_url}
                         >
                             Next

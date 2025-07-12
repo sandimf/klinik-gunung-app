@@ -3,6 +3,7 @@ import { SidebarProvider } from "@/Components/ui/sidebar";
 import { AppSidebar } from "@/Components/Sidebar/ParamedisSidebar";
 import { ModeToggle } from "@/Components/mode-toggle";
 import { ProfileButton } from "@/Components/ProfileButton";
+import { NotificationBell } from "@/Components/NotificationBell";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/Components/ui/breadcrumb";
 import { Slash, Menu } from "lucide-react";
 import { FlashToast } from '@/Components/ToastProvider';
@@ -53,6 +54,7 @@ export default function AdminSidebarLayout({ header, children }) {
                         </Breadcrumb>
                     </div>
                     <div className="flex items-center space-x-4">
+                        <NotificationBell />
                         <ModeToggle />
                         <ProfileButton />
                     </div>
@@ -62,7 +64,7 @@ export default function AdminSidebarLayout({ header, children }) {
                     <FlashToast />
                 </main>
             </div>
-        
+
         </SidebarProvider>
     );
 }

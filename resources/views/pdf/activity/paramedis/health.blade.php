@@ -29,12 +29,10 @@
         <tbody>
             @foreach ($examinations as $examination)
             <tr>
-                <td> @if ($examination['health_status'] === 'healthy')
+                <td> @if ($examination['health_status'] === 'sehat')
                     Sehat
-                    @elseif ($examination['health_status'] === 'butuh_dokter')
+                    @elseif ($examination['health_status'] === 'tidak_sehat')
                     Membutuhkan Dokter
-                    @elseif ($examination['health_status'] === 'butuh_pendamping')
-                    Membutuhkan pendamping
                     @else
                     Status Tidak Diketahui
                     @endif</td>

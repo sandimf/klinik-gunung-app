@@ -2,11 +2,14 @@
 
 namespace App\Services\Screening;
 
+use App\Events\NewScreeningEvent;
 use App\Exceptions\NikAlreadyExistsException;
+use App\Models\Notifications\Notification;
 use App\Models\Screenings\ScreeningAnswers;
 use App\Models\User;
 use App\Models\Users\Patients;
 use App\Models\Users\PatientsOnline;
+use App\Models\Users\Paramedis;
 use Carbon\Carbon;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
@@ -43,6 +46,9 @@ class GuestScreeningSubmissionService
 
             $this->saveScreeningAnswers($patient, $validatedData['answers']);
             Log::info('Screening answers disimpan', ['patient_id' => $patient->id]);
+
+            // Send notifications to paramedics
+            $this->sendNotificationsToParamedics($patient);
         });
     }
 
@@ -81,10 +87,23 @@ class GuestScreeningSubmissionService
 
     private function createPatientProfiles(User $user, array $data): Patients
     {
+        // Generate queue number for today
+        $today = Carbon::today();
+        $lastQueue = DB::table('patients')
+            ->whereDate('screening_date', $today)
+            ->lockForUpdate()
+            ->max('queue') ?? 0;
+        
+        $newQueueNumber = $lastQueue + 1;
+
         $patientData = array_merge($data, [
             'user_id' => $user->id,
-            'screening_status' => 'pending', 'health_status' => 'pending',
-            'health_check_status' => 'pending', 'payment_status' => 'pending',
+            'screening_status' => 'pending',
+            'health_status' => 'pending',
+            'health_check_status' => 'pending',
+            'payment_status' => 'pending',
+            'queue' => $newQueueNumber,
+            'screening_date' => $today,
         ]);
 
         PatientsOnline::create($patientData);
@@ -128,5 +147,44 @@ class GuestScreeningSubmissionService
         }
 
         return implode(', ', array_filter($parts));
+    }
+
+    /**
+     * Send notifications to all paramedics
+     */
+    private function sendNotificationsToParamedics(Patients $patient): void
+    {
+        try {
+            // Get all paramedics
+            $paramedics = Paramedis::all();
+
+            foreach ($paramedics as $paramedic) {
+                // Create notification record
+                Notification::create([
+                    'user_id' => $paramedic->user_id,
+                    'type' => 'new_screening',
+                    'title' => 'Screening Baru (Guest)',
+                    'message' => "Pasien baru: {$patient->name} (Antrian: {$patient->queue})",
+                    'data' => [
+                        'patient_id' => $patient->id,
+                        'patient_name' => $patient->name,
+                        'queue_number' => $patient->queue,
+                        'screening_date' => $patient->screening_date,
+                        'screening_id' => $patient->id,
+                        'is_guest' => true,
+                    ],
+                ]);
+
+                // Broadcast realtime event
+                broadcast(new NewScreeningEvent($patient))->toOthers();
+            }
+
+            Log::info('Notifications sent to paramedics', [
+                'patient_id' => $patient->id,
+                'paramedics_count' => $paramedics->count()
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error sending notifications to paramedics: ' . $e->getMessage());
+        }
     }
 }

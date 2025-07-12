@@ -36,9 +36,8 @@ class ParamedisReportController extends Controller
 
         // Hitung jumlah pasien berdasarkan status kesehatan
         $healthCounts = $examinations->groupBy('health_status')->map->count();
-        $sickPatientsCount = $healthCounts->get('butuh_dokter', 0);
-        $needPatientsCount = $healthCounts->get('butuh_pendamping', 0);
-        $healthyPatientsCount = $healthCounts->get('healthy', 0);
+        $sickPatientsCount = $healthCounts->get('tidak_sehat', 0);
+        $healthyPatientsCount = $healthCounts->get('sehat', 0);
 
         // Ambil data pasien dengan validasi null
         $patients = $examinations->map(function ($examination) {
@@ -60,7 +59,6 @@ class ParamedisReportController extends Controller
             'totalPatients' => $totalPatients,
             'sickPatientsCount' => $sickPatientsCount,
             'healthyPatientsCount' => $healthyPatientsCount,
-            'needPatientsCount' => $needPatientsCount,
         ]);
     }
 
@@ -95,9 +93,8 @@ class ParamedisReportController extends Controller
 
         // Rest of your code remains the same
         $totalPatients = $examinations->count();
-        $sickPatientsCount = $examinations->where('health_status', 'butuh_dokter')->count();
-        $needPatientsCount = $examinations->where('health_status', 'butuh_pendamping')->count();
-        $healthyPatientsCount = $examinations->where('health_status', 'healthy')->count();
+        $sickPatientsCount = $examinations->where('health_status', 'tidak_sehat')->count();
+        $healthyPatientsCount = $examinations->where('health_status', 'sehat')->count();
         $totalParamedis = $examinations->pluck('paramedis_id')->unique()->count();
 
         $patients = $examinations->map(function ($examination) {
@@ -117,7 +114,6 @@ class ParamedisReportController extends Controller
             'totalPatients' => $totalPatients,
             'sickPatientsCount' => $sickPatientsCount,
             'totalParamedis' => $totalParamedis,
-            'needPatientsCount' => $needPatientsCount,
             'healthyPatientsCount' => $healthyPatientsCount,
             'currentFilter' => $filter,
         ]);
@@ -154,9 +150,8 @@ class ParamedisReportController extends Controller
 
         // Hitung statistik
         $totalPatients = $examinations->count();
-        $sickPatientsCount = $examinations->where('health_status', 'butuh_dokter')->count();
-        $needPatientsCount = $examinations->where('health_status', 'butuh_pendamping')->count();
-        $healthyPatientsCount = $examinations->where('health_status', 'healthy')->count();
+        $sickPatientsCount = $examinations->where('health_status', 'tidak_sehat')->count();
+        $healthyPatientsCount = $examinations->where('health_status', 'sehat')->count();
         $totalParamedis = $examinations->pluck('paramedis_id')->unique()->count();
 
         // Format data pasien
@@ -184,7 +179,6 @@ class ParamedisReportController extends Controller
             'sickPatientsCount' => $sickPatientsCount,
             'totalParamedis' => $totalParamedis,
             'healthyPatientsCount' => $healthyPatientsCount,
-            'needPatientsCount' => $needPatientsCount,
             'filter' => ucfirst($filter), // Tampilkan nama filter di PDF
             'dateRange' => $dateRange, // Tambahkan rentang tanggal
         ];
@@ -220,7 +214,7 @@ class ParamedisReportController extends Controller
         $pdf = Pdf::loadView('pdf.screenings.health_check', $data);
 
         // Download PDF dengan nama yang sesuai
-        return $pdf->download('hasil_pemeriksaan_'.$patientName.'.pdf');
+        return $pdf->download('hasil_pemeriksaan_' . $patientName . '.pdf');
     }
 
     // generate pdf  pemeriksaan yang dilakukan paramedis
@@ -247,9 +241,8 @@ class ParamedisReportController extends Controller
         // Hitung jumlah pasien yang sakit
         $healthCounts = $examinations->groupBy('health_status')->map->count();
         // Use array access instead of get() method since $healthCounts is an array
-        $sickPatientsCount = $healthCounts['butuh_dokter'] ?? 0;
-        $needPatientsCount = $healthCounts['butuh_pendamping'] ?? 0;
-        $healthyPatientsCount = $healthCounts['healthy'] ?? 0;
+        $sickPatientsCount = $healthCounts['tidak_sehat'] ?? 0;
+        $healthyPatientsCount = $healthCounts['sehat'] ?? 0;
         // Ambil nama-nama pasien
         $patients = $examinations->map(function ($examination) {
             return [
@@ -266,7 +259,6 @@ class ParamedisReportController extends Controller
             'patients' => $patients,
             'totalPatients' => $totalPatients,
             'sickPatientsCount' => $sickPatientsCount,
-            'needPatientsCount' => $needPatientsCount,
             'healthyPatientsCount' => $healthyPatientsCount,
         ];
 

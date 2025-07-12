@@ -28,7 +28,6 @@ export default function Report({
     sickPatientsCount,
     patients,
     totalParamedis,
-    needPatientsCount,
     healthyPatientsCount,
     currentFilter,
 }) {
@@ -57,7 +56,6 @@ export default function Report({
         setFilter(value);
         window.location.href = route("activity.healthcheck", { filter: value });
     };
-
 
     return (
         <Sidebar header={"Aktivitas"}>
@@ -180,13 +178,13 @@ export default function Report({
                                     <Badge>
                                         {
                                             patient.health_status === "sehat"
-                                                ? "Sehat"                             // Jika statusnya "Sehat", tampilkan "Sehat"
-                                                : patient.health_status === "tidak_sehat"
-                                                    ? "Tidak Sehat"                    // Jika statusnya "Tidak_sehat", tampilkan "Tidak Sehat"
-                                                    : "Status Tidak Diketahui"      // Jika tidak cocok semua kondisi di atas, tampilkan "Status Tidak Diketahui"
+                                                ? "Sehat" // Jika statusnya "Sehat", tampilkan "Sehat"
+                                                : patient.health_status ===
+                                                  "tidak_sehat"
+                                                ? "Tidak Sehat" // Jika statusnya "Tidak_sehat", tampilkan "Tidak Sehat"
+                                                : "Status Tidak Diketahui" // Jika tidak cocok semua kondisi di atas, tampilkan "Status Tidak Diketahui"
                                         }
                                     </Badge>
-
                                 </TableCell>
                                 <TableCell>{patient.examined_by}</TableCell>
                                 <TableCell>{patient.examined_at}</TableCell>

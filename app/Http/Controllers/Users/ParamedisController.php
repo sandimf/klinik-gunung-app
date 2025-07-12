@@ -172,6 +172,9 @@ class ParamedisController extends Controller
         return Inertia::render('Dashboard/Paramedis/Screenings/Index', [
             'screenings_offline' => $offline,
             'screenings_online' => $online,
+            'filters' => [
+                'search' => $search,
+            ],
         ]);
     }
 }

@@ -75,10 +75,6 @@
                     <td>{{ $sickPatientsCount }}</td>
                 </tr>
                 <tr>
-                    <th>Jumlah Pasien Membutuhkan pendamping</th>
-                    <td>{{ $needPatientsCount }}</td>
-                </tr>
-                <tr>
                     <th>Jumlah Paramedis yang Terlibat</th>
                     <td>{{ $totalParamedis }}</td>
                 </tr>
@@ -100,12 +96,10 @@
                 <tr>
                     <td>{{ $patient['name'] }}</td>
                     <td>
-                        @if ($patient['health_status'] === 'healthy')
+                        @if ($patient['health_status'] === 'sehat')
                         Sehat
-                        @elseif ($patient['health_status'] === 'butuh_dokter')
-                        Membutuhkan Dokter
-                        @elseif ($patient['health_status'] === 'butuh_pendamping')
-                        Membutuhkan pendamping
+                        @elseif ($patient['health_status'] === 'tidak_sehat')
+                        Tidak Sehat
                         @else
                         Status Tidak Diketahui
                         @endif
