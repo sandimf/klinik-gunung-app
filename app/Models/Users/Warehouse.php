@@ -21,6 +21,7 @@ class Warehouse extends Model
         'date_of_birth',
         'phone',
         'role',
+        'signature',
     ];
 
     public function user()

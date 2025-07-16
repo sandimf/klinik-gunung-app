@@ -24,8 +24,9 @@ class Payments extends Model
         'quantity_product',
         'price_product',
         'payment_proof',
-        'selected_medicine_id', // Tambahkan ini
-        'medicine_batch_id',    // Tambahkan ini
+        'selected_medicine_id',
+        'medicine_batch_id',
+        'service_types', // <--- ini sebelumnya untuk menyimpan jenis pelayanan
     ];
 
     protected static function boot()
@@ -82,19 +83,25 @@ class Payments extends Model
     {
         if ($this->quantity_product && $this->medicineBatch) {
             $batchResult = $this->medicineBatch->deductStock($this->quantity_product);
-            
+
             // Jika batch berhasil dikurangi, kurangi juga stok utama
             if ($batchResult && $this->medicineBatch->medicine) {
                 $this->medicineBatch->medicine->deductStock($this->quantity_product);
             }
-            
+
             return $batchResult;
         }
+
         return false;
     }
 
     public function medicine()
     {
         return $this->belongsTo(\App\Models\Medicines\Medicine::class, 'selected_medicine_id');
+    }
+
+    public function items()
+    {
+        return $this->hasMany(\App\Models\PaymentItem::class, 'payment_id');
     }
 }

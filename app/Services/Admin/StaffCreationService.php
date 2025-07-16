@@ -64,8 +64,10 @@ class StaffCreationService
                 'date_of_birth' => $data['date_of_birth'],
                 'phone' => $data['phone'],
                 'role' => $role, // Memastikan konsistensi data
+                'signature' => $data['signature'] ?? null, // <--- Tambahkan ini
             ];
 
+            Log::info($personnelData); // cek isi sebelum create
             $this->classMap[$role]::create($personnelData);
 
             // 2. LOGIKA KOMPLEKS: Proses background untuk mengirim email.

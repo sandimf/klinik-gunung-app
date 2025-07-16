@@ -30,14 +30,15 @@ class TestNotificationCommand extends Command
     public function handle()
     {
         $count = (int) $this->option('count');
-        
+
         $this->info("Creating {$count} test notification(s)...");
 
         // Get all paramedics
         $paramedics = Paramedis::all();
-        
+
         if ($paramedics->isEmpty()) {
             $this->error('No paramedics found in the system!');
+
             return 1;
         }
 
@@ -96,11 +97,11 @@ class TestNotificationCommand extends Command
 
                     // Broadcast realtime event
                     broadcast(new NewScreeningEvent($patient))->toOthers();
-                    
+
                     $createdCount++;
-                    
+
                     $this->line("✓ Created notification for paramedic: {$paramedic->name}");
-                    
+
                 } catch (\Exception $e) {
                     $this->error("✗ Failed to create notification for paramedic {$paramedic->name}: {$e->getMessage()}");
                 }
@@ -108,7 +109,7 @@ class TestNotificationCommand extends Command
         }
 
         $this->info("Successfully created {$createdCount} test notification(s)!");
-        
+
         return 0;
     }
-} 
+}

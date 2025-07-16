@@ -1,8 +1,15 @@
-import React, { useState } from 'react';
-import { Head, usePage, Link, router } from '@inertiajs/react';
+import React, { useState } from "react";
+import { Head, Link, router } from "@inertiajs/react";
 import CashierSidebar from "@/Layouts/Dashboard/CashierSidebarLayout";
 import { Input } from "@/Components/ui/input";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/Components/ui/table";
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/Components/ui/table";
 import {
     flexRender,
     getCoreRowModel,
@@ -11,12 +18,23 @@ import {
     getSortedRowModel,
     useReactTable,
 } from "@tanstack/react-table";
-import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/Components/ui/dropdown-menu";
+import {
+    DropdownMenu,
+    DropdownMenuCheckboxItem,
+    DropdownMenuContent,
+    DropdownMenuTrigger,
+} from "@/Components/ui/dropdown-menu";
 import { ChevronDown, Search } from "lucide-react";
-import { Button } from '@/Components/ui/button';
-import { CreditCard, Printer } from 'lucide-react';
-import PaymentDialog from './Payments/OfflinePayments';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/Components/ui/select';
+import { Button } from "@/Components/ui/button";
+import { CreditCard, Printer } from "lucide-react";
+import PaymentDialog from "./Payments/OfflinePayments";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/Components/ui/select";
 
 const ScreeningIndex = ({
     screenings_offline = {},
@@ -27,45 +45,72 @@ const ScreeningIndex = ({
 }) => {
     // Inisialisasi hanya sekali dari props
     const [searchTerm, setSearchTerm] = useState(() => filters.search || "");
-    const [filter, setFilter] = useState(() => filters.type || 'offline');
+    const [filter, setFilter] = useState(() => filters.type || "offline");
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [paymentScreening, setPaymentScreening] = useState(null);
 
     // Pilih data sesuai filter
-    const screenings = filter === 'offline' ? screenings_offline : screenings_online;
+    const screenings =
+        filter === "offline" ? screenings_offline : screenings_online;
     const data = screenings.data || [];
-
 
     // Pagination handler
     const handlePageChange = (url) => {
         if (url) {
-            router.get(url, { search: searchTerm, type: filter }, { preserveState: true, replace: true });
+            router.get(
+                url,
+                { search: searchTerm, type: filter },
+                { preserveState: true, replace: true }
+            );
         }
     };
 
     // Search handler
     const handleSearch = (e) => {
         e.preventDefault();
-        router.get(route('cashier.screening'), { search: searchTerm, type: filter }, { preserveState: true, replace: true });
+        router.get(
+            route("cashier.screening"),
+            { search: searchTerm, type: filter },
+            { preserveState: true, replace: true }
+        );
     };
 
     // Filter handler
     const handleFilterChange = (value) => {
         setFilter(value);
-        router.get(route('cashier.screening'), { search: searchTerm, type: value }, { preserveState: true, replace: true });
+        router.get(
+            route("cashier.screening"),
+            { search: searchTerm, type: value },
+            { preserveState: true, replace: true }
+        );
     };
 
     const handlePayment = (screening) => {
+        console.log("handlePayment called, opening dialog");
         setPaymentScreening(screening);
         setIsDialogOpen(true);
     };
 
     const handleDialogClose = () => {
+        console.log("handleDialogClose called, closing dialog");
         setIsDialogOpen(false);
         setPaymentScreening(null);
+        // Delay reload to allow dialog to close first
+        setTimeout(() => {
+            router.reload({
+                only: ["screenings_offline", "screenings_online"],
+            });
+        }, 300);
     };
 
-
+    const handlePaymentSuccess = () => {
+        console.log("handlePaymentSuccess called, reloading screenings data");
+        router.get(
+            route("cashier.screening"),
+            { search: searchTerm, type: filter },
+            { preserveState: true, replace: true }
+        );
+    };
 
     function ScreeningDataTable({ data, filter, onPayment }) {
         const columns = React.useMemo(
@@ -81,59 +126,106 @@ const ScreeningIndex = ({
                 },
                 ...(filter === "online"
                     ? [
-                        {
-                            id: "pembayaran",
-                            header: "Pembayaran",
-                            cell: ({ row }) => (
-                                <Link href={route('cashier.payments-online', row.original.id)}>
-                                    <Button>
-                                        <CreditCard className="h-4 w-4 mr-2" />
-                                        Cek Pembayaran
-                                    </Button>
-                                </Link>
-                            ),
-                        },
-                    ]
+                          {
+                              id: "pembayaran",
+                              header: "Pembayaran",
+                              cell: ({ row }) => (
+                                  <Link
+                                      href={route(
+                                          "cashier.payments-online",
+                                          row.original.id
+                                      )}
+                                  >
+                                      <Button>
+                                          <CreditCard className="h-4 w-4 mr-2" />
+                                          Cek Pembayaran
+                                      </Button>
+                                  </Link>
+                              ),
+                          },
+                      ]
                     : [
-                        {
-                            id: "aksi",
-                            header: "Aksi/Status",
-                            cell: ({ row }) => {
-                                if (row.original.screening_status === "pending") {
-                                    return <span className="text-yellow-600 font-semibold">Sedang Diperiksa</span>;
-                                }
-                                if (row.original.payment_status === "completed") {
-                                    return <span className="text-green-600 font-semibold">Dibayar</span>;
-                                }
-                                return (
-                                    <Button onClick={() => onPayment(row.original)} variant="ghost">
-                                        <CreditCard className="h-4 w-4 mr-2" />
-                                        Bayar
-                                    </Button>
-                                );
-                            },
-                        },
-                        {
-                            id: "pdf",
-                            header: "PDF",
-                            cell: ({ row }) =>
-                                row.original.screening_status === "completed" ? (
-                                    <a
-                                        href={route("pdf.healthcheck.cashier", row.original.uuid)}
-                                    >
-                                        <Button>
-                                            <Printer />
-                                        </Button>
-                                    </a>
-                                ) : (
-                                    <span>Belum Diperiksa</span>
-                                ),
-                        },
-                    ]),
+                          {
+                              id: "aksi",
+                              header: "Aksi/Status",
+                              cell: ({ row }) => {
+                                  if (
+                                      row.original.screening_status ===
+                                      "pending"
+                                  ) {
+                                      return (
+                                          <span className="text-yellow-600 font-semibold">
+                                              Sedang Diperiksa
+                                          </span>
+                                      );
+                                  }
+                                  if (
+                                      row.original.payment_status ===
+                                      "completed"
+                                  ) {
+                                      return (
+                                          <span className="text-green-600 font-semibold">
+                                              Dibayar
+                                          </span>
+                                      );
+                                  }
+                                  return (
+                                      <Button
+                                          onClick={() =>
+                                              onPayment(row.original)
+                                          }
+                                          variant="ghost"
+                                      >
+                                          <CreditCard className="h-4 w-4 mr-2" />
+                                          Bayar
+                                      </Button>
+                                  );
+                              },
+                          },
+                          {
+                              id: "pdf",
+                              header: "PDF",
+                              cell: ({ row }) =>
+                                  row.original.screening_status ===
+                                  "completed" ? (
+                                      <a
+                                          href={route(
+                                              "pdf.healthcheck.cashier",
+                                              row.original.uuid
+                                          )}
+                                      >
+                                          <Button>
+                                              <Printer />
+                                          </Button>
+                                      </a>
+                                  ) : (
+                                      <span>Belum Diperiksa</span>
+                                  ),
+                          },
+                          {
+                              id: "nota",
+                              header: "Nota",
+                              cell: ({ row }) =>
+                                  row.original.payment_status ===
+                                  "completed" ? (
+                                      <a
+                                          href={route(
+                                              "generate.nota.ts",
+                                              row.original.payments[0].no_transaction
+                                          )}
+                                      >
+                                          <Button>
+                                              <Printer />
+                                          </Button>
+                                      </a>
+                                  ) : (
+                                      <span>Belum Dibayar</span>
+                                  ),
+                          },
+                      ]),
             ],
             [filter, onPayment]
         );
-        console.log(screenings);
 
         const [globalFilter, setGlobalFilter] = React.useState("");
         const table = useReactTable({
@@ -155,10 +247,13 @@ const ScreeningIndex = ({
                             <Input
                                 placeholder="Cari nama pasien..."
                                 value={searchTerm}
-                                onChange={e => setSearchTerm(e.target.value)}
+                                onChange={(e) => setSearchTerm(e.target.value)}
                                 className="max-w-sm"
                             />
-                            <Button type="submit" variant='ghost'> <Search /> </Button>
+                            <Button type="submit" variant="ghost">
+                                {" "}
+                                <Search />{" "}
+                            </Button>
                         </form>
                     </div>
                     <DropdownMenu>
@@ -168,11 +263,13 @@ const ScreeningIndex = ({
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                            {table.getAllColumns().map(column => (
+                            {table.getAllColumns().map((column) => (
                                 <DropdownMenuCheckboxItem
                                     key={column.id}
                                     checked={column.getIsVisible()}
-                                    onCheckedChange={value => column.toggleVisibility(!!value)}
+                                    onCheckedChange={(value) =>
+                                        column.toggleVisibility(!!value)
+                                    }
                                 >
                                     {column.id}
                                 </DropdownMenuCheckboxItem>
@@ -192,11 +289,17 @@ const ScreeningIndex = ({
                 <div className="rounded-md border">
                     <Table>
                         <TableHeader>
-                            {table.getHeaderGroups().map(headerGroup => (
+                            {table.getHeaderGroups().map((headerGroup) => (
                                 <TableRow key={headerGroup.id}>
-                                    {headerGroup.headers.map(header => (
+                                    {headerGroup.headers.map((header) => (
                                         <TableHead key={header.id}>
-                                            {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                                            {header.isPlaceholder
+                                                ? null
+                                                : flexRender(
+                                                      header.column.columnDef
+                                                          .header,
+                                                      header.getContext()
+                                                  )}
                                         </TableHead>
                                     ))}
                                 </TableRow>
@@ -204,18 +307,24 @@ const ScreeningIndex = ({
                         </TableHeader>
                         <TableBody>
                             {table.getRowModel().rows.length ? (
-                                table.getRowModel().rows.map(row => (
+                                table.getRowModel().rows.map((row) => (
                                     <TableRow key={row.id}>
-                                        {row.getVisibleCells().map(cell => (
+                                        {row.getVisibleCells().map((cell) => (
                                             <TableCell key={cell.id}>
-                                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                                {flexRender(
+                                                    cell.column.columnDef.cell,
+                                                    cell.getContext()
+                                                )}
                                             </TableCell>
                                         ))}
                                     </TableRow>
                                 ))
                             ) : (
                                 <TableRow>
-                                    <TableCell colSpan={columns.length} className="h-24 text-center">
+                                    <TableCell
+                                        colSpan={columns.length}
+                                        className="h-24 text-center"
+                                    >
                                         Belum ada data
                                     </TableCell>
                                 </TableRow>
@@ -228,11 +337,18 @@ const ScreeningIndex = ({
     }
 
     return (
-        <CashierSidebar header={'Daftar Screening'}>
+        <CashierSidebar header={"Daftar Screening"}>
             <Head title="Screening" />
-            <h2 className='text-2xl font-bold tracking-tight'>Screening</h2>
-            <p className="text-muted-foreground">Daftar seluruh hasil screening pasien yang telah membayar dan belum.</p>
-            <ScreeningDataTable data={data} filter={filter} onPayment={handlePayment} />
+            <h2 className="text-2xl font-bold tracking-tight">Screening</h2>
+            <p className="text-muted-foreground">
+                Daftar seluruh hasil screening pasien yang telah membayar dan
+                belum.
+            </p>
+            <ScreeningDataTable
+                data={data}
+                filter={filter}
+                onPayment={handlePayment}
+            />
 
             {/* Pagination dari backend */}
             {screenings && (
@@ -244,7 +360,9 @@ const ScreeningIndex = ({
                         <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => handlePageChange(screenings.prev_page_url)}
+                            onClick={() =>
+                                handlePageChange(screenings.prev_page_url)
+                            }
                             disabled={!screenings.prev_page_url}
                         >
                             Previous
@@ -252,7 +370,9 @@ const ScreeningIndex = ({
                         <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => handlePageChange(screenings.next_page_url)}
+                            onClick={() =>
+                                handlePageChange(screenings.next_page_url)
+                            }
                             disabled={!screenings.next_page_url}
                         >
                             Next
@@ -262,8 +382,10 @@ const ScreeningIndex = ({
             )}
 
             <PaymentDialog
+                key={paymentScreening ? paymentScreening.id : "no-screening"}
                 isOpen={isDialogOpen}
                 onClose={handleDialogClose}
+                onPaymentSuccess={handlePaymentSuccess}
                 screening={paymentScreening}
                 medicines={medicines}
                 amounts={amounts}

@@ -111,7 +111,6 @@ class DatabaseSeeder extends Seeder
             }
         }
 
-        // $this->call(ScreeningStressTestSeeder::class);
         // $this->call(FullStressTestSeeder::class);
         $this->call(ScreeningOfflineQuestionsSeeder::class);
         $this->call([
@@ -119,5 +118,7 @@ class DatabaseSeeder extends Seeder
             AmountScreeningSeeder::class,
         ]);
         // $this->call(MedicineSeeder::class);
+        $this->call(ScreeningStressTestSeeder::class);
+
     }
 }

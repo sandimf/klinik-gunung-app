@@ -1,9 +1,9 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Community\CommunityController;
 use App\Http\Controllers\Community\CreateAccountController;
 use App\Http\Controllers\Community\ProfileAccountController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,4 +36,4 @@ Route::middleware(['check.username'])->group(function () {
 
     Route::get('/community/{slug}', [CreateAccountController::class, 'profile'])
         ->name('profile.show');
-}); 
+});

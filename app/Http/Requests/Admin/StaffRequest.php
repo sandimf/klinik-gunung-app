@@ -29,7 +29,8 @@ class StaffRequest extends FormRequest
             'nik' => 'required|string|unique:doctors,nik|unique:paramedis,nik|unique:cashiers,nik|unique:patients,nik|unique:admins,nik|unique:warehouses,nik',
             'date_of_birth' => 'required|date',
             'address' => 'required|string|max:255',
-            'phone' => 'required|string|max:15|min:5|unique:admins,phone|unique:paramedis,phone|unique:cashiers,phone|unique:doctors,phone|unique:patients,contact',
+            'phone' => 'required|string|max:15|min:5',
+            'signature' => 'required|string',
         ];
     }
 
@@ -41,10 +42,13 @@ class StaffRequest extends FormRequest
             'name.max' => 'Nama maksimal 255 karakter',
             'date_of_birth.required' => 'Tanggal lahir wajib di isi',
             'address' => 'Alamat tidak boleh kosong',
-            'phone' => 'Nomor telepon tidak boleh kosong',
+            'phone.required' => 'Nomor telepon tidak boleh kosong',
+            'phone.unique' => 'Nomor telepon sudah terdaftar',
             'email.required' => 'Email tidak boleh kosong',
             'email.string' => 'Email harus berupa string',
             'role.required' => 'Peran wajin di isi',
+            'signature.required' => 'Tanda tangan digital wajib diisi',
+            'signature.string' => 'Tanda tangan digital harus berupa string',
         ];
     }
 }

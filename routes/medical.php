@@ -1,22 +1,24 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Appointments\AppointmentDoctorController;
 use App\Http\Controllers\Chatbot\ChatbotController;
 use App\Http\Controllers\Clinic\MedicalRecordController;
 use App\Http\Controllers\Clinic\PhysicalExaminationOnlineController;
-use App\Http\Controllers\Paramedis\v2\HealthCheckController;
-use App\Http\Controllers\Paramedis\v2\MedicalServiceController;
+use App\Http\Controllers\Paramedis\ScreeningAiSuggestionController;
 use App\Http\Controllers\Paramedis\v2\HistoryHealthCheckController;
-use App\Http\Controllers\Roles\Doctor\DoctorDashboardController;
-use App\Http\Controllers\Roles\Doctor\Service\ConsultationController;
-use App\Http\Controllers\Roles\Doctor\Profile\DoctorProfileController;
-use App\Http\Controllers\Roles\Doctor\Managements\PatientsListController;
-use App\Http\Controllers\Roles\Doctor\Screenings\DoctorScreeningController;
-use App\Http\Controllers\Roles\Paramedis\MedicalRecord\ParamedisMedicalRecordController;
-use App\Http\Controllers\Roles\Paramedis\PhysicalExaminations\PhysicalExaminationController;
-use App\Http\Controllers\Appointments\AppointmentDoctorController;
-use App\Http\Controllers\Users\ParamedisController;
+use App\Http\Controllers\Paramedis\v2\MedicalServiceController;
 use App\Http\Controllers\Report\ParamedisReportController;
+use App\Http\Controllers\Roles\Doctor\DoctorDashboardController;
+use App\Http\Controllers\Roles\Doctor\Managements\PatientsListController;
+use App\Http\Controllers\Roles\Doctor\Profile\DoctorProfileController;
+use App\Http\Controllers\Roles\Doctor\Screenings\DoctorScreeningController;
+use App\Http\Controllers\Roles\Doctor\Service\ConsultationController;
+use App\Http\Controllers\Roles\Paramedis\HealthCheck\HealthCheckController;
+use App\Http\Controllers\Roles\Paramedis\MedicalRecord\ParamedisMedicalRecordController;
+use App\Http\Controllers\Roles\Paramedis\ParamedisDasboardController;
+use App\Http\Controllers\Roles\Paramedis\PhysicalExaminations\PhysicalExaminationController;
+use App\Http\Controllers\Users\ParamedisController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -68,7 +70,7 @@ Route::prefix('dashboard/paramedis')->middleware(['role:paramedis'])->group(func
     // Dashboard & Profile
     Route::get('/', [ParamedisController::class, 'index'])->name('paramedis.dashboard');
     Route::get('profile', [ParamedisController::class, 'profile'])->name('paramedis.profile');
-    Route::get('screenings', [ParamedisController::class, 'showScreenings'])->name('paramedis.screenings');
+    Route::get('screenings', [ParamedisDasboardController::class, 'index'])->name('paramedis.screenings');
     Route::get('chatbot', [ChatbotController::class, 'paramedis'])->name('chatbot.paramedis');
 
     // Medical Records
@@ -104,6 +106,10 @@ Route::prefix('dashboard/paramedis')->middleware(['role:paramedis'])->group(func
     Route::get('activity/pdf', [ParamedisReportController::class, 'generatePDFActivity'])->name('pdf.activity.paramedis');
     Route::get('activity/pdf/generate', [ParamedisReportController::class, 'generatePDFself'])->name('pdf.self.paramedis');
     Route::get('report/health-check/{uuid}', [ParamedisReportController::class, 'generatePDFHealthCheck'])->name('pdf.healthcheck.paramedis');
+
+    // AI Suggestion
+    // AI Suggestion untuk paramedis
+    Route::post('screening/ai-suggestion-paramedis', [ScreeningAiSuggestionController::class, 'suggestParamedis'])->name('screening.ai.suggestion.paramedis');
 });
 
 // ===================================================================

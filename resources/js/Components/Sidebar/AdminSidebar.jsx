@@ -6,12 +6,12 @@ import {
     Settings2,
     ChevronRight,
     NotebookPen,
-    Scan,
     Ghost,
     Bot,
     Key,
     Contact,
-    DollarSign
+    DollarSign,
+    Logs
 } from "lucide-react";
 import { NavUser } from "@/Components/Nav/NavUser";
 import { TeamSwitcher } from "@/Components/Nav/TeamSwitcher";
@@ -70,18 +70,18 @@ export function AppSidebar({ ...sidebarProps }) {
             },
             {
                 title: "Kuesioner Screening",
-                url: route("questioner.create"),
+                url: route("questioner.index"),
                 icon: NotebookPen,
-                items: [
-                    {
-                        title: "Kuesioner",
-                        url: route("questioner.index"),
-                    },
-                    {
-                        title: "Kuesioner Online",
-                        url: route("questioner-online.index"),
-                    },
-                ],
+                // items: [
+                //     {
+                //         title: "Kuesioner",
+                //         url: route("questioner.index"),
+                //     },
+                //     {
+                //         title: "Kuesioner Online",
+                //         url: route("questioner-online.index"),
+                //     },
+                // ],
             },
             {
                 title: "Staff",
@@ -93,11 +93,11 @@ export function AppSidebar({ ...sidebarProps }) {
                 url: route("amounts.index"),
                 icon: DollarSign,
             },
-            {
-                title: "Pindai QrCode",
-                url: route("admin.scan"),
-                icon: Scan,
-            },
+            // {
+            //     title: "Pindai QrCode",
+            //     url: route("admin.scan"),
+            //     icon: Scan,
+            // },
             {
                 title: "Kontak Darurat",
                 url: route("emergecy-contact.index"),
@@ -137,6 +137,11 @@ export function AppSidebar({ ...sidebarProps }) {
                         url: route("admin.profile"),
                     },
                 ],
+            },
+            {
+                title: "Logs",
+                url: route("admin.logs"),
+                icon: Logs,
             },
         ],
     };

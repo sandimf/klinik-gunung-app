@@ -65,9 +65,21 @@ export function EditAnswerDialog({ id, question, answer_text, onSave, physicalFi
                     setIsOpen(false);
                 },
                 onError: (err) => {
-                    console.error('Error response:', err);
-                    const errorMessage = err?.message || err?.tinggi_badan?.[0] || err?.berat_badan?.[0] || 'Gagal update data fisik';
-                    setError(errorMessage);
+                    if (err?.tinggi_badan) {
+                        const errorMessage = Array.isArray(err.tinggi_badan)
+                            ? err.tinggi_badan[0]
+                            : err.tinggi_badan;
+                        setError(errorMessage);
+                    } else if (err?.berat_badan) {
+                        const errorMessage = Array.isArray(err.berat_badan)
+                            ? err.berat_badan[0]
+                            : err.berat_badan;
+                        setError(errorMessage);
+                    } else if (err?.message) {
+                        setError(err.message);
+                    } else {
+                        setError('Gagal update data fisik');
+                    }
                 },
             });
         } else {
@@ -90,10 +102,14 @@ export function EditAnswerDialog({ id, question, answer_text, onSave, physicalFi
         }
     };
 
-    // Handler untuk input change
     const handleInputChange = (e) => {
         const value = e.target.value;
         if (physicalField) {
+            if (value && isNaN(Number(value))) {
+                setError('Harus berupa angka (boleh desimal)');
+            } else {
+                setError('');
+            }
             if (physicalField === 'tinggi_badan') {
                 setData('tinggi_badan', value);
             } else if (physicalField === 'berat_badan') {
@@ -104,7 +120,6 @@ export function EditAnswerDialog({ id, question, answer_text, onSave, physicalFi
         }
     };
 
-    // Get current input value
     const getCurrentValue = () => {
         if (physicalField) {
             return physicalField === 'tinggi_badan' ? data.tinggi_badan : data.berat_badan;
@@ -112,7 +127,6 @@ export function EditAnswerDialog({ id, question, answer_text, onSave, physicalFi
         return data.answer?.[0] || '';
     };
 
-    // Tentukan input type dinamis
     let inputType = 'text';
     if (physicalField) {
         inputType = 'number';
@@ -132,27 +146,18 @@ export function EditAnswerDialog({ id, question, answer_text, onSave, physicalFi
             <DialogContent className="sm:max-w-[425px]">
                 <form onSubmit={handleSave}>
                     <DialogHeader>
-                        <DialogTitle>Edit Jawaban</DialogTitle>
+                        <DialogTitle>Edit {question}</DialogTitle>
                         <DialogDescription>
                             Ubah jawaban untuk pertanyaan ini. Klik simpan ketika selesai.
                         </DialogDescription>
                     </DialogHeader>
                     <div className="grid gap-4 py-4">
                         <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="question" className="text-right">
-                                Pertanyaan
-                            </Label>
-                            <div className="col-span-3">
-                                <p id="question">{question}</p>
-                            </div>
-                        </div>
-                        <div className="grid grid-cols-4 items-center gap-4">
                             <Label htmlFor="answer" className="text-right">
                                 Jawaban
                             </Label>
                             <Input
                                 id="answer"
-                                type={inputType}
                                 value={getCurrentValue()}
                                 onChange={handleInputChange}
                                 className="col-span-3"
@@ -160,10 +165,11 @@ export function EditAnswerDialog({ id, question, answer_text, onSave, physicalFi
                                 step={physicalField ? 'any' : undefined}
                                 placeholder={physicalField === 'tinggi_badan' ? 'cm' : physicalField === 'berat_badan' ? 'kg' : ''}
                             />
+                            {error && (
+                                <div className="col-span-4 text-red-600 text-sm">{error}</div>
+                            )}
                         </div>
-                        {error && (
-                            <div className="col-span-4 text-red-600 text-sm">{error}</div>
-                        )}
+
                     </div>
                     <DialogFooter>
                         <Button type="submit" disabled={processing}>

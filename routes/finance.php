@@ -1,18 +1,18 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Chatbot\ChatbotController;
-use App\Http\Controllers\Users\CashierController;
-use App\Http\Controllers\Cashier\v2\CompanionController;
 use App\Http\Controllers\Cashier\v2\ActivityCashierController;
+use App\Http\Controllers\Cashier\v2\CompanionController;
+use App\Http\Controllers\Chatbot\ChatbotController;
 use App\Http\Controllers\Payments\PaymentsOnlineController;
-use App\Http\Controllers\Transaction\PurchaseController;
 use App\Http\Controllers\Report\CashierReportController;
+use App\Http\Controllers\Report\ParamedisReportController;
 use App\Http\Controllers\Roles\Cashier\CashierDashboardController;
-use App\Http\Controllers\Roles\Cashier\Profile\ProfileCashierController;
 use App\Http\Controllers\Roles\Cashier\MedicalRecord\CashierMedicalRecordController;
-use App\Http\Controllers\Paramedis\v2\HistoryHealthCheckController;
 use App\Http\Controllers\Roles\Cashier\Payments\ScreeningPaymentsController;
+use App\Http\Controllers\Roles\Cashier\Profile\ProfileCashierController;
+use App\Http\Controllers\Roles\Cashier\Screening\ScreeningPaymentListController;
+use App\Http\Controllers\Users\CashierController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,7 +34,7 @@ Route::prefix('dashboard/cashier')->middleware(['role:cashier'])->group(function
     Route::get('chatbot', [ChatbotController::class, 'cashier'])->name('chatbot.cashier');
 
     // Screening Management
-    Route::get('screening', [CashierController::class, 'screenings'])->name('cashier.screening');
+    Route::get('screening', [ScreeningPaymentListController::class, 'index'])->name('cashier.screening');
     Route::get('screening-online', [CashierController::class, 'showScreeningOnline'])->name('cashier.screening-online');
     Route::get('screening-online/payments/{id}', [CashierController::class, 'showPayment'])->name('cashier.payments-online');
     Route::get('companion', [CompanionController::class, 'index'])->name('companion.screening');
@@ -65,5 +65,5 @@ Route::prefix('dashboard/cashier')->middleware(['role:cashier'])->group(function
     Route::get('medical-record/{uuid}', [CashierMedicalRecordController::class, 'show'])->name('show.medical-record.cashier');
 
     // Health Check Reports
-    Route::get('report/health-check/{uuid}', [HistoryHealthCheckController::class, 'generatePDFHealthCheck'])->name('pdf.healthcheck.cashier');
+    Route::get('report/health-check/{uuid}', [ParamedisReportController::class, 'generatePDFHealthCheck'])->name('pdf.healthcheck.cashier');
 });

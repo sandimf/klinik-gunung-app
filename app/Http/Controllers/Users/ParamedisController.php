@@ -60,7 +60,7 @@ class ParamedisController extends Controller
 
         $questionsAndAnswers = $patient->answers->map(function ($answer) {
             $answerText = $answer->answer_text;
-            
+
             // Parse JSON jika jawaban adalah JSON string (untuk checkbox_textarea)
             if (is_string($answerText) && (str_starts_with($answerText, '{') || str_starts_with($answerText, '['))) {
                 try {
@@ -70,15 +70,15 @@ class ParamedisController extends Controller
                         if (isset($parsed['options']) && isset($parsed['textarea'])) {
                             $options = $parsed['options'];
                             $textarea = $parsed['textarea'];
-                            
+
                             if ($options === 'N/A' && empty($textarea)) {
                                 $answerText = 'Tidak';
-                            } else if ($options === 'N/A') {
+                            } elseif ($options === 'N/A') {
                                 $answerText = $textarea;
-                            } else if (empty($textarea)) {
+                            } elseif (empty($textarea)) {
                                 $answerText = $options;
                             } else {
-                                $answerText = $options . ' - ' . $textarea;
+                                $answerText = $options.' - '.$textarea;
                             }
                         } else {
                             $answerText = is_array($parsed) ? implode(', ', $parsed) : $parsed;
@@ -88,7 +88,7 @@ class ParamedisController extends Controller
                     // Jika gagal parse, gunakan string asli
                 }
             }
-            
+
             return [
                 'question' => $answer->question->question_text,
                 'answer' => $answerText,
@@ -130,51 +130,4 @@ class ParamedisController extends Controller
         return redirect()->back()->with('message', 'Berhasil Menyimpan Jawaban');
     }
 
-    /**
-     * Update only the physical attributes (tinggi_badan, berat_badan) of a patient.
-     */
-    public function updatePhysicalAttributes(Request $request, $id)
-    {
-        $validated = $request->validate([
-            'tinggi_badan' => 'nullable|integer|min:1',
-            'berat_badan' => 'nullable|integer|min:1',
-        ]);
-
-        $patient = \App\Models\Users\Patients::findOrFail($id);
-        $patient->update($validated);
-
-        return back()->with('success', 'Data fisik pasien berhasil diperbarui.');
-    }
-
-    public function showScreenings(Request $request)
-    {
-        $page = $request->input('page', 1);
-        $perPage = 20;
-        $search = $request->input('search');
-        $cacheKey = "screenings:offline:{$page}:{$perPage}:{$search}";
-        $offline = DB::table('patients')
-            ->select('patients.id', 'patients.uuid', 'patients.name', 'patients.screening_status', 'q.queue')
-            ->join(DB::raw('(
-                SELECT patient_id, MIN(queue) as queue
-                FROM screening_offline_answers
-                WHERE answer_text IS NOT NULL
-                GROUP BY patient_id
-            ) as q'), 'patients.id', '=', 'q.patient_id')
-            ->where('patients.screening_status', 'pending');
-        if ($search) {
-            $offline->where('patients.name', 'like', '%'.$search.'%');
-        }
-        $offline = $offline
-            ->orderBy('q.queue', 'asc')
-            ->paginate($perPage, ['*'], 'page', $page);
-        $online = [];
-
-        return Inertia::render('Dashboard/Paramedis/Screenings/Index', [
-            'screenings_offline' => $offline,
-            'screenings_online' => $online,
-            'filters' => [
-                'search' => $search,
-            ],
-        ]);
-    }
 }

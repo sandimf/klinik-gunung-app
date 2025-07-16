@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('address', 100);
             $table->date('date_of_birth');
             $table->string('phone', 15);
+            $table->longText('signature')->nullable();
             $table->enum('role', ['admin'])
                 ->default('admin');
             $table->timestamps();

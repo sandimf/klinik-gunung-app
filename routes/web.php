@@ -1,9 +1,10 @@
 <?php
 
-use Inertia\Inertia;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\PatientQrController;
 use App\Http\Controllers\Auth\ProviderController;
 use App\Http\Controllers\Screening\GuestScreeningController;
+use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,49 +29,67 @@ Route::get('/', function () {
 Route::resource('screening-now', GuestScreeningController::class)
     ->only(['index', 'store']);
 
+// Generate new QR code (protected route)
+Route::middleware(['auth'])->group(function () {
+    Route::post('/api/patient/{patient}/generate-qr', [PatientQrController::class, 'generateQrCode'])
+        ->name('patient.qr.generate');
+});
+
 // Social Authentication Routes
 Route::get('auth/{provider}/redirect', [ProviderController::class, 'redirect']);
 Route::get('auth/{provider}/callback', [ProviderController::class, 'callback']);
 
+
+Route::fallback(function () {
+    return Inertia::render('Errors/Error', ['status' => 404]);
+    return Inertia::render('Errors/Error', ['status' => 403]);
+    return Inertia::render('Errors/Error', ['status' => 401]);
+    return Inertia::render('Errors/Error', ['status' => 400]);
+    return Inertia::render('Errors/Error', ['status' => 405]);
+    return Inertia::render('Errors/Error', ['status' => 500]);
+    return Inertia::render('Errors/Error', ['status' => 501]);
+    return Inertia::render('Errors/Error', ['status' => 502]);
+    return Inertia::render('Errors/Error', ['status' => 503]);
+});
 // ===================================================================
 // AUTHENTICATED ROUTES
 // ===================================================================
 
 Route::middleware(['auth'])->group(function () {
-    
+
     // ===================================================================
     // SHARED ROUTES
     // ===================================================================
-    require __DIR__ . '/shared.php';
+    require __DIR__.'/shared.php';
 
     // ===================================================================
     // DOMAIN-SPECIFIC ROUTES
     // ===================================================================
-    
+
     // Patient routes
-    require __DIR__ . '/patient.php';
-    
+    require __DIR__.'/patient.php';
+
     // Medical routes (Doctor & Paramedic)
-    require __DIR__ . '/medical.php';
-    
+    require __DIR__.'/medical.php';
+
     // Finance routes (Cashier)
-    require __DIR__ . '/finance.php';
-    
+    require __DIR__.'/finance.php';
+
     // Inventory routes (Cashier & Warehouse)
-    require __DIR__ . '/inventory.php';
-    
+    require __DIR__.'/inventory.php';
+
     // Admin routes
-    require __DIR__ . '/admin.php';
-    
+    require __DIR__.'/admin.php';
+
     // Manager routes
-    require __DIR__ . '/manager.php';
-    
+    require __DIR__.'/manager.php';
+
     // Community routes
-    require __DIR__ . '/community.php';
+    require __DIR__.'/community.php';
 });
 
 // ===================================================================
 // AUTH ROUTES
 // ===================================================================
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';

@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Users\Patients;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Users\Patients;
-use App\Models\Screenings\ScreeningAnswers;
 
 class ParamedisScreeningController extends Controller
 {
@@ -16,19 +15,19 @@ class ParamedisScreeningController extends Controller
     {
         try {
             $user = Auth::user();
-            
-            if (!$user) {
+
+            if (! $user) {
                 return response()->json(['error' => 'Not authenticated'], 401);
             }
-            
+
             if ($user->role !== 'paramedis') {
                 return response()->json(['error' => 'Unauthorized'], 403);
             }
 
             // Get screenings with pagination
-            $screenings = Patients::with(['answers' => function($query) {
-                    $query->orderBy('created_at', 'desc');
-                }])
+            $screenings = Patients::with(['answers' => function ($query) {
+                $query->orderBy('created_at', 'desc');
+            }])
                 ->where('screening_status', 'pending')
                 ->orderBy('created_at', 'desc')
                 ->paginate(20);
@@ -74,7 +73,8 @@ class ParamedisScreeningController extends Controller
             ]);
 
         } catch (\Exception $e) {
-            \Log::error('Error getting screenings: ' . $e->getMessage());
+            \Log::error('Error getting screenings: '.$e->getMessage());
+
             return response()->json(['error' => 'Internal server error'], 500);
         }
     }
@@ -86,8 +86,8 @@ class ParamedisScreeningController extends Controller
     {
         try {
             $user = Auth::user();
-            
-            if (!$user || $user->role !== 'paramedis') {
+
+            if (! $user || $user->role !== 'paramedis') {
                 return response()->json(['error' => 'Unauthorized'], 403);
             }
 
@@ -103,8 +103,9 @@ class ParamedisScreeningController extends Controller
             ]);
 
         } catch (\Exception $e) {
-            \Log::error('Error getting screening count: ' . $e->getMessage());
+            \Log::error('Error getting screening count: '.$e->getMessage());
+
             return response()->json(['error' => 'Internal server error'], 500);
         }
     }
-} 
+}

@@ -1,11 +1,11 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Clinic\OfficeController;
 use App\Http\Controllers\Medicines\MedicineController;
 use App\Http\Controllers\Product\ProductController;
 use App\Http\Controllers\Transaction\PurchaseController;
-use App\Http\Controllers\Clinic\OfficeController;
 use App\Http\Controllers\Users\WarehouseController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -57,4 +57,4 @@ Route::prefix('dashboard/warehouse')->middleware(['role:warehouse'])->group(func
     // Medicine Management
     Route::get('medicine', [WarehouseController::class, 'medicine'])->name('medicine.warehouse');
     Route::post('medicine/store', [MedicineController::class, 'store'])->name('medicine.warehouse.store');
-}); 
+});

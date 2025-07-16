@@ -2,31 +2,22 @@
 
 namespace App\Http\Controllers\Roles\Cashier\Payments;
 
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Cashier\ScreeningPaymentsRequest;
+use App\Jobs\SendScreeningNotification;
+use App\Models\Medicines\Medicine;
+use App\Models\Medicines\MedicineBatch;
+use App\Models\PaymentItem;
 use App\Models\Payments;
-use Illuminate\Http\Request;
+use App\Models\Roles\Admin\Management\AmountScreening;
 use App\Models\Users\Cashier;
 use App\Models\Users\Patients;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Support\Facades\Log;
-use App\Http\Controllers\Controller;
-use App\Jobs\SendScreeningNotification;
-use App\Models\Medicines\MedicineBatch;
 
 class ScreeningPaymentsController extends Controller
 {
-    public function store(Request $request)
+    public function store(ScreeningPaymentsRequest $request)
     {
-        $request->validate([
-            'cashier_id' => 'required|exists:cashiers,id',
-            'patient_id' => 'required|exists:patients,id',
-            'amount_paid' => 'required|numeric|min:0',
-            'payment_method' => 'required|string',
-            'quantity_product' => 'nullable|integer|min:1',
-            'payment_proof' => 'nullable|file|image|max:2048',
-            'selected_medicine_id' => 'nullable|exists:medicines,id',
-            'medicine_batch_id' => 'nullable|exists:medicine_batches,id',
-            'selectedOptions' => 'nullable|array',
-        ]);
 
         // Menyiapkan data untuk disimpan
         $data = $request->only([
@@ -35,7 +26,6 @@ class ScreeningPaymentsController extends Controller
             'payment_method',
             'amount_paid',
             'payment_proof',
-            'selectedOptions',
             'selected_medicine_id',
             'medicine_batch_id',
         ]);
@@ -52,7 +42,7 @@ class ScreeningPaymentsController extends Controller
         $data['payment_status'] = 1;
 
         // Proses pengurangan stok obat SEBELUM menyimpan pembayaran
-        if (isset($data['quantity_product']) && $data['quantity_product'] > 0 && !empty($data['medicine_batch_id'])) {
+        if (isset($data['quantity_product']) && $data['quantity_product'] > 0 && ! empty($data['medicine_batch_id'])) {
             try {
                 // Cari batch berdasarkan medicine_batch_id
                 $batch = MedicineBatch::findOrFail($data['medicine_batch_id']);
@@ -66,12 +56,12 @@ class ScreeningPaymentsController extends Controller
                     }
                 } else {
                     return redirect()->back()->withErrors([
-                        'quantity_product' => "Stok batch tidak mencukupi. Stok tersedia: {$batch->quantity}"
+                        'quantity_product' => "Stok batch tidak mencukupi. Stok tersedia: {$batch->quantity}",
                     ]);
                 }
             } catch (\Exception $e) {
                 return redirect()->back()->withErrors([
-                    'quantity_product' => 'Terjadi error saat memproses stok batch: ' . $e->getMessage()
+                    'quantity_product' => 'Terjadi error saat memproses stok batch: '.$e->getMessage(),
                 ]);
             }
         }
@@ -80,7 +70,44 @@ class ScreeningPaymentsController extends Controller
         try {
             $payment = Payments::create($data);
         } catch (\Exception $e) {
+            // \Log::error('Error saat menyimpan pembayaran: ' . $e->getMessage());
             return redirect()->back()->withErrors(['payment' => 'Terjadi error saat menyimpan pembayaran.']);
+        }
+
+        // Simpan layanan (service) yang dipilih
+        $selectedOptions = $request->input('selectedOptions', []);
+        foreach ($selectedOptions as $option) {
+            // Jika value adalah ID amount_screening
+            $amount = AmountScreening::find($option);
+            if ($amount) {
+                PaymentItem::create([
+                    'payment_id' => $payment->id,
+                    'item_type' => 'service',
+                    'item_id' => $amount->id,
+                    'item_name' => $amount->type,
+                    'quantity' => 1,
+                    'price' => $amount->amount,
+                    'total' => $amount->amount,
+                ]);
+            }
+        }
+
+        // Simpan obat
+        if ($request->filled('selected_medicine_id') && $request->filled('medicine_quantity')) {
+            $medicine = Medicine::find($request->input('selected_medicine_id'));
+            if ($medicine) {
+                $qty = (int) $request->input('medicine_quantity');
+                $price = $medicine->pricing->otc_price ?? 0;
+                PaymentItem::create([
+                    'payment_id' => $payment->id,
+                    'item_type' => 'medicine',
+                    'item_id' => $medicine->id,
+                    'item_name' => $medicine->medicine_name,
+                    'quantity' => $qty,
+                    'price' => $price,
+                    'total' => $price * $qty,
+                ]);
+            }
         }
 
         // Update status pembayaran pasien jika pembayaran selesai
@@ -95,13 +122,74 @@ class ScreeningPaymentsController extends Controller
         }
 
         // Mengarahkan kembali dengan pesan sukses
+
         return redirect()->route('cashier.screening')->with('success', 'Pembayaran berhasil diproses.');
     }
 
     public function generateNota($noTransaction)
     {
-        // Ambil data pembayaran berdasarkan nomor transaksi
-        $payment = Payments::where('no_transaction', $noTransaction)->firstOrFail();
+        // Log the transaction number we're looking for
+        \Log::info('Generating nota for transaction:', ['no_transaction' => $noTransaction]);
+
+        // Get the payment with items
+        $payment = Payments::with(['items' => function ($query) {
+            $query->orderBy('item_type')->orderBy('id');
+        }])
+            ->where('no_transaction', $noTransaction)
+            ->firstOrFail();
+
+        // Log payment details
+        \Log::info('Payment found:', [
+            'id' => $payment->id,
+            'no_transaction' => $payment->no_transaction,
+            'patient_id' => $payment->patient_id,
+            'created_at' => $payment->created_at,
+        ]);
+
+        // Check if items relation is loaded
+        if ($payment->relationLoaded('items')) {
+            \Log::info('Items relation is loaded');
+            $itemsCount = $payment->items->count();
+            \Log::info('Payment Items Count:', ['count' => $itemsCount]);
+
+            if ($itemsCount === 0) {
+                // If no items, check if they exist in the database
+                $dbItems = \DB::table('payment_items')
+                    ->where('payment_id', $payment->id)
+                    ->get();
+
+                \Log::info('Items from database query:', ['items' => $dbItems->toArray()]);
+
+                // If we found items in the DB but not in the relation, something's wrong with the relationship
+                if ($dbItems->isNotEmpty()) {
+                    \Log::warning('Items exist in database but not in relation. Relationship might be broken.');
+                    // Manually create items collection from DB results
+                    $payment->setRelation('items', $dbItems->map(function ($item) {
+                        return new \App\Models\PaymentItem((array) $item);
+                    }));
+                }
+            }
+        } else {
+            \Log::warning('Items relation is NOT loaded. Loading manually...');
+            $payment->load(['items' => function ($query) {
+                $query->orderBy('item_type')->orderBy('id');
+            }]);
+            \Log::info('Items loaded manually. Count:', ['count' => $payment->items->count()]);
+        }
+
+        // Final check of items
+        $finalItems = $payment->items->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'payment_id' => $item->payment_id,
+                'item_type' => $item->item_type,
+                'item_name' => $item->item_name,
+                'quantity' => $item->quantity,
+                'price' => $item->price,
+                'total' => $item->total,
+            ];
+        });
+        \Log::info('Final payment items:', ['items' => $finalItems->toArray()]);
 
         // Ambil data pasien berdasarkan patient_id
         $patient = Patients::findOrFail($payment->patient_id);
@@ -109,10 +197,63 @@ class ScreeningPaymentsController extends Controller
         // Ambil data kasir berdasarkan cashier_id
         $cashier = Cashier::findOrFail($payment->cashier_id);
 
+        // Kelompokkan item pembayaran berdasarkan tipe
+        $groupedItems = [
+            'services' => [],
+            'medicines' => [],
+        ];
+
+        // Hitung total untuk setiap kelompok
+        $totals = [
+            'services' => 0,
+            'medicines' => 0,
+            'grand_total' => 0,
+        ];
+
+        // Proses setiap item pembayaran
+        foreach ($payment->items as $item) {
+            if ($item->item_type === 'service') {
+                $groupedItems['services'][] = [
+                    'id' => $item->id,
+                    'item_name' => $item->item_name,
+                    'price' => $item->price,
+                    'quantity' => $item->quantity,
+                    'total' => $item->total,
+                ];
+                $totals['services'] += $item->total;
+            } elseif ($item->item_type === 'medicine') {
+                $groupedItems['medicines'][] = [
+                    'id' => $item->id,
+                    'item_name' => $item->item_name,
+                    'price' => $item->price,
+                    'quantity' => $item->quantity,
+                    'total' => $item->total,
+                ];
+                $totals['medicines'] += $item->total;
+            }
+
+            // Debug: Log each item
+            \Log::info('Processing item:', [
+                'id' => $item->id,
+                'type' => $item->item_type,
+                'name' => $item->item_name,
+                'price' => $item->price,
+                'quantity' => $item->quantity,
+                'total' => $item->total,
+            ]);
+        }
+
+        // Debug: Log grouped items and totals
+        \Log::info('Grouped Items:', $groupedItems);
+        \Log::info('Totals:', $totals);
+
+        // Hitung grand total
+        $totals['grand_total'] = $totals['services'] + $totals['medicines'];
+
         // Jika ada produk yang dibeli, ambil informasi produk dan batch
         $product = null;
         if ($payment->quantity_product && $payment->medicine_batch_id) {
-            $product = MedicineBatch::findOrFail($payment->medicine_batch_id);
+            $product = MedicineBatch::with('medicine')->findOrFail($payment->medicine_batch_id);
         }
 
         // Membuat tampilan nota
@@ -121,9 +262,11 @@ class ScreeningPaymentsController extends Controller
             'patient' => $patient,
             'cashier' => $cashier,
             'product' => $product,
-        ]);
+            'groupedItems' => $groupedItems,
+            'totals' => $totals,
+        ])->setPaper('A5');
 
-        // Mengunduh PDF dengan nama file "nota_pembayaran.pdf"
-        return $pdf->download('nota_pembayaran_' . $payment->no_transaction . '.pdf');
+        // Mengunduh PDF dengan nama file "nota_pembayaran_[no_transaksi].pdf"
+        return $pdf->download('nota_pembayaran_'.$payment->no_transaction.'.pdf');
     }
 }

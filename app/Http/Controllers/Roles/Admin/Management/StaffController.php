@@ -22,12 +22,47 @@ class StaffController extends Controller
         protected StaffCreationService $creationService
     ) {}
 
-    public function index(): InertiaResponse
+    public function index(Request $request): InertiaResponse
     {
-        $users = $this->queryService->getAllStaff();
+        $perPage = 20;
+        $search = $request->input('search', '');
+
+        // Ambil semua staff (Collection)
+        $allStaff = $this->queryService->getAllStaff();
+
+        // Filter search manual di Collection
+        if ($search) {
+            $allStaff = $allStaff->filter(function ($staff) use ($search) {
+                $search = strtolower($search);
+
+                return str_contains(strtolower($staff['name']), $search)
+                    || str_contains(strtolower($staff['email']), $search)
+                    || str_contains(strtolower($staff['nik']), $search)
+                    || str_contains(strtolower($staff['phone']), $search)
+                    || str_contains(strtolower($staff['role']), $search);
+            });
+        }
+
+        // Pagination manual di Collection
+        $page = $request->input('page', 1);
+        $total = $allStaff->count();
+        $items = $allStaff->slice(($page - 1) * $perPage, $perPage)->values();
+
+        $users = [
+            'data' => $items,
+            'current_page' => $page,
+            'per_page' => $perPage,
+            'last_page' => ceil($total / $perPage),
+            'prev_page_url' => $page > 1 ? route('staff.index', ['page' => $page - 1, 'search' => $search]) : null,
+            'next_page_url' => $page < ceil($total / $perPage) ? route('staff.index', ['page' => $page + 1, 'search' => $search]) : null,
+            'total' => $total,
+        ];
 
         return Inertia::render('Dashboard/Admin/MedicalPersonnel/Index', [
             'users' => $users,
+            'filters' => [
+                'search' => $search,
+            ],
         ]);
     }
 

@@ -25,7 +25,8 @@ export default defineConfig({
     },
 
     server: {
-        //     host: 'localhost', // ← Ganti IP kamu kalau beda
+        // Ngork set up
+        //     host: 'localhost',
         //     port: 5173,
         //     https: {
         //         key: fs.readFileSync('../cert/vite.key'),
@@ -40,5 +41,4 @@ export default defineConfig({
         // },
         cors: true,
     },
-
 });

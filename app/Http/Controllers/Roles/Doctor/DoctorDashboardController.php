@@ -14,6 +14,7 @@ class DoctorDashboardController extends Controller
 
         return Inertia::render('Dashboard/Doctor/Index', [
             'waitingConsultationCount' => $waitingConsultationCount,
+            'appVersion' => config('app.version'),
         ]);
     }
 }

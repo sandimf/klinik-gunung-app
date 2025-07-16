@@ -66,7 +66,7 @@ export default function GeminiApiKey({ apikeys, errors }) {
         <Sidebar header={"Apikey"}>
             <Head title="Apikey" />
             <div className="container p-6 mx-auto space-y-6">
-                <h1 className="mb-6 text-3xl font-bold">API KEY</h1>
+                {/* <h1 className="mb-6 text-3xl font-bold">API KEY</h1> */}
                 <Card>
                     <CardHeader>
                         <CardTitle className="flex gap-2 items-center">
@@ -127,7 +127,7 @@ export default function GeminiApiKey({ apikeys, errors }) {
                             API Key Status
                         </CardTitle>
                         <CardDescription>
-                            Status kunci API Gemini AI Anda saat ini
+                            Status kunci API Gemini AI
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -150,11 +150,11 @@ export default function GeminiApiKey({ apikeys, errors }) {
                                             {/* Menampilkan 3 karakter pertama dan 3 karakter terakhir dari api_key */}
                                             {apikeys.api_key
                                                 ? `${apikeys.api_key.slice(
-                                                      0,
-                                                      3
-                                                  )}...${apikeys.api_key.slice(
-                                                      -3
-                                                  )}`
+                                                    0,
+                                                    3
+                                                )}...${apikeys.api_key.slice(
+                                                    -3
+                                                )}`
                                                 : "No API Key"}
                                         </TableCell>
                                         {/* Menampilkan api_key */}
@@ -171,25 +171,6 @@ export default function GeminiApiKey({ apikeys, errors }) {
                     </CardContent>
                 </Card>
 
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="flex gap-2 items-center">
-                            <AlertTriangle className="w-6 h-6" />
-                            Informasi Penting
-                        </CardTitle>
-                        <CardDescription>
-                            Detail penting tentang penggunaan Google Gemini AI
-                            API
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <ul className="pl-5 space-y-2 list-disc">
-                            <li>
-                                Jaga kerahasiaan dan keamanan kunci API Anda.
-                            </li>
-                        </ul>
-                    </CardContent>
-                </Card>
             </div>
         </Sidebar>
     );

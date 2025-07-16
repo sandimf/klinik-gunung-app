@@ -23,12 +23,14 @@ import { Head } from "@inertiajs/react";
 import { ArrowLeft, FileText, Calendar, User, Phone, Info, Loader2 } from 'lucide-react';
 import { EditAnswerDialog } from "../_components/edit-answer";
 import { Toaster } from "sonner";
+import MarkdownRenderer from "@/Components/ui/markdown-renderer";
 
 export default function ScreeningDetails({ patient, questionsAndAnswers, queue }) {
     const [qaState, setQaState] = React.useState(questionsAndAnswers);
     const [patientState, setPatientState] = React.useState(patient);
     const { ai_saran } = usePage().props;
     const [isLoading, setIsLoading] = React.useState(false);
+    const [aiSuggestion, setAiSuggestion] = React.useState(null);
 
     const capitalizeWords = (str) => {
         return str
@@ -124,13 +126,13 @@ export default function ScreeningDetails({ patient, questionsAndAnswers, queue }
                             <CardDescription>
                                 Jawaban {patient.name} kuesioner screening
                             </CardDescription>
-                            {ai_saran && (
+                            {(aiSuggestion || ai_saran) && (
                                 <Card className="mt-2">
                                     <CardHeader>
                                         <CardTitle>Saran AI</CardTitle>
                                     </CardHeader>
                                     <CardContent>
-                                        <p>{ai_saran}</p>
+                                        <MarkdownRenderer>{aiSuggestion || ai_saran}</MarkdownRenderer>
                                     </CardContent>
                                 </Card>
                             )}
@@ -265,16 +267,24 @@ export default function ScreeningDetails({ patient, questionsAndAnswers, queue }
                                 <Button
                                     variant="secondary"
                                     disabled={isLoading}
-                                    onClick={() => {
+                                    onClick={async () => {
                                         setIsLoading(true);
-                                        router.post(
-                                            route('paramedis.screenings.ai-saran'),
-                                            { answers: qaState, patient: patientState },
-                                            {
-                                                preserveScroll: true,
-                                                onFinish: () => setIsLoading(false),
-                                            }
-                                        );
+                                        try {
+                                            const res = await fetch(route('screening.ai.suggestion.paramedis'), {
+                                                method: 'POST',
+                                                headers: {
+                                                    'Content-Type': 'application/json',
+                                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                                },
+                                                body: JSON.stringify({ answers: qaState, patient: patientState }),
+                                            });
+                                            const data = await res.json();
+                                            setAiSuggestion(data.suggestion);
+                                        } catch (e) {
+                                            setAiSuggestion('Gagal mendapatkan saran AI.');
+                                        } finally {
+                                            setIsLoading(false);
+                                        }
                                     }}
                                 >
                                     {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

@@ -10,6 +10,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class ParamedisReportController extends Controller
@@ -204,17 +205,60 @@ class ParamedisReportController extends Controller
         // Ambil data pemeriksaan fisik dan paramedis yang memeriksa
         $examinations = $screening->physicalExaminations;  // Mengambil semua pemeriksaan fisik yang terkait
 
+        // Ambil pemeriksaan fisik terbaru (jika ada)
+        $latestExamination = $examinations->sortByDesc('created_at')->first();
+        $examiner = $latestExamination ? $latestExamination->paramedis : null;
+
+        // Siapkan signature path jika ada
+        $signaturePath = null;
+        if ($examiner && $examiner->signature) {
+            if (preg_match('/^data:image\\/(png|jpeg);base64,/', $examiner->signature, $matches)) {
+                $ext = $matches[1] === 'jpeg' ? 'jpg' : $matches[1];
+                $signatureData = substr($examiner->signature, strpos($examiner->signature, ',') + 1);
+                $signatureData = base64_decode($signatureData);
+                $filename = 'signatures/examiner_'.$examiner->id.'_'.time().'.'.$ext;
+                Storage::disk('public')->put($filename, $signatureData);
+                $signaturePath = storage_path('app/public/'.$filename);
+            }
+        }
+
+        // Ambil medical record terbaru
+        $medicalRecord = \App\Models\EMR\MedicalRecord::where('patient_id', $screening->id)
+            ->latest()
+            ->first();
+        $medicalRecordNumber = $medicalRecord->medical_record_number ?? '-';
+        $bulan = $medicalRecord ? ($medicalRecord->created_at ? $medicalRecord->created_at->format('n') : null) : null;
+        $romawi = [
+            1 => 'I',
+            2 => 'II',
+            3 => 'III',
+            4 => 'IV',
+            5 => 'V',
+            6 => 'VI',
+            7 => 'VII',
+            8 => 'VIII',
+            9 => 'IX',
+            10 => 'X',
+            11 => 'XI',
+            12 => 'XII',
+        ];
+        $bulanRomawi = $bulan ? ($romawi[$bulan] ?? '-') : '-';
+
         // Menyusun data untuk PDF
         $data = [
             'screening' => $screening,
             'examinations' => $examinations, // Kirim data pemeriksaan fisik
+            'medical_record_number' => $medicalRecordNumber,
+            'bulan_romawi' => $bulanRomawi,
+            'examiner_name' => $examiner ? $examiner->name : null,
+            'examiner_signature_path' => $signaturePath,
         ];
 
         // Mengonversi data menjadi PDF
         $pdf = Pdf::loadView('pdf.screenings.health_check', $data);
 
         // Download PDF dengan nama yang sesuai
-        return $pdf->download('hasil_pemeriksaan_' . $patientName . '.pdf');
+        return $pdf->download('hasil_pemeriksaan_'.$patientName.'.pdf');
     }
 
     // generate pdf  pemeriksaan yang dilakukan paramedis

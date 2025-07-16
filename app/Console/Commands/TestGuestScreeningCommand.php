@@ -46,55 +46,55 @@ class TestGuestScreeningCommand extends Command
             'age' => 25,
             'blood_type' => 'O',
             'contact' => '081234567890',
-            'email' => 'guest.test.' . time() . '@example.com',
+            'email' => 'guest.test.'.time().'@example.com',
             'tinggi_badan' => 170.00,
             'berat_badan' => 65.00,
             'answers' => [
                 [
                     'questioner_id' => 1,
-                    'answer' => 'Tidak'
+                    'answer' => 'Tidak',
                 ],
                 [
                     'questioner_id' => 2,
-                    'answer' => 'Ya'
+                    'answer' => 'Ya',
                 ],
                 [
                     'questioner_id' => 3,
-                    'answer' => 'Tidak'
+                    'answer' => 'Tidak',
                 ],
                 [
                     'questioner_id' => 4,
-                    'answer' => 'Ya'
+                    'answer' => 'Ya',
                 ],
                 [
                     'questioner_id' => 5,
-                    'answer' => 'Tidak'
+                    'answer' => 'Tidak',
                 ],
                 [
                     'questioner_id' => 6,
-                    'answer' => 'Ya'
+                    'answer' => 'Ya',
                 ],
                 [
                     'questioner_id' => 7,
-                    'answer' => 'Tidak'
+                    'answer' => 'Tidak',
                 ],
                 [
                     'questioner_id' => 8,
-                    'answer' => 'Ya'
+                    'answer' => 'Ya',
                 ],
-            ]
+            ],
         ];
 
         try {
-            $service = new GuestScreeningSubmissionService();
+            $service = new GuestScreeningSubmissionService;
             $service->handle($guestData, null);
 
             $this->info('✅ Guest screening submitted successfully!');
             $this->info('Check paramedis dashboard for notifications.');
-            
+
         } catch (\Exception $e) {
-            $this->error('❌ Error: ' . $e->getMessage());
-            $this->error('Stack trace: ' . $e->getTraceAsString());
+            $this->error('❌ Error: '.$e->getMessage());
+            $this->error('Stack trace: '.$e->getTraceAsString());
         }
     }
-} 
+}

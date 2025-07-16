@@ -10,4 +10,11 @@ export default {
         './resources/js/**/*.tsx',
     ],
     plugins: [require('@tailwindcss/forms'), require('tailwindcss-animate')],
+    theme: {
+        extend: {
+            colors: {
+                'muted-foreground': '#6b7280', // contoh gray-500
+            }
+        }
+    }
 };

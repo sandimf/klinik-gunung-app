@@ -2,20 +2,19 @@
 
 namespace App\Events;
 
+use App\Models\Users\Patients;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use App\Models\Users\Patients;
 
 class NewScreeningEvent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $patient;
+
     public $message;
 
     /**
@@ -62,4 +61,4 @@ class NewScreeningEvent implements ShouldBroadcast
     {
         return 'new-screening';
     }
-} 
+}

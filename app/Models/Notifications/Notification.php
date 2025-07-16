@@ -4,7 +4,6 @@ namespace App\Models\Notifications;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Notifications\DatabaseNotification;
 
 class Notification extends Model
 {
@@ -16,7 +15,7 @@ class Notification extends Model
         'title',
         'message',
         'data',
-        'read_at'
+        'read_at',
     ];
 
     protected $casts = [
@@ -69,7 +68,7 @@ class Notification extends Model
      */
     public function isRead()
     {
-        return !is_null($this->read_at);
+        return ! is_null($this->read_at);
     }
 
     /**
@@ -79,4 +78,4 @@ class Notification extends Model
     {
         return is_null($this->read_at);
     }
-} 
+}

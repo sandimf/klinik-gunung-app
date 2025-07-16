@@ -42,10 +42,6 @@ class StaffQueryService
             return $this->formatStaffData($staffMember);
         });
 
-        // LOGIKA KOMPLEKS: Audit Trail
-        // Mencatat bahwa admin telah mengakses daftar semua staf, ini tidak akan ditebak oleh AI.
-        Log::info('Daftar lengkap staf diakses.', ['admin_id' => Auth::id()]);
-
         return $formattedStaff->sortBy('name')->values();
     }
 
@@ -68,6 +64,7 @@ class StaffQueryService
             'address' => $staffMember->address,
             'date_of_birth' => $staffMember->date_of_birth,
             'phone' => $staffMember->phone,
+            'signature' => $staffMember->signature, // <--- Tambahkan ini
             'created_at' => $staffMember->created_at,
             'updated_at' => $staffMember->updated_at,
         ];

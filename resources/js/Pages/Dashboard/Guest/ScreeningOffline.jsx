@@ -138,7 +138,8 @@ export default function PatientDataEntry({ questions, apiKey }) {
                         ),
                     });
                     resetAllStates();
-                    router.reload();
+                    setStep(1); // Kembali ke step 1 (pengisian pendaki)
+                    // router.reload(); // Tidak perlu reload
                 },
                 onError: (errors) => {
                     setIsLoading(false); // Matikan loading setelah error

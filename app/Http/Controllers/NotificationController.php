@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Notifications\Notification as NotificationModel;
+use App\Models\Screenings\Screening;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Screenings\Screening;
-use App\Models\Notifications\Notification as NotificationModel;
 
 class NotificationController extends Controller
 {
@@ -16,12 +16,12 @@ class NotificationController extends Controller
     {
         try {
             $user = Auth::user();
-            
-            if (!$user) {
+
+            if (! $user) {
                 return response()->json(['error' => 'Not authenticated'], 401);
             }
-            
-            if ($user->role !== 'paramedis') {
+            // Izinkan paramedis dan dokter
+            if (! in_array($user->role, ['paramedis', 'doctor'])) {
                 return response()->json(['error' => 'Unauthorized'], 403);
             }
 
@@ -33,10 +33,11 @@ class NotificationController extends Controller
 
             return response()->json([
                 'notifications' => $notifications,
-                'unread_count' => $notifications->count()
+                'unread_count' => $notifications->count(),
             ]);
         } catch (\Exception $e) {
-            \Log::error('Error getting notifications: ' . $e->getMessage());
+            \Log::error('Error getting notifications: '.$e->getMessage());
+
             return response()->json(['error' => 'Internal server error'], 500);
         }
     }
@@ -47,11 +48,11 @@ class NotificationController extends Controller
     public function markAsRead(Request $request)
     {
         $request->validate([
-            'notification_id' => 'required|exists:notifications,id'
+            'notification_id' => 'required|exists:notifications,id',
         ]);
 
         $notification = NotificationModel::findOrFail($request->notification_id);
-        
+
         // Check if user owns this notification
         if ($notification->user_id !== Auth::id()) {
             return response()->json(['error' => 'Unauthorized'], 403);
@@ -92,7 +93,7 @@ class NotificationController extends Controller
     public function getRecentScreenings()
     {
         $user = Auth::user();
-        
+
         if ($user->role !== 'paramedis') {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
@@ -105,4 +106,4 @@ class NotificationController extends Controller
 
         return response()->json(['screenings' => $screenings]);
     }
-} 
+}

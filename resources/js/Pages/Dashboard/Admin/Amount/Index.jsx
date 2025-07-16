@@ -7,15 +7,18 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import Sidebar from "@/Layouts/Dashboard/AdminSidebarLayout";
 import { Popover, PopoverContent, PopoverTrigger } from "@/Components/ui/popover"
 import { Command, CommandInput, CommandList, CommandItem, CommandEmpty } from "@/Components/ui/command"
-import { Trash2, Edit, Plus } from "lucide-react"
+import { Trash2, Edit, Plus, ChevronDown, Check } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/Components/ui/dialog"
 import { Label } from "@/Components/ui/label"
+import { toast } from "sonner"
+import { cn } from "@/lib/utils"
 
 const TYPE_OPTIONS = [
   { value: "Screening", label: "Screening" },
-  { value: "Pendamping Dokter", label: "Pendamping Dokter" },
-  { value: "Pendamping Paramedis", label: "Pendamping Paramedis" },
-  { value: "konsultasi", label: "Konsultasi" },
+  { value: "Pendampingan Perawat", label: "Pendampingan Perawat" },
+  { value: "Pendampingan Paramedis", label: "Pendampingan Paramedis" },
+  { value: "Pendampingan Dokter", label: "Pendampingan Dokter" },
+  { value: "konsultasi Dokter", label: "Konsultasi Dokter" },
 ]
 
 // Helper format rupiah
@@ -40,18 +43,17 @@ export default function AmountIndex({ amounts = [] }) {
     type: "",
     amount: "",
   })
+  const [typeSearch, setTypeSearch] = useState("");
 
   // Tambah harga baru
   const handleSubmit = (e) => {
     e.preventDefault()
     post(route("amounts.store"), {
       onSuccess: () => {
-        toast.success("Harga berhasil ditambahkan.")
         reset()
         setDisplayAmount("")
       },
       onError: () => {
-        toast.error("Gagal menambah harga.")
       },
     })
   }
@@ -85,23 +87,6 @@ export default function AmountIndex({ amounts = [] }) {
     setData("amount", raw)
   }
 
-  // Combobox logic (shadcn/ui)
-  const handleTypeInputChange = (value) => {
-    setData("type", value)
-  }
-
-  const handleTypeSelect = (value) => {
-    setData("type", value)
-    setOpen(false)
-    setTimeout(() => {
-      document.getElementById("amount-input")?.focus()
-    }, 100)
-  }
-
-  const filteredOptions = TYPE_OPTIONS.filter(opt =>
-    opt.label.toLowerCase().includes((data.type || "").toLowerCase())
-  )
-
   // Hapus harga
   const handleDelete = (id) => {
     setDeleteId(id)
@@ -120,6 +105,15 @@ export default function AmountIndex({ amounts = [] }) {
     })
   }
 
+  // Daftar type default dari seeder
+  const defaultTypes = [
+    "Screening",
+    "Pendampingan Perawat",
+    "Pendampingan Paramedis",
+    "Pendampingan Dokter",
+    "Konsultasi Dokter"
+  ];
+
   return (
     <Sidebar header={'Harga Screening'}>
       <Head title="Atur Harga Screening" />
@@ -128,81 +122,119 @@ export default function AmountIndex({ amounts = [] }) {
           <CardTitle>Atur Harga Screening</CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="flex flex-col md:flex-row gap-2 mb-6">
+          <form onSubmit={handleSubmit} className="flex flex-col md:flex-row items-end gap-2 mb-6">
             <div className="flex flex-col md:w-1/2">
-              <Label htmlFor="type-input" className="mb-1">Tipe Harga</Label>
-              <Popover open={open} onOpenChange={setOpen}>
-                <PopoverTrigger asChild>
-                  <Input
-                    id="type-input"
-                    className="cursor-pointer placeholder:text-gray-400"
-                    placeholder="Tipe harga (pilih atau ketik manual)"
-                    value={data.type}
-                    onChange={e => {
-                      handleTypeInputChange(e.target.value)
-                      setOpen(true)
-                    }}
-                    onFocus={() => setOpen(true)}
-                    autoComplete="off"
-                  />
-                </PopoverTrigger>
-                <PopoverContent className="p-0 w-[var(--radix-popover-trigger-width)] min-w-[200px]">
-                  <Command shouldFilter={false}>
-                    <CommandInput
-                      placeholder="Cari atau ketik tipe..."
-                      value={data.type}
-                      onValueChange={handleTypeInputChange}
-                      autoFocus={false}
-                    />
-                    <CommandList>
-                      {data.type === "" && (
-                        <CommandItem disabled className="text-muted-foreground">
-                          Pilih atau ketik tipe harga...
-                        </CommandItem>
-                      )}
-                      {filteredOptions.length === 0 && data.type !== "" && (
-                        <CommandEmpty>Tidak ada pilihan</CommandEmpty>
-                      )}
-                      {filteredOptions.map(opt => (
-                        <CommandItem
-                          key={opt.value}
-                          value={opt.value}
-                          onSelect={handleTypeSelect}
-                          className="cursor-pointer"
-                        >
-                          {opt.label}
-                        </CommandItem>
-                      ))}
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-              {errors.type && (
-                <p className="text-xs text-red-500 mt-1">{errors.type}</p>
-              )}
+              <div className="grid w-full  items-center gap-3">
+                <Label htmlFor="type-input" className="mb-1">Jenis Pelayanan</Label>
+                <Popover open={open} onOpenChange={setOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      aria-expanded={open}
+                      className="w-full justify-between"
+                    >
+                      {data.type
+                        ? TYPE_OPTIONS.find((option) => option.value === data.type)?.label || data.type
+                        : "Pilih Jenis Pelayanan.."}
+                      <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-full">
+                    <Command>
+                      <CommandInput
+                        placeholder="Cari Jenis Layanan..."
+                        value={typeSearch}
+                        onValueChange={setTypeSearch}
+                      />
+                      <CommandEmpty>
+                        Tidak ada Jenis Layanan ditemukan.
+                        {typeSearch && (
+                          <div
+                            className="cursor-pointer text-blue-600 mt-2"
+                            onClick={() => {
+                              setData("type", typeSearch)
+                              setOpen(false)
+                              setTypeSearch("")
+                            }}
+                          >
+                            + Tambah Jenis Pelayanan: <b>{typeSearch}</b>
+                          </div>
+                        )}
+                      </CommandEmpty>
+                      <CommandList>
+                        {TYPE_OPTIONS.filter(option =>
+                          option.label.toLowerCase().includes(typeSearch.toLowerCase())
+                        ).map((option) => (
+                          <CommandItem
+                            key={option.value}
+                            value={option.value}
+                            onSelect={(currentValue) => {
+                              setData("type", currentValue === data.type ? "" : currentValue)
+                              setOpen(false)
+                              setTypeSearch("")
+                            }}
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                data.type === option.value ? "opacity-100" : "opacity-0"
+                              )}
+                            />
+                            {option.label}
+                          </CommandItem>
+                        ))}
+                        {typeSearch &&
+                          !TYPE_OPTIONS.some(option => option.label.toLowerCase() === typeSearch.toLowerCase()) && (
+                            <CommandItem
+                              value={typeSearch}
+                              onSelect={() => {
+                                setData("type", typeSearch)
+                                setOpen(false)
+                                setTypeSearch("")
+                              }}
+                              className="text-blue-600"
+                            >
+                              + Tambah Jenis Pelayanan: <b>{typeSearch}</b>
+                            </CommandItem>
+                          )
+                        }
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+
+                {errors.type && (
+                  <p className="text-xs text-red-500 mt-1">{errors.type}</p>
+                )}
+              </div>
             </div>
+
             <div className="flex flex-col md:w-1/3">
-              <Label htmlFor="amount-input" className="mb-1">Harga</Label>
-              <Input
-                id="amount-input"
-                placeholder="Harga"
-                inputMode="numeric"
-                value={displayAmount}
-                onChange={handleAmountChange}
-                className=""
-              />
-              {errors.amount && (
-                <p className="text-xs text-red-500 mt-1">{errors.amount}</p>
-              )}
+              <div className="grid w-full items-center gap-3">
+                <Label htmlFor="amount-input" className="mb-1">Harga</Label>
+                <Input
+                  id="amount-input"
+                  placeholder="Harga"
+                  inputMode="numeric"
+                  value={displayAmount}
+                  onChange={handleAmountChange}
+                  className=""
+                />
+                {errors.amount && (
+                  <p className="text-xs text-red-500 mt-1">{errors.amount}</p>
+                )}
+              </div>
             </div>
-            <div className="flex flex-col md:justify-end md:self-end w-full md:w-auto">
+
+            <div>
               <Button
                 type="submit"
                 disabled={processing}
-                className="h-10 w-full md:w-auto"
+                className="grid w-full items-center gap-3"
                 id="submit-btn"
               >
-                <Plus/>
+                <Plus />
               </Button>
             </div>
           </form>
@@ -247,11 +279,14 @@ export default function AmountIndex({ amounts = [] }) {
                     ) : (
                       <div className="flex gap-2">
                         <Button size="sm" variant="outline" onClick={() => handleEdit(item.id, item.amount)} type="button">
-                          <Edit/>
+                          <Edit />
                         </Button>
-                        <Button size="sm" variant="destructive" onClick={() => handleDelete(item.id)} type="button">
-                          <Trash2 />
-                        </Button>
+                        {/* Tombol hapus hanya muncul jika bukan data default */}
+                        {!defaultTypes.includes(item.type) && (
+                          <Button size="sm" variant="destructive" onClick={() => handleDelete(item.id)} type="button">
+                            <Trash2 />
+                          </Button>
+                        )}
                       </div>
                     )}
                   </TableCell>
@@ -261,6 +296,7 @@ export default function AmountIndex({ amounts = [] }) {
           </Table>
         </CardContent>
       </Card>
+
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent>
           <DialogHeader>

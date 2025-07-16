@@ -36,7 +36,7 @@ export function PatientInfoForm({ data, setData, errors }) {
     return (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             {/* NIK field */}
-            <div>
+            <div className="grid w-full items-center gap-3">
                 <Label htmlFor="nik">NIK</Label>
                 <Input
                     id="nik"
@@ -47,7 +47,7 @@ export function PatientInfoForm({ data, setData, errors }) {
                 {errors.nik && <p className="text-red-600">{errors.nik}</p>}
             </div>
             {/* Name field */}
-            <div>
+            <div className="grid w-full items-center gap-3">
                 <Label htmlFor="name">Nama Lengkap</Label>
                 <Input
                     id="name"
@@ -58,7 +58,7 @@ export function PatientInfoForm({ data, setData, errors }) {
                 {errors.name && <p className="text-red-600">{errors.name}</p>}
             </div>
             {/* Place of Birth field */}
-            <div>
+            <div className="grid w-full items-center gap-3">
                 <Label htmlFor="place_of_birth">Tempat Lahir</Label>
                 <Input
                     id="place_of_birth"
@@ -68,7 +68,7 @@ export function PatientInfoForm({ data, setData, errors }) {
                 />
             </div>
             {/* Date of Birth field */}
-            <div>
+            <div className="grid w-full items-center gap-3">
                 <Label htmlFor="date_of_birth">Tanggal Lahir</Label>
                 <Input
                     id="date_of_birth"
@@ -79,12 +79,12 @@ export function PatientInfoForm({ data, setData, errors }) {
                 />
                 {data.date_of_birth && (
                     <div className="text-sm text-muted-foreground mt-1">
-                        Umur hasil hitung: {calculateAge(data.date_of_birth)} tahun
+                        
                     </div>
                 )}
             </div>
             {/* Gender field */}
-            <div>
+            <div className="grid w-full items-center gap-3">
                 <Label htmlFor="gender">Jenis Kelamin</Label>
                 <Select
                     value={data.gender}
@@ -107,7 +107,7 @@ export function PatientInfoForm({ data, setData, errors }) {
                 )}
             </div>
             {/* Address field */}
-            <div>
+            <div className="grid w-full items-center gap-3">
                 <Label htmlFor="address">Alamat</Label>
                 <Input
                     id="address"
@@ -117,7 +117,7 @@ export function PatientInfoForm({ data, setData, errors }) {
                 />
             </div>
             {/* RT/RW field */}
-            <div>
+            <div className="grid w-full items-center gap-3">
                 <Label htmlFor="rt_rw">RT/RW</Label>
                 <Input
                     id="rt_rw"
@@ -127,7 +127,7 @@ export function PatientInfoForm({ data, setData, errors }) {
                 />
             </div>
             {/* Village field */}
-            <div>
+            <div className="grid w-full items-center gap-3">
                 <Label htmlFor="village">Kel/Desa</Label>
                 <Input
                     id="village"
@@ -137,7 +137,7 @@ export function PatientInfoForm({ data, setData, errors }) {
                 />
             </div>
             {/* District field */}
-            <div>
+            <div className="grid w-full items-center gap-3">
                 <Label htmlFor="district">Kecamatan</Label>
                 <Input
                     id="district"
@@ -147,7 +147,7 @@ export function PatientInfoForm({ data, setData, errors }) {
                 />
             </div>
             {/* Religion field */}
-            <div>
+            <div className="grid w-full items-center gap-3">
                 <Label htmlFor="religion">Agama</Label>
                 <Input
                     id="religion"
@@ -157,7 +157,7 @@ export function PatientInfoForm({ data, setData, errors }) {
                 />
             </div>
             {/* Marital Status field */}
-            <div>
+            <div className="grid w-full items-center gap-3">
                 <Label htmlFor="marital_status">Status Perkawinan</Label>
                 <Input
                     id="marital_status"
@@ -167,7 +167,7 @@ export function PatientInfoForm({ data, setData, errors }) {
                 />
             </div>
             {/* Occupation field */}
-            <div>
+            <div className="grid w-full items-center gap-3">
                 <Label htmlFor="occupation">Pekerjaan</Label>
                 <Input
                     id="occupation"
@@ -177,7 +177,7 @@ export function PatientInfoForm({ data, setData, errors }) {
                 />
             </div>
             {/* Nationality field */}
-            <div>
+            <div className="grid w-full items-center gap-3">
                 <Label htmlFor="nationality">Kewarganegaraan</Label>
                 <Input
                     id="nationality"
@@ -187,7 +187,7 @@ export function PatientInfoForm({ data, setData, errors }) {
                 />
             </div>
             {/* Valid Until field */}
-            <div>
+            <div className="grid w-full items-center gap-3">
                 <Label htmlFor="valid_until">Berlaku Hingga</Label>
                 <Input
                     id="valid_until"
@@ -197,7 +197,7 @@ export function PatientInfoForm({ data, setData, errors }) {
                 />
             </div>
             {/* Blood Type field */}
-            <div>
+            <div className="grid w-full items-center gap-3">
                 <Label htmlFor="blood_type">Golongan Darah</Label>
                 <Input
                     id="blood_type"
@@ -207,7 +207,7 @@ export function PatientInfoForm({ data, setData, errors }) {
                 />
             </div>
             {/* Tinggi Badan field */}
-            <div>
+            <div className="grid w-full items-center gap-3">
                 <Label htmlFor="tinggi_badan">Tinggi Badan (cm)</Label>
                 <Input
                     id="tinggi_badan"
@@ -220,7 +220,7 @@ export function PatientInfoForm({ data, setData, errors }) {
                 )}
             </div>
             {/* Berat Badan field */}
-            <div>
+            <div className="grid w-full items-center gap-3">
                 <Label htmlFor="berat_badan">Berat Badan (kg)</Label>
                 <Input
                     id="berat_badan"
@@ -233,7 +233,7 @@ export function PatientInfoForm({ data, setData, errors }) {
                 )}
             </div>
             {/* Age field (editable, auto-calculated) */}
-            <div>
+            <div className="grid w-full items-center gap-3">
                 <Label htmlFor="age">Umur</Label>
                 <Input
                     id="age"
@@ -246,7 +246,7 @@ export function PatientInfoForm({ data, setData, errors }) {
                 )}
             </div>
             {/* Email field */}
-            <div>
+            <div className="grid w-full items-center gap-3">
                 <Label htmlFor="email">Email</Label>
                 <Input
                     id="email"
@@ -258,7 +258,7 @@ export function PatientInfoForm({ data, setData, errors }) {
                 {errors.email && <p className="text-red-600">{errors.email}</p>}
             </div>
             {/* Contact field */}
-            <div>
+            <div className="grid w-full items-center gap-3">
                 <Label htmlFor="contact">Nomor Telepon</Label>
                 <PhoneInput
                     id="contact"

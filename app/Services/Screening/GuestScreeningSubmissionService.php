@@ -7,9 +7,9 @@ use App\Exceptions\NikAlreadyExistsException;
 use App\Models\Notifications\Notification;
 use App\Models\Screenings\ScreeningAnswers;
 use App\Models\User;
+use App\Models\Users\Paramedis;
 use App\Models\Users\Patients;
 use App\Models\Users\PatientsOnline;
-use App\Models\Users\Paramedis;
 use Carbon\Carbon;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
@@ -93,7 +93,7 @@ class GuestScreeningSubmissionService
             ->whereDate('screening_date', $today)
             ->lockForUpdate()
             ->max('queue') ?? 0;
-        
+
         $newQueueNumber = $lastQueue + 1;
 
         $patientData = array_merge($data, [
@@ -181,10 +181,10 @@ class GuestScreeningSubmissionService
 
             Log::info('Notifications sent to paramedics', [
                 'patient_id' => $patient->id,
-                'paramedics_count' => $paramedics->count()
+                'paramedics_count' => $paramedics->count(),
             ]);
         } catch (\Exception $e) {
-            Log::error('Error sending notifications to paramedics: ' . $e->getMessage());
+            Log::error('Error sending notifications to paramedics: '.$e->getMessage());
         }
     }
 }

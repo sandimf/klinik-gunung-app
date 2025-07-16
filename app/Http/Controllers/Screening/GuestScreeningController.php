@@ -41,7 +41,6 @@ class GuestScreeningController extends Controller
             return $this->flashError('Terjadi kesalahan sistem. Silakan coba lagi nanti.');
         }
 
-        // Kembalikan respons sukses
-        return $this->flashSuccess('Data pasien dan screening berhasil disimpan.');
+        return redirect(route('screening-now.index'))->with('success', 'Data pasien dan screening berhasil disimpan.');
     }
 }

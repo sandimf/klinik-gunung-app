@@ -24,6 +24,7 @@ class Cashier extends Model
         'date_of_birth',
         'phone',
         'role',
+        'signature',
     ];
 
     protected static function boot()

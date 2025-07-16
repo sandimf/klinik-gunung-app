@@ -15,6 +15,7 @@ return [
 
     'name' => env('APP_NAME', 'Laravel'),
 
+    'version' => env('APP_VERSION', 'dev'),
     /*
     |--------------------------------------------------------------------------
     | Application Environment
@@ -53,6 +54,8 @@ return [
     */
 
     'url' => env('APP_URL', 'http://localhost'),
+
+    'qr_api_url' => env('QR_API_URL', 'http://localhost:3001/api/qr'),
 
     /*
     |--------------------------------------------------------------------------

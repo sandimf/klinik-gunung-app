@@ -51,6 +51,9 @@ class Patients extends Model
         'tinggi_badan',
         'berat_badan',
         'konsultasi_dokter_status',
+        'qr_code_path',
+        'unique_link',
+        'verification_token',
     ];
 
     public function setEmailAttribute($value)

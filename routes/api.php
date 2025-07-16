@@ -1,9 +1,11 @@
 <?php
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\PatientDataController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ParamedisScreeningController;
+use App\Http\Controllers\TestQrController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,11 +37,9 @@ Route::middleware(['web'])->prefix('paramedis')->group(function () {
     Route::get('/screenings/count', [ParamedisScreeningController::class, 'getScreeningCount']);
 });
 
-
-
 // Server-Sent Events for realtime notifications
 Route::middleware(['web'])->get('/notifications/stream', function (Request $request) {
-    if (!auth()->check()) {
+    if (! auth()->check()) {
         abort(401);
     }
 
@@ -57,35 +57,48 @@ Route::middleware(['web'])->get('/notifications/stream', function (Request $requ
     header('X-Accel-Buffering: no'); // Disable nginx buffering
 
     // Send initial connection message
-    echo "data: " . json_encode(['type' => 'connected', 'message' => 'SSE Connected']) . "\n\n";
+    echo 'data: '.json_encode(['type' => 'connected', 'message' => 'SSE Connected'])."\n\n";
     ob_flush();
     flush();
 
     // Simple heartbeat approach - just send ping every 30 seconds
     $startTime = time();
     $timeout = 300; // 5 minutes
-    
+
     while (true) {
         // Check timeout
         if (time() - $startTime > $timeout) {
-            echo "data: " . json_encode(['type' => 'timeout', 'message' => 'Connection timeout']) . "\n\n";
+            echo 'data: '.json_encode(['type' => 'timeout', 'message' => 'Connection timeout'])."\n\n";
             ob_flush();
             flush();
             break;
         }
-        
+
         // Send ping every 30 seconds
         if (time() % 30 === 0) {
-            echo "data: " . json_encode(['type' => 'ping', 'timestamp' => time()]) . "\n\n";
+            echo 'data: '.json_encode(['type' => 'ping', 'timestamp' => time()])."\n\n";
             ob_flush();
             flush();
         }
-        
+
         // Check if client is still connected
         if (connection_aborted()) {
             break;
         }
-        
+
         sleep(1);
     }
+});
+
+// Patient Data API Routes (accessed via QR code)
+Route::prefix('v1')->group(function () {
+    Route::get('/tb0xPxDOVTRmhejyE3Wukn4QBni/patient/{uniqueLink}/H0u01BshX7nsyxm0Qkeqa8N9odxvmAzC', [PatientDataController::class, 'getPatientData']);
+    Route::get('/verify/{uniqueLink}', [PatientDataController::class, 'verifyQrCode']);
+});
+
+// Test QR Code Routes (for development/testing)
+// Test QR Code Routes (for development/testing)ETQY3g6JrZ1s7m7ZKFmrD3KFm8psUsEuQAElwa3A81QwlX9TIQsKoHIBCvkZ1GFa
+Route::prefix('test-qr')->group(function () {
+    Route::get('/generate', [TestQrController::class, 'testQrGeneration']);
+    Route::get('/data/{uniqueLink}', [TestQrController::class, 'testPatientData']);
 });

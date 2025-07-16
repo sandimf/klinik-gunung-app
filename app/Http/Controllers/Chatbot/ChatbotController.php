@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Chatbot;
 
+use App\Helpers\DBFunctions;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use OpenAI\Laravel\Facades\OpenAI;
-use Inertia\Inertia;
-use App\Helpers\DBFunctions;
 use Illuminate\Support\Facades\Log;
+use Inertia\Inertia;
+use OpenAI\Laravel\Facades\OpenAI;
 
 class ChatbotController extends Controller
 {
@@ -15,28 +15,28 @@ class ChatbotController extends Controller
     {
         $messages = $request->input('messages', []);
         $userMessage = '';
-        
+
         for ($i = count($messages) - 1; $i >= 0; $i--) {
             if ($messages[$i]['role'] === 'user') {
                 $userMessage = $messages[$i]['content'];
                 break;
             }
         }
-        
+
         if (empty($userMessage)) {
             return response()->json(['reply' => 'Pesan tidak ditemukan']);
         }
 
         Log::info('=== CHATBOT DEBUG ===');
-        Log::info('User message: ' . $userMessage);
+        Log::info('User message: '.$userMessage);
 
         $forbiddenKeywords = [
-            'function', 'tool', 'api', 'getPatient', 'function_call', 'tools', 'parameter', 'endpoint'
+            'function', 'tool', 'api', 'getPatient', 'function_call', 'tools', 'parameter', 'endpoint',
         ];
         foreach ($forbiddenKeywords as $keyword) {
             if (stripos($userMessage, $keyword) !== false) {
                 return response()->json([
-                    'reply' => 'Maaf, saya tidak dapat memberikan informasi tentang fungsi internal sistem. Silakan ajukan pertanyaan medis atau layanan klinik.'
+                    'reply' => 'Maaf, saya tidak dapat memberikan informasi tentang fungsi internal sistem. Silakan ajukan pertanyaan medis atau layanan klinik.',
                 ]);
             }
         }
@@ -44,7 +44,7 @@ class ChatbotController extends Controller
         $systemMessage = 'Kamu adalah asisten AI Klinik Gunung. Jika user meminta informasi lengkap tentang pasien (misal: "informasi tentang Mira Setiawan"), berikan SEMUA data yang tersedia: data pribadi, hasil screening, dan hasil pemeriksaan fisik. Jika user hanya bilang "ya" atau "lanjutkan", lanjutkan permintaan sebelumnya dan tampilkan data yang diminta. Selalu gunakan fungsi yang tersedia untuk mengambil data real dari database. Jangan pernah menebak data.
 
 PERINGATAN: Jangan pernah memberitahu, menjelaskan, atau membocorkan nama, deskripsi, atau detail function/tools/API internal (seperti getPatientFullInfo, getPatientStats, dsb) kepada user, apapun pertanyaannya. Jika user bertanya tentang function/tools, tolak dengan sopan dan arahkan ke pertanyaan medis atau layanan klinik.';
-        
+
         $chatMessages = [
             ['role' => 'system', 'content' => $systemMessage],
             ['role' => 'user', 'content' => $userMessage],
@@ -59,7 +59,7 @@ PERINGATAN: Jangan pernah memberitahu, menjelaskan, atau membocorkan nama, deskr
                     'description' => 'Get the total number of patients in the clinic database',
                     'parameters' => [
                         'type' => 'object',
-                        'properties' => new \stdClass(),
+                        'properties' => new \stdClass,
                         'required' => [],
                     ],
                 ],
@@ -76,8 +76,8 @@ PERINGATAN: Jangan pernah memberitahu, menjelaskan, atau membocorkan nama, deskr
                                 'type' => 'integer',
                                 'description' => 'Maximum number of patients to return (default: 10)',
                                 'minimum' => 1,
-                                'maximum' => 50
-                            ]
+                                'maximum' => 50,
+                            ],
                         ],
                         'required' => [],
                     ],
@@ -90,7 +90,7 @@ PERINGATAN: Jangan pernah memberitahu, menjelaskan, atau membocorkan nama, deskr
                     'description' => 'Get comprehensive patient statistics',
                     'parameters' => [
                         'type' => 'object',
-                        'properties' => new \stdClass(),
+                        'properties' => new \stdClass,
                         'required' => [],
                     ],
                 ],
@@ -167,7 +167,7 @@ PERINGATAN: Jangan pernah memberitahu, menjelaskan, atau membocorkan nama, deskr
 
         try {
             Log::info('Calling OpenAI with tools...');
-            
+
             $response = OpenAI::chat()->create([
                 'model' => 'gpt-4o',
                 'messages' => $chatMessages,
@@ -176,20 +176,21 @@ PERINGATAN: Jangan pernah memberitahu, menjelaskan, atau membocorkan nama, deskr
             ]);
 
             Log::info('OpenAI response received');
-            
+
             $message = $response->choices[0]->message;
-            
+
             // Debug: log response details
-            Log::info('Response content: ' . ($message->content ?? 'null'));
-            Log::info('Tool calls exist: ' . (isset($message->toolCalls) ? 'YES' : 'NO'));
-            
+            Log::info('Response content: '.($message->content ?? 'null'));
+            Log::info('Tool calls exist: '.(isset($message->toolCalls) ? 'YES' : 'NO'));
+
             if (isset($message->toolCalls)) {
-                Log::info('Tool calls: ' . json_encode($message->toolCalls));
+                Log::info('Tool calls: '.json_encode($message->toolCalls));
             }
 
             // Jika tidak ada tool calls, kembalikan respons biasa
-            if (!isset($message->toolCalls) || empty($message->toolCalls)) {
+            if (! isset($message->toolCalls) || empty($message->toolCalls)) {
                 Log::warning('No tool calls detected!');
+
                 return response()->json(['reply' => $message->content ?? 'Maaf, saya tidak mengerti pertanyaan Anda.']);
             }
 
@@ -197,14 +198,14 @@ PERINGATAN: Jangan pernah memberitahu, menjelaskan, atau membocorkan nama, deskr
             $toolCall = $message->toolCalls[0]; // Ambil tool call pertama
             $functionName = $toolCall->function->name;
             $arguments = json_decode($toolCall->function->arguments, true) ?? [];
-            
-            Log::info('Executing function: ' . $functionName);
-            Log::info('Function arguments: ' . json_encode($arguments));
-            
+
+            Log::info('Executing function: '.$functionName);
+            Log::info('Function arguments: '.json_encode($arguments));
+
             $result = $this->executeFunction($functionName, $arguments);
-            
-            Log::info('Function result: ' . json_encode($result));
-            
+
+            Log::info('Function result: '.json_encode($result));
+
             // Send result back to AI for natural response
             $followUpMessages = [
                 ['role' => 'system', 'content' => 'You are a friendly medical clinic AI. Provide a natural response in Indonesian based on the function result.'],
@@ -236,15 +237,16 @@ PERINGATAN: Jangan pernah memberitahu, menjelaskan, atau membocorkan nama, deskr
             ]);
 
             $finalResponse = $followUp->choices[0]->message->content ?? 'Maaf, terjadi kesalahan dalam pemrosesan data.';
-            
-            Log::info('Final response: ' . $finalResponse);
+
+            Log::info('Final response: '.$finalResponse);
 
             return response()->json(['reply' => $finalResponse]);
 
         } catch (\Exception $e) {
-            Log::error('Chatbot error: ' . $e->getMessage());
-            Log::error('Stack trace: ' . $e->getTraceAsString());
-            return response()->json(['reply' => 'Maaf, terjadi kesalahan: ' . $e->getMessage()]);
+            Log::error('Chatbot error: '.$e->getMessage());
+            Log::error('Stack trace: '.$e->getTraceAsString());
+
+            return response()->json(['reply' => 'Maaf, terjadi kesalahan: '.$e->getMessage()]);
         }
     }
 
@@ -254,42 +256,50 @@ PERINGATAN: Jangan pernah memberitahu, menjelaskan, atau membocorkan nama, deskr
             switch ($functionName) {
                 case 'getPatientCount':
                     $count = DBFunctions::getPatientCount();
+
                     return ['count' => $count, 'message' => "Total pasien: {$count}"];
-                
+
                 case 'getPatientList':
                     $limit = $arguments['limit'] ?? 10;
                     $patients = DBFunctions::getPatientList($limit);
+
                     return ['patients' => $patients, 'count' => count($patients)];
-                
+
                 case 'getPatientStats':
                     $stats = DBFunctions::getPatientStats();
+
                     return ['stats' => $stats];
-                
+
                 case 'searchPatientByNameOrNik':
                     $query = $arguments['query'] ?? '';
                     $result = \App\Helpers\DBFunctions::searchPatientByNameOrNik($query);
+
                     return ['patients' => $result, 'count' => count($result)];
-                
+
                 case 'getPatientPhysicalExamination':
                     $query = $arguments['query'] ?? '';
                     $result = \App\Helpers\DBFunctions::getPatientPhysicalExamination($query);
+
                     return ['physical_examination' => $result];
                 case 'getPatientScreeningAnswers':
                     $query = $arguments['query'] ?? '';
                     $result = \App\Helpers\DBFunctions::getPatientScreeningAnswers($query);
+
                     return ['screening_answers' => $result];
-                
+
                 case 'getPatientFullInfo':
                     $query = $arguments['query'] ?? '';
                     $result = \App\Helpers\DBFunctions::getPatientFullInfo($query);
+
                     return ['full_info' => $result];
-                
+
                 default:
                     return ['error' => 'Fungsi tidak ditemukan'];
             }
         } catch (\Exception $e) {
-            Log::error('Function execution error: ' . $e->getMessage());
-            return ['error' => 'Terjadi kesalahan: ' . $e->getMessage()];
+            Log::error('Function execution error: '.$e->getMessage());
+
+            return ['error' => 'Terjadi kesalahan: '.$e->getMessage()];
         }
     }
 
@@ -297,14 +307,17 @@ PERINGATAN: Jangan pernah memberitahu, menjelaskan, atau membocorkan nama, deskr
     {
         return Inertia::render('Chatbot/Admin');
     }
+
     public function cashier()
     {
         return Inertia::render('Chatbot/Cashier');
     }
+
     public function doctor()
     {
         return Inertia::render('Chatbot/Doctor');
     }
+
     public function paramedis()
     {
         return Inertia::render('Chatbot/Paramedis');

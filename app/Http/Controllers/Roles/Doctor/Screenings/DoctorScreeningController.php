@@ -29,7 +29,7 @@ class DoctorScreeningController extends Controller
         // Menyiapkan data pertanyaan dan jawaban
         $questionsAndAnswers = $patient->answers->map(function ($answer) {
             $answerText = $answer->answer_text;
-            
+
             // Parse JSON jika jawaban adalah JSON string (untuk checkbox_textarea)
             if (is_string($answerText) && (str_starts_with($answerText, '{') || str_starts_with($answerText, '['))) {
                 try {
@@ -39,15 +39,15 @@ class DoctorScreeningController extends Controller
                         if (isset($parsed['options']) && isset($parsed['textarea'])) {
                             $options = $parsed['options'];
                             $textarea = $parsed['textarea'];
-                            
+
                             if ($options === 'N/A' && empty($textarea)) {
                                 $answerText = 'Tidak';
-                            } else if ($options === 'N/A') {
+                            } elseif ($options === 'N/A') {
                                 $answerText = $textarea;
-                            } else if (empty($textarea)) {
+                            } elseif (empty($textarea)) {
                                 $answerText = $options;
                             } else {
-                                $answerText = $options . ' - ' . $textarea;
+                                $answerText = $options.' - '.$textarea;
                             }
                         } else {
                             $answerText = is_array($parsed) ? implode(', ', $parsed) : $parsed;
@@ -57,7 +57,7 @@ class DoctorScreeningController extends Controller
                     // Jika gagal parse, gunakan string asli
                 }
             }
-            
+
             return [
                 'question' => $answer->question->question_text,
                 'answer' => $answerText,

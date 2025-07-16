@@ -20,17 +20,55 @@ import {
 } from "@/Components/ui/select";
 import AdminSidebar from "@/Layouts/Dashboard/AdminSidebarLayout";
 import {
-    CheckCircle2,
-    X,
     RefreshCw,
     Eye,
     EyeOff,
 } from "lucide-react";
+import SignatureInput from '@/Components/ui/signature-input'
+import { Calendar } from "@/Components/ui/calendar";
+import { Popover, PopoverTrigger, PopoverContent } from "@/Components/ui/popover";
+import { CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+
+function DatePicker({ value, onChange, error }) {
+    const [open, setOpen] = React.useState(false);
+    return (
+        <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
+                <Button
+                    variant="outline"
+                    className={`w-full pl-3 text-left font-normal ${!value ? "text-muted-foreground" : ""}`}
+                    type="button"
+                >
+                    {value ? format(new Date(value), "PPP") : <span>Pilih tanggal</span>}
+                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                    mode="single"
+                    selected={value ? new Date(value) : undefined}
+                    onSelect={date => {
+                        if (date) {
+                            // Format ke YYYY-MM-DD agar cocok dengan backend
+                            const iso = date.toISOString().slice(0, 10);
+                            onChange(iso);
+                            setOpen(false);
+                        }
+                    }}
+                    captionLayout="dropdown"
+                />
+            </PopoverContent>
+        </Popover>
+    );
+}
 
 export default function CreatePersonal() {
     const [showPassword, setShowPassword] = React.useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
     const [confirmPassword, setConfirmPassword] = React.useState("");
+    const [signature, setSignature] = React.useState("");
+    const canvasRef = React.useRef();
     const initialData = {
         name: "",
         email: "",
@@ -40,6 +78,7 @@ export default function CreatePersonal() {
         address: "",
         nik: "",
         date_of_birth: "",
+        signature: "",
     };
 
     const generatePassword = () => {
@@ -58,12 +97,15 @@ export default function CreatePersonal() {
 
     const { data, setData, post, processing, errors } = useForm(initialData);
 
+    React.useEffect(() => {
+        setData("signature", signature);
+    }, [signature]);
+
     const handleSubmit = (e) => {
         e.preventDefault();
+        setData("signature", signature); // pastikan signature di-set
         post(route("staff.store"), {
-            onSuccess: () => {
-                setData(initialData);
-            },
+            onSuccess: () => setData(initialData),
             onError: (errors) => {
                 // Jika errors adalah objek atau array, kamu bisa tampilkan pesan pertama atau semua pesan
                 const errorMessage = Array.isArray(errors)
@@ -160,26 +202,16 @@ export default function CreatePersonal() {
 
                             {/* Tanggal Lahir */}
                             <div className="space-y-2">
-                                <Label
-                                    htmlFor="date_of_birth"
-                                    className="block text-sm font-medium"
-                                >
+                                <Label htmlFor="date_of_birth" className="block text-sm font-medium">
                                     Tanggal Lahir
                                 </Label>
-                                <Input
-                                    id="date_of_birth"
-                                    type="date"
-                                    name="date_of_birth"
+                                <DatePicker
                                     value={data.date_of_birth}
-                                    onChange={(e) =>
-                                        setData("date_of_birth", e.target.value)
-                                    }
+                                    onChange={val => setData("date_of_birth", val)}
+                                    error={errors.date_of_birth}
                                 />
                                 {errors.date_of_birth && (
-                                    <p
-                                        className="text-sm text-red-500"
-                                        role="alert"
-                                    >
+                                    <p className="text-sm text-red-500" role="alert">
                                         {errors.date_of_birth}
                                     </p>
                                 )}
@@ -319,8 +351,7 @@ export default function CreatePersonal() {
                                 onClick={generatePassword}
                                 className="mt-2 w-full"
                             >
-                                <RefreshCw className="mr-2 w-4 h-4" /> Generate
-                                Password
+                                <RefreshCw className="mr-2 w-4 h-4" /> Hasilkan Kata Sandi Otomatis
                             </Button>
 
                             {/* Role */}
@@ -362,6 +393,30 @@ export default function CreatePersonal() {
                                         role="alert"
                                     >
                                         {errors.role}
+                                    </p>
+                                )}
+                            </div>
+
+                            {/* Tanda Tangan */}
+                            <div className="space-y-2">
+                                <Label htmlFor="signature">Tanda Tangan</Label>
+                                <SignatureInput
+                                    canvasRef={canvasRef}
+                                    onSignatureChange={setSignature}
+                                />
+                                {/* {signature && (
+                                    <img
+                                        src={signature}
+                                        alt="Preview Tanda Tangan"
+                                        className="mt-2 w-full max-w-xs h-auto"
+                                    />
+                                )} */}
+                                {errors.signature && (
+                                    <p
+                                        className="text-sm text-red-500"
+                                        role="alert"
+                                    >
+                                        {errors.signature}
                                     </p>
                                 )}
                             </div>

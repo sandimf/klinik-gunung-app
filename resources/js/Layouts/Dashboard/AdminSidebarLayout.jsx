@@ -8,14 +8,14 @@ import { Slash, Menu } from "lucide-react";
 import { FlashToast } from '@/Components/ToastProvider';
 
 
-export default function AdminSidebarLayout({ header, children }) {
+export default function AdminSidebarLayout({ header, children, head }) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
     return (
         <SidebarProvider>
             {/* Sidebar for desktop */}
             <AppSidebar className="hidden md:fixed md:left-0 md:top-0 md:h-full md:w-64 md:bg-background md:border-r md:z-30 md:block" />
-
+            {head}
             {/* Sidebar for mobile (overlay) */}
             {sidebarOpen && (
                 <div className="fixed inset-0 z-40 flex md:hidden">
@@ -62,7 +62,7 @@ export default function AdminSidebarLayout({ header, children }) {
                     <FlashToast />
                 </main>
             </div>
-            
+
         </SidebarProvider>
     );
 }

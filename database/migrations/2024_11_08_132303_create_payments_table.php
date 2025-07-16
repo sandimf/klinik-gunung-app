@@ -24,6 +24,7 @@ return new class extends Migration
             $table->integer('quantity_product')->nullable();
             $table->decimal('price_product', 10, 2)->nullable();
             $table->string('payment_proof')->nullable();
+            $table->text('service_types')->nullable(); // <--- ini sebelumnya untuk menyimpan jenis pelayanan
             $table->timestamps();
         });
     }

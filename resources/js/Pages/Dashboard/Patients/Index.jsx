@@ -4,81 +4,70 @@ import Sidebar from "@/Layouts/Dashboard/PatientsSidebarLayout";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/Components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
 import { CalendarDays, Activity, Pill, Phone } from "lucide-react";
-
-export default function Dashboard({ screening, visitCount, emergency }) {
+import AppVersion from '@/Components/app-version'
+export default function Dashboard({ screening, visitCount, emergency, appVersion }) {
     const user = usePage().props.auth.user;
 
     return (
-        <Sidebar header={"Welcome"}>
-            <Head title="Dashboard" />
-            <div className="overflow-x-auto pb-2 w-full">
-                <h1 className="mb-4 text-2xl font-bold tracking-tight">
-                    Selamat Datang di Klinik Gunung,{user.name}{" "}
-                </h1>
+        <>
+            <Sidebar header={"Welcome"}>
+                <Head title="Dashboard" />
+                <div className="overflow-x-auto pb-2 w-full">
+                    <h1 className="mb-4 text-2xl font-bold tracking-tight">
+                        Selamat Datang di Klinik Gunung,{user.name}{" "}
+                    </h1>
 
-                <Tabs defaultValue="overview" className="space-y-4">
-                    <TabsList>
-                        <TabsTrigger value="overview">Overview</TabsTrigger>
-                        <TabsTrigger value="screening">Screening</TabsTrigger>
-                        <TabsTrigger value="appointments">
-                            Appointments
-                        </TabsTrigger>
-                        <TabsTrigger value="records">
-                            Medical Records
-                        </TabsTrigger>
-                        <TabsTrigger value="charts">Health Charts</TabsTrigger>
-                    </TabsList>
-                    <TabsContent value="overview" className="space-y-4">
-                        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                            <Card>
-                                <CardHeader className="flex flex-row justify-between items-center pb-2 space-y-0">
-                                    <CardTitle className="text-sm font-medium">
-                                        Screening
-                                    </CardTitle>
-                                    <CalendarDays className="w-4 h-4 text-muted-foreground" />
-                                </CardHeader>
-                                <CardContent>
-                                    {screening ? (
-                                        <>
-                                            <div className="text-2xl font-bold">
-                                                {new Date(
-                                                    screening.created_at
-                                                ).toLocaleDateString("id-ID")}
-                                            </div>
-                                            <p className="text-xs text-muted-foreground">
-                                                Hour{" "}
-                                                {new Date(
-                                                    screening.created_at
-                                                ).toLocaleTimeString("id-ID", {
-                                                    hour: "2-digit",
-                                                    minute: "2-digit",
-                                                })}
-                                            </p>
-                                        </>
-                                    ) : (
+
+                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                        <Card>
+                            <CardHeader className="flex flex-row justify-between items-center pb-2 space-y-0">
+                                <CardTitle className="text-sm font-medium">
+                                    Screening
+                                </CardTitle>
+                                <CalendarDays className="w-4 h-4 text-muted-foreground" />
+                            </CardHeader>
+                            <CardContent>
+                                {screening ? (
+                                    <>
+                                        <div className="text-2xl font-bold">
+                                            {new Date(
+                                                screening.created_at
+                                            ).toLocaleDateString("id-ID")}
+                                        </div>
                                         <p className="text-xs text-muted-foreground">
-                                            Kamu Belum Memiliki Screening
+                                            Hour{" "}
+                                            {new Date(
+                                                screening.created_at
+                                            ).toLocaleTimeString("id-ID", {
+                                                hour: "2-digit",
+                                                minute: "2-digit",
+                                            })}
                                         </p>
-                                    )}
-                                </CardContent>
-                            </Card>
-                            <Card>
-                                <CardHeader className="flex flex-row justify-between items-center pb-2 space-y-0">
-                                    <CardTitle className="text-sm font-medium">
-                                        Kujungan Terkini
-                                    </CardTitle>
-                                    <Activity className="w-4 h-4 text-muted-foreground" />
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="text-2xl font-bold">
-                                        {visitCount}
-                                    </div>
+                                    </>
+                                ) : (
                                     <p className="text-xs text-muted-foreground">
-                                        Dalam 3 bulan terakhir
+                                        Kamu Belum Memiliki Screening
                                     </p>
-                                </CardContent>
-                            </Card>
-                            {/* <Card>
+                                )}
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardHeader className="flex flex-row justify-between items-center pb-2 space-y-0">
+                                <CardTitle className="text-sm font-medium">
+                                    Kujungan Terkini
+                                </CardTitle>
+                                <Activity className="w-4 h-4 text-muted-foreground" />
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold">
+                                    {visitCount}
+                                </div>
+                                <p className="text-xs text-muted-foreground">
+                                    Dalam 3 bulan terakhir
+                                </p>
+                            </CardContent>
+                        </Card>
+                        {/* <Card>
                                 <CardHeader className="flex flex-row justify-between items-center pb-2 space-y-0">
                                     <CardTitle className="text-sm font-medium">
                                         Lorem, ipsum dolor.
@@ -95,34 +84,34 @@ export default function Dashboard({ screening, visitCount, emergency }) {
                                     </p>
                                 </CardContent>
                             </Card> */}
-                            <Card>
-                                <CardHeader className="flex flex-row justify-between items-center pb-2 space-y-0">
-                                    <CardTitle className="text-sm font-medium">
-                                        Emergency Contact
-                                    </CardTitle>
-                                    <Phone className="w-4 h-4 text-muted-foreground" />
-                                </CardHeader>
-                                <CardContent>
-                                    {emergency ? (
-                                        <>
-                                            <div className="text-2xl font-bold">
-                                                {emergency.contact}
-                                            </div>
-                                            <p className="mt-2 text-xs text-muted-foreground">
-                                                {emergency.name}
-                                            </p>
-                                        </>
-                                    ) : (
-                                        <p className="text-xs text-muted-foreground">
-                                            -
+                        <Card>
+                            <CardHeader className="flex flex-row justify-between items-center pb-2 space-y-0">
+                                <CardTitle className="text-sm font-medium">
+                                    Emergency Contact
+                                </CardTitle>
+                                <Phone className="w-4 h-4 text-muted-foreground" />
+                            </CardHeader>
+                            <CardContent>
+                                {emergency ? (
+                                    <>
+                                        <div className="text-2xl font-bold">
+                                            {emergency.contact}
+                                        </div>
+                                        <p className="mt-2 text-xs text-muted-foreground">
+                                            {emergency.name}
                                         </p>
-                                    )}
-                                </CardContent>
-                            </Card>
-                        </div>
-                    </TabsContent>
-                </Tabs>
-            </div>
-        </Sidebar>
+                                    </>
+                                ) : (
+                                    <p className="text-xs text-muted-foreground">
+                                        -
+                                    </p>
+                                )}
+                            </CardContent>
+                        </Card>
+                    </div>
+                </div>
+            </Sidebar>
+            <AppVersion appVersion={appVersion} />
+        </>
     );
 }

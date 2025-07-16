@@ -7,6 +7,7 @@ import NoScreeningData from "@/Pages/Dashboard/Patients/Screenings/_components/N
 import { CheckCircle } from "lucide-react";
 import { CardContent } from "@/Components/ui/card";
 import { Button } from "@/Components/ui/button";
+import MarkdownRenderer from "@/Components/ui/markdown-renderer";
 
 export default function HistoryOffline({ screening }) {
     const user = usePage().props.auth.user;
@@ -69,7 +70,7 @@ export default function HistoryOffline({ screening }) {
                                 <Alert className="">
                                     <AlertTitle>Rekomendasi AI untuk Anda:</AlertTitle>
                                     <AlertDescription>
-                                        <div className="whitespace-pre-line">{aiSuggestion}</div>
+                                        <MarkdownRenderer>{aiSuggestion}</MarkdownRenderer>
                                     </AlertDescription>
                                 </Alert>
                             )}

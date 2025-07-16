@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Roles\Admin\Management;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\AmountRequest;
 use App\Models\Roles\Admin\Management\AmountScreening;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -20,12 +21,9 @@ class AmountScreeningController extends Controller
     }
 
     // Menyimpan harga screening baru
-    public function store(Request $request)
+    public function store(AmountRequest $request)
     {
-        $validated = $request->validate([
-            'type' => 'required|string|unique:amount_screening,type',
-            'amount' => 'required|numeric|min:0',
-        ]);
+        $validated = $request->validated();
         AmountScreening::create($validated);
 
         return redirect()->back()->with('success', 'Harga berhasil ditambahkan.');

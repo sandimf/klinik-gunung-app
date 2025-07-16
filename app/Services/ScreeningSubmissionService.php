@@ -29,8 +29,8 @@ class ScreeningSubmissionService
             // Cari pasien berdasarkan email untuk menghindari duplikasi email
             $patient = Patients::where('email', $data['email'])->first();
 
-            if (!$patient) {
-                $patient = new Patients();
+            if (! $patient) {
+                $patient = new Patients;
             }
 
             $patient->fill([
@@ -117,7 +117,7 @@ class ScreeningSubmissionService
                 broadcast(new NewScreeningEvent($patient))->toOthers();
             }
         } catch (\Exception $e) {
-            \Log::error('Error sending realtime notification: ' . $e->getMessage());
+            \Log::error('Error sending realtime notification: '.$e->getMessage());
         }
     }
 }

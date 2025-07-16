@@ -73,7 +73,15 @@ const ScreeningHistoryIndex = ({ screenings = {}, filters = {} }) => {
                 id: "status_pemeriksaan",
                 header: "Status Pemeriksaan",
                 cell: ({ row }) => (
-                    <Badge>
+                    <Badge
+                        className={
+                            row.original.screening_status === "completed"
+                                ? "bg-blue-500 text-white dark:bg-blue-600"
+                                : row.original.screening_status === "pending"
+                                ? "bg-yellow-500 text-white dark:bg-yellow-600"
+                                : "bg-gray-500 text-white dark:bg-gray-600"
+                        }
+                    >
                         {row.original.screening_status === "completed"
                             ? "Selesai"
                             : row.original.screening_status}
@@ -84,7 +92,15 @@ const ScreeningHistoryIndex = ({ screenings = {}, filters = {} }) => {
                 id: "status_kesehatan",
                 header: "Status Kesehatan",
                 cell: ({ row }) => (
-                    <Badge>
+                    <Badge
+                        className={
+                            row.original.health_status === "sehat"
+                                ? "bg-blue-500 text-white dark:bg-blue-600"
+                                : row.original.health_status === "tidak_sehat"
+                                ? "bg-red-500 text-white dark:bg-red-600"
+                                : "bg-gray-500 text-white dark:bg-gray-600"
+                        }
+                    >
                         {row.original.health_status === "sehat"
                             ? "Sehat"
                             : row.original.health_status === "tidak_sehat"

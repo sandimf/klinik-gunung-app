@@ -43,9 +43,8 @@ class ManagerReportController extends Controller
 
         // Rest of your code remains the same
         $totalPatients = $examinations->count();
-        $sickPatientsCount = $examinations->where('health_status', 'butuh_dokter')->count();
-        $needPatientsCount = $examinations->where('health_status', 'butuh_pendamping')->count();
-        $healthyPatientsCount = $examinations->where('health_status', 'healthy')->count();
+        $sickPatientsCount = $examinations->where('health_status', 'tidak_sehat')->count();
+        $healthyPatientsCount = $examinations->where('health_status', 'sehat')->count();
         $totalParamedis = $examinations->pluck('paramedis_id')->unique()->count();
 
         $patients = $examinations->map(function ($examination) {
@@ -65,7 +64,6 @@ class ManagerReportController extends Controller
             'totalPatients' => $totalPatients,
             'sickPatientsCount' => $sickPatientsCount,
             'totalParamedis' => $totalParamedis,
-            'needPatientsCount' => $needPatientsCount,
             'healthyPatientsCount' => $healthyPatientsCount,
             'currentFilter' => $filter,
         ]);

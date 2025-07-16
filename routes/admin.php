@@ -1,19 +1,18 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Pdf\CustomPdfController;
-use App\Http\Controllers\Chatbot\ChatbotController;
-use App\Http\Controllers\Admin\v2\LoginSettingController;
-use App\Http\Controllers\Roles\Admin\Scanner\ScanController;
-use App\Http\Controllers\Roles\Admin\Management\StaffController;
+use App\Http\Controllers\Admin\v2\AdminPanelController as V2AdminPanelController;
+// use App\Http\Controllers\Pdf\CustomPdfController;
 use App\Http\Controllers\Admin\v2\ApikeyController as v2ApikeyController;
+use App\Http\Controllers\Admin\v2\LoginSettingController;
+use App\Http\Controllers\Admin\v2\Questioner\QuestionerForScreeningController;
+use App\Http\Controllers\Admin\v2\Questioner\QuestionerForScreeningOnlineController;
+use App\Http\Controllers\Chatbot\ChatbotController;
+use App\Http\Controllers\Roles\Admin\AdminDasboardController;
 use App\Http\Controllers\Roles\Admin\Management\AmountScreeningController;
 use App\Http\Controllers\Roles\Admin\Management\EmergencyContactController;
-use App\Http\Controllers\Admin\v2\Questioner\QuestionerForScreeningController;
-use App\Http\Controllers\Admin\v2\AdminPanelController as V2AdminPanelController;
-use App\Http\Controllers\Admin\v2\Questioner\QuestionerForScreeningOnlineController;
-use App\Http\Controllers\Roles\Admin\AdminDasboardController;
-
+use App\Http\Controllers\Roles\Admin\Management\StaffController;
+use App\Http\Controllers\Roles\Admin\Scanner\ScanController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -67,8 +66,10 @@ Route::prefix('dashboard/master')->middleware(['role:admin'])->group(function ()
         ->only(['index', 'store']);
 
     // PDF Management
-    Route::get('pdf', [CustomPdfController::class, 'index'])->name('custom.pdf');
+    // Route::get('pdf', [CustomPdfController::class, 'index'])->name('custom.pdf');
 
     // Amount Settings
     Route::resource('amounts', AmountScreeningController::class)->only(['index', 'store', 'update', 'destroy']);
+    Route::get('/logs', [\App\Http\Controllers\Admin\LogViewerController::class, 'index'])->name('admin.logs');
+    Route::get('/logs/data', [\App\Http\Controllers\Admin\LogViewerController::class, 'data'])->name('admin.logs.data');
 });

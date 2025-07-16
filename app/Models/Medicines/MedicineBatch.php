@@ -31,8 +31,10 @@ class MedicineBatch extends Model
         if ($this->quantity >= $quantity) {
             $this->quantity -= $quantity;
             $this->save();
+
             return true;
         }
+
         return false;
     }
 }

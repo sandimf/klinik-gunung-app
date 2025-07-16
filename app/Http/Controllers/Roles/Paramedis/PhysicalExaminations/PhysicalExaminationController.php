@@ -2,19 +2,26 @@
 
 namespace App\Http\Controllers\Roles\Paramedis\PhysicalExaminations;
 
+use App\Events\NewDoctorConsultationEvent;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Paramedis\updatePhysicalAttributesRequest;
 use App\Jobs\SendScreeningNotification;
 use App\Jobs\SyncPatientsToAirtable;
 use App\Models\Clinic\PhysicalExamination;
 use App\Models\EMR\MedicalRecord;
+use App\Models\Users\Doctor;
+use App\Models\Users\Paramedis;
 use App\Models\Users\Patients;
+use App\Services\Printer\ScreeningPrintService;
+use App\Services\QrCodeService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class PhysicalExaminationController extends Controller
 {
-        protected function generateMedicalRecordNumber()
+    protected function generateMedicalRecordNumber()
     {
         $lastRecord = MedicalRecord::latest()->first(); // Ambil rekam medis terakhir
         $lastNumber = $lastRecord ? intval(substr($lastRecord->medical_record_number, 2)) : 0; // Ambil angka terakhir
@@ -25,8 +32,7 @@ class PhysicalExaminationController extends Controller
 
     public function store(Request $request)
     {
-        // dd($request->all());
-        \Log::info('Request data:', $request->all());
+
         $user = Auth::user(); // Get the authenticated user
 
         // Validate the request data
@@ -79,21 +85,79 @@ class PhysicalExaminationController extends Controller
         $patient->health_check_status = 'completed';
         $patient->konsultasi_dokter = $request->konsultasi_dokter;
         $patient->pendampingan = $request->pendampingan;
-        \Log::info('Patient after assignment:', $patient->toArray());
         $patient->save();
-        \Log::info('Patient after save:', $patient->fresh()->toArray());
+
+        // Notifikasi realtime ke dokter jika konsultasi dokter
+        if ($request->konsultasi_dokter) {
+            // Broadcast event ke dokter
+            event(new NewDoctorConsultationEvent($patient));
+            // Simpan notifikasi ke tabel notifications untuk dokter
+            // Asumsi: ada model Notification dan relasi user dokter
+            $doctorUsers = Doctor::all();
+            foreach ($doctorUsers as $doctor) {
+                \App\Models\Notifications\Notification::create([
+                    'user_id' => $doctor->user_id, // Pastikan kolom user_id benar
+                    'type' => 'doctor_consultation',
+                    'title' => 'Konsultasi Dokter Baru',
+                    'message' => 'Ada konsultasi dokter baru untuk pasien '.$patient->name,
+                    'data' => [
+                        'message' => 'Ada konsultasi dokter baru untuk pasien '.$patient->name,
+                        'patient_id' => $patient->id,
+                    ],
+                    'read_at' => null,
+                ]);
+            }
+        }
 
         // Dispatch a notification
         // SendScreeningNotification::dispatch($patient);
 
         SyncPatientsToAirtable::dispatch();
 
+        // Generate QR Code for patient before printing
+        try {
+            $qrCodeService = new QrCodeService;
+            $qrResult = $qrCodeService->generatePatientQrCode($patient);
+
+            if ($qrResult['success']) {
+                Log::info('QR Code generated successfully for patient: '.$patient->id, [
+                    'qr_path' => $qrResult['qr_code_path'],
+                    'unique_link' => $qrResult['unique_link'],
+                ]);
+            } else {
+                Log::warning('QR Code generation failed for patient: '.$patient->id, [
+                    'error' => $qrResult['message'],
+                ]);
+            }
+        } catch (\Exception $e) {
+            Log::error('QR Code generation exception for patient: '.$patient->id, [
+                'error' => $e->getMessage(),
+            ]);
+        }
+
+        // Print otomatis, kirim $medicalRecord dan paramedis sebagai examiner
+        $paramedis = Paramedis::find($request->paramedis_id);
+        ScreeningPrintService::printScreening($medicalRecord, $paramedis);
+
+        SendScreeningNotification::dispatch($patient);
+
         return back()->with('success', 'Pemeriksaan Fisik Berhasil Berhasil di Simpan!');
     }
 
     public function editScreening($id)
     {
-        $examination = PhysicalExamination::where('id', $id)->firstOrFail(); // Fetch the record by UUID
+        $examination = PhysicalExamination::where('id', $id)->firstOrFail();
+
+        // Format field numerik agar tidak ada trailing .00
+        foreach (['tinggi_badan', 'berat_badan'] as $field) {
+            if (isset($examination[$field])) {
+                $value = $examination[$field];
+                // Jika float dan tidak ada desimal, jadikan integer
+                if (is_numeric($value)) {
+                    $examination[$field] = $value == (int) $value ? (int) $value : $value + 0;
+                }
+            }
+        }
 
         return Inertia::render('Dashboard/Paramedis/Screenings/Edit/Index', [
             'examination' => $examination,
@@ -140,5 +204,15 @@ class PhysicalExaminationController extends Controller
         $patient->save();
 
         return back()->with('message', 'Pemeriksaan Fisik berhasil diperbarui.');
+    }
+
+    public function updatePhysicalAttributes(updatePhysicalAttributesRequest $request, $id)
+    {
+        $validated = $request->validated();
+
+        $patient = Patients::findOrFail($id);
+        $patient->update($validated);
+
+        return back()->with('success', 'Data fisik pasien berhasil diperbarui.');
     }
 }

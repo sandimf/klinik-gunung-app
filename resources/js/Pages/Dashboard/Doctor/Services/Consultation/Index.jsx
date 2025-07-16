@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/Components/ui/table";
 import {
   flexRender,
@@ -9,14 +9,14 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/Components/ui/dropdown-menu";
-import { ChevronDown, Eye } from "lucide-react";
+import { ChevronDown, Eye, Search } from "lucide-react";
 import { Input } from "@/Components/ui/input";
 import { Button } from "@/Components/ui/button";
-import { Head, Link } from "@inertiajs/react";
+import { Head, router } from "@inertiajs/react";
 import SideBar from "@/Layouts/Dashboard/DoctorSidebarLayout";
+import { Link } from "@inertiajs/inertia-react";
 
-
-function ConsultationDataTable({ data }) {
+function ConsultationDataTable({ data, searchTerm, setSearchTerm, handleSearch }) {
   const columns = React.useMemo(
     () => [
       {
@@ -71,13 +71,16 @@ function ConsultationDataTable({ data }) {
 
   return (
     <div className="w-full">
-      <div className="flex items-center py-4">
-        <Input
-          placeholder="Cari Nama atau NIK"
-          value={globalFilter ?? ""}
-          onChange={e => setGlobalFilter(e.target.value)}
-          className="max-w-sm"
-        />
+      <div className="flex items-center py-4 gap-2">
+        <form onSubmit={handleSearch} className="flex gap-2">
+          <Input
+            placeholder="Cari Nama atau NIK"
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+            className="max-w-sm"
+          />
+          <Button type="submit" variant="ghost"><Search /></Button>
+        </form>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
@@ -135,12 +138,59 @@ function ConsultationDataTable({ data }) {
   );
 }
 
-export default function ConsultationIndex({ patients }) {
+export default function ConsultationIndex({ patients = {}, filters = {} }) {
+  const data = patients.data || [];
+  const [searchTerm, setSearchTerm] = useState(() => filters.search || "");
+
+  // Pagination handler
+  const handlePageChange = (url) => {
+    if (url) {
+      router.get(url, { search: searchTerm }, { preserveState: true, replace: true });
+    }
+  };
+
+  // Search handler
+  const handleSearch = (e) => {
+    e.preventDefault();
+    router.get(route('consultation.index'), { search: searchTerm }, { preserveState: true, replace: true });
+  };
+
   return (
     <SideBar header={`Konsultasi Dokter`}>
       <Head title="Konsultasi Dokter" />
-      <h1 className="text-2xl font-bold ">Konsultasi</h1>
-      <ConsultationDataTable data={patients} />
+      <h1 className="text-2xl font-bold mb-6">Konsultasi</h1>
+      <ConsultationDataTable
+        data={data}
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        handleSearch={handleSearch}
+      />
+      {/* Pagination */}
+      {patients && (
+        <div className="flex items-center justify-between space-x-2 py-4">
+          <div className="text-muted-foreground text-sm">
+            Page {patients.current_page} of {patients.last_page}
+          </div>
+          <div className="space-x-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlePageChange(patients.prev_page_url)}
+              disabled={!patients.prev_page_url}
+            >
+              Previous
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlePageChange(patients.next_page_url)}
+              disabled={!patients.next_page_url}
+            >
+              Next
+            </Button>
+          </div>
+        </div>
+      )}
     </SideBar>
   );
 }

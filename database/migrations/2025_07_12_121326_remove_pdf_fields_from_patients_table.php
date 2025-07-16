@@ -17,7 +17,7 @@ return new class extends Migration
                 'pdf_generated_at',
                 'pdf_generation_status',
                 'pdf_generation_error',
-                'autocrat_document_id'
+                'autocrat_document_id',
             ]);
         });
     }

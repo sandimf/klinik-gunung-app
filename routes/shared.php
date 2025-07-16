@@ -1,9 +1,10 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Chatbot\ChatbotController;
 use App\Http\Controllers\Paramedis\ScreeningAiSuggestionController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Roles\Paramedis\PhysicalExaminations\PhysicalExaminationController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,6 +30,5 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/screening/ai-suggestion', [ScreeningAiSuggestionController::class, 'suggest'])->name('screening.ai.suggestion');
 
     // Patient physical attributes update
-    Route::put('/patients/{id}/physical', [App\Http\Controllers\Users\ParamedisController::class, 'updatePhysicalAttributes'])
-        ->name('patients.updatePhysical');
-}); 
+    Route::put('/patients/{id}/physical', [PhysicalExaminationController::class, 'updatePhysicalAttributes'])->name('patients.updatePhysical');
+});

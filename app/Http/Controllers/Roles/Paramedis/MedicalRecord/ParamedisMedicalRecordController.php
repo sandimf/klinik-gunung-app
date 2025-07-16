@@ -2,15 +2,13 @@
 
 namespace App\Http\Controllers\Roles\Paramedis\MedicalRecord;
 
-use Inertia\Inertia;
-use Illuminate\Http\Request;
-use App\Models\Users\Patients;
-use App\Models\EMR\MedicalRecord;
 use App\Http\Controllers\Controller;
+use App\Models\EMR\MedicalRecord;
+use App\Models\Users\Patients;
+use Inertia\Inertia;
 
 class ParamedisMedicalRecordController extends Controller
 {
-
     // public function show($uuid)
     // {
     //     $patient = Patients::with([
@@ -80,7 +78,6 @@ class ParamedisMedicalRecordController extends Controller
     //         'physicalExaminations' => $physicalExaminations,
     //     ]);
     // }
-
 
     public function index()
     {

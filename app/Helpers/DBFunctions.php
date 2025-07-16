@@ -3,7 +3,6 @@
 namespace App\Helpers;
 
 use App\Models\Users\Patients;
-use App\Models\Users\Doctors;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -15,14 +14,16 @@ class DBFunctions
             // Pastikan tabel patients ada
             $count = DB::table('patients')->count();
             Log::info('Patient count retrieved:', ['count' => $count]);
+
             return $count;
         } catch (\Exception $e) {
             Log::error('Error getting patient count:', ['error' => $e->getMessage()]);
+
             // Tidak ada dummy data, return null
             return null;
         }
     }
-    
+
     public static function getPatientList($limit = 10)
     {
         try {
@@ -34,11 +35,12 @@ class DBFunctions
                 ->toArray();
         } catch (\Exception $e) {
             Log::error('Error getting patient list:', ['error' => $e->getMessage()]);
+
             // Tidak ada dummy data, return array kosong
             return [];
         }
     }
-    
+
     public static function getPatientStats()
     {
         try {
@@ -52,6 +54,7 @@ class DBFunctions
             ];
         } catch (\Exception $e) {
             Log::error('Error getting patient stats:', ['error' => $e->getMessage()]);
+
             // Tidak ada dummy data, return array kosong
             return [];
         }
@@ -69,6 +72,7 @@ class DBFunctions
                 ->toArray();
         } catch (\Exception $e) {
             Log::error('Error searching patient by name or NIK:', ['error' => $e->getMessage()]);
+
             // Tidak ada dummy data, return array kosong
             return [];
         }
@@ -80,23 +84,31 @@ class DBFunctions
             $patient = \App\Models\Users\Patients::where('nik', $query)
                 ->orWhere('name', 'like', "%$query%")
                 ->first();
-            if (!$patient) return null;
+            if (! $patient) {
+                return null;
+            }
             $examination = $patient->physicalExaminations()->latest()->first();
+
             return $examination ? $examination->toArray() : null;
         } catch (\Exception $e) {
             \Log::error('Error getting physical examination:', ['error' => $e->getMessage()]);
+
             return null;
         }
     }
+
     public static function getPatientScreeningAnswers($query)
     {
         try {
             $patient = \App\Models\Users\Patients::where('nik', $query)
                 ->orWhere('name', 'like', "%$query%")
                 ->first();
-            if (!$patient) return [];
+            if (! $patient) {
+                return [];
+            }
             $answers = $patient->answers()->with('question')->get();
-            return $answers->map(function($a) {
+
+            return $answers->map(function ($a) {
                 return [
                     'pertanyaan' => $a->question->question_text ?? '',
                     'jawaban' => $a->answer_text,
@@ -104,6 +116,7 @@ class DBFunctions
             })->toArray();
         } catch (\Exception $e) {
             \Log::error('Error getting screening answers:', ['error' => $e->getMessage()]);
+
             return [];
         }
     }
@@ -113,9 +126,12 @@ class DBFunctions
         $patient = \App\Models\Users\Patients::where('nik', $query)
             ->orWhere('name', 'like', "%$query%")
             ->first();
-        if (!$patient) return null;
+        if (! $patient) {
+            return null;
+        }
         $physical = $patient->physicalExaminations()->latest()->first();
         $answers = $patient->answers()->with('question')->get();
+
         return [
             'pribadi' => [
                 'nama' => $patient->name,
@@ -126,7 +142,7 @@ class DBFunctions
                 'tanggal_registrasi' => $patient->created_at?->format('d F Y'),
             ],
             'pemeriksaan_fisik' => $physical ? $physical->toArray() : null,
-            'screening' => $answers->map(function($a) {
+            'screening' => $answers->map(function ($a) {
                 return [
                     'pertanyaan' => $a->question->question_text ?? '',
                     'jawaban' => $a->answer_text,

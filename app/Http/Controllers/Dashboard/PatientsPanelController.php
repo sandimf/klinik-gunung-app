@@ -42,6 +42,7 @@ class PatientsPanelController extends Controller
         return Inertia::render('Dashboard/Patients/Index', [
             'visitCount' => $visitRepository->visitCount($this->user),
             'emergency' => $emergencyContact,
+            'appVersion' => config('app.version'),
         ]);
     }
 

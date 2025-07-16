@@ -4,9 +4,8 @@ namespace App\Http\Controllers\Paramedis\v2;
 
 use App\Http\Controllers\Controller;
 use App\Models\Users\Patients;
-use App\Models\Users\PatientsOnline;
-use Inertia\Inertia;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class HistoryHealthCheckController extends Controller
 {
@@ -57,12 +56,12 @@ class HistoryHealthCheckController extends Controller
 
         // Pagination links (mirip Laravel)
         $links = [];
-        $baseUrl = url()->current() . '?search=' . urlencode($search ?? '') . '&page=';
-        $links[] = [ 'url' => $currentPage > 1 ? $baseUrl . ($currentPage - 1) : null, 'label' => '&laquo; Previous', 'active' => false ];
+        $baseUrl = url()->current().'?search='.urlencode($search ?? '').'&page=';
+        $links[] = ['url' => $currentPage > 1 ? $baseUrl.($currentPage - 1) : null, 'label' => '&laquo; Previous', 'active' => false];
         for ($i = 1; $i <= $lastPage; $i++) {
-            $links[] = [ 'url' => $baseUrl . $i, 'label' => (string)$i, 'active' => $i == $currentPage ];
+            $links[] = ['url' => $baseUrl.$i, 'label' => (string) $i, 'active' => $i == $currentPage];
         }
-        $links[] = [ 'url' => $currentPage < $lastPage ? $baseUrl . ($currentPage + 1) : null, 'label' => 'Next &raquo;', 'active' => false ];
+        $links[] = ['url' => $currentPage < $lastPage ? $baseUrl.($currentPage + 1) : null, 'label' => 'Next &raquo;', 'active' => false];
 
         return Inertia::render('Dashboard/Paramedis/Screenings/History/Index', [
             'screenings' => [
@@ -91,7 +90,7 @@ class HistoryHealthCheckController extends Controller
         // Menyiapkan data pertanyaan dan jawaban
         $questionsAndAnswers = $patient->answers->map(function ($answer) {
             $answerText = $answer->answer_text;
-            
+
             // Parse JSON jika jawaban adalah JSON string (untuk checkbox_textarea)
             if (is_string($answerText) && (str_starts_with($answerText, '{') || str_starts_with($answerText, '['))) {
                 try {
@@ -101,15 +100,15 @@ class HistoryHealthCheckController extends Controller
                         if (isset($parsed['options']) && isset($parsed['textarea'])) {
                             $options = $parsed['options'];
                             $textarea = $parsed['textarea'];
-                            
+
                             if ($options === 'N/A' && empty($textarea)) {
                                 $answerText = 'Tidak';
-                            } else if ($options === 'N/A') {
+                            } elseif ($options === 'N/A') {
                                 $answerText = $textarea;
-                            } else if (empty($textarea)) {
+                            } elseif (empty($textarea)) {
                                 $answerText = $options;
                             } else {
-                                $answerText = $options . ' - ' . $textarea;
+                                $answerText = $options.' - '.$textarea;
                             }
                         } else {
                             $answerText = is_array($parsed) ? implode(', ', $parsed) : $parsed;
@@ -119,7 +118,7 @@ class HistoryHealthCheckController extends Controller
                     // Jika gagal parse, gunakan string asli
                 }
             }
-            
+
             return [
                 'question' => $answer->question->question_text,
                 'answer' => $answerText,

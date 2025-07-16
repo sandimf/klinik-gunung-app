@@ -1,10 +1,10 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Users\ManagerController;
 use App\Http\Controllers\Dashboard\ManagerPanelController;
 use App\Http\Controllers\Report\ManagerReportController;
 use App\Http\Controllers\Report\ParamedisReportController;
+use App\Http\Controllers\Users\ManagerController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,4 +38,4 @@ Route::prefix('dashboard/manager')->middleware(['role:manager'])->group(function
     Route::get('office/pdf', [ManagerReportController::class, 'generatePdf'])->name('manager.office.pdf');
     Route::get('activity/pdf', [ParamedisReportController::class, 'generatePDFActivity'])->name('pdf.activity.manager');
     Route::get('report/health-check/{uuid}', [ParamedisReportController::class, 'generatePDFHealthCheck'])->name('pdf.healthcheck.manager');
-}); 
+});
