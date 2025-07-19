@@ -16,6 +16,7 @@ use App\Services\Printer\ScreeningPrintService;
 use App\Services\QrCodeService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
@@ -141,6 +142,34 @@ class PhysicalExaminationController extends Controller
 
         SendScreeningNotification::dispatch($patient);
 
+        // Kirim notifikasi realtime ke cashier via Go WebSocket server
+        $notificationData = [
+            'type' => 'physical_exam_done',
+            'message' => 'Pasien sudah selesai pemeriksaan fisik',
+            'patient_id' => $patient->id,
+            'patient_name' => $patient->name,
+            'created_at' => now()->toDateTimeString(),
+            'notification_type' => 'physical_exam_done',
+        ];
+        \Illuminate\Support\Facades\Http::withHeaders(['Content-Type' => 'application/json'])
+            ->post('http://localhost:8080/notify', $notificationData);
+
+        // Simpan notifikasi ke database untuk semua cashier
+        $cashiers = \App\Models\Users\Cashier::all();
+        foreach ($cashiers as $cashier) {
+            \App\Models\Notifications\Notification::create([
+                'user_id' => $cashier->user_id,
+                'type' => 'physical_exam_done',
+                'title' => 'Pemeriksaan Fisik Selesai',
+                'message' => 'Pasien sudah selesai pemeriksaan fisik',
+                'data' => [
+                    'patient_id' => $patient->id,
+                    'patient_name' => $patient->name,
+                ],
+                'read_at' => null,
+            ]);
+        }
+
         return back()->with('success', 'Pemeriksaan Fisik Berhasil Berhasil di Simpan!');
     }
 
@@ -214,5 +243,27 @@ class PhysicalExaminationController extends Controller
         $patient->update($validated);
 
         return back()->with('success', 'Data fisik pasien berhasil diperbarui.');
+    }
+
+    public function selesaiPemeriksaanFisik(Request $request)
+    {
+        // ... logic pemeriksaan fisik selesai
+
+        // Data notifikasi
+        $patient = Patients::find($request->patient_id);
+        $data = [
+            'type' => 'physical_exam_done',
+            'message' => 'Pasien sudah selesai pemeriksaan fisik',
+            'patient_id' => $patient->id,
+            'patient_name' => $patient->name,
+            'created_at' => now()->toDateTimeString(),
+            'notification_type' => 'physical_exam_done',
+        ];
+
+        // Kirim ke Go WebSocket server
+        Http::withHeaders(['Content-Type' => 'application/json'])
+            ->post('http://localhost:8080/notify', $data);
+
+        // ... lanjutkan response/logic lain
     }
 }

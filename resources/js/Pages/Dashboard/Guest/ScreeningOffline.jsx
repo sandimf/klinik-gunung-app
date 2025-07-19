@@ -21,8 +21,7 @@ import WebcamComponent from "./_components/Webcam";
 import { PatientInfoForm } from "./_components/PatientInfoForm";
 import { analyzeImage, parseTanggalLahir } from "./_components/Ai";
 import { Navbar } from "@/Components/ui/navbar";
-import { Progress } from "@/Components/ui/progress";
-import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription } from "@/Components/ui/dialog";
+import { Dialog,  DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription } from "@/Components/ui/dialog";
 import { usePage } from "@inertiajs/react";
 
 export default function PatientDataEntry({ questions, apiKey }) {
@@ -36,7 +35,7 @@ export default function PatientDataEntry({ questions, apiKey }) {
     const [formErrors, setFormErrors] = useState({});
     const [answers, setAnswers] = useState({});
     const [isLoading, setIsLoading] = useState(false);
-    const [step, setStep] = useState(1); // stepper state
+    const [step, setStep] = useState(1);
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
     const { auth } = usePage().props;
@@ -80,9 +79,8 @@ export default function PatientDataEntry({ questions, apiKey }) {
         }));
     };
 
-    // Fungsi untuk reset semua state form, answers, errors, dsb
     const resetAllStates = () => {
-        reset(); // reset useForm inertia
+        reset();
         setAgreedToPrivacy(false);
         setEntryMethod("manual");
         setImageFile(null);
@@ -110,10 +108,10 @@ export default function PatientDataEntry({ questions, apiKey }) {
         if (unansweredQuestions.length > 0) {
             const newErrors = {};
             unansweredQuestions.forEach((question) => {
-                newErrors[question.id] = "Pertanyaan ini wajib dijawab";
+                newErrors[question.id] = "Mohon lengkapi jawaban untuk pertanyaan ini.";
             });
             setFormErrors(newErrors);
-            toast.error("Harap jawab semua pertanyaan sebelum mengirimkan.");
+            toast.error("Silakan lengkapi seluruh pertanyaan sebelum mengirimkan.");
             return;
         }
 
@@ -138,11 +136,10 @@ export default function PatientDataEntry({ questions, apiKey }) {
                         ),
                     });
                     resetAllStates();
-                    setStep(1); // Kembali ke step 1 (pengisian pendaki)
-                    // router.reload(); // Tidak perlu reload
+                    setStep(1);
                 },
                 onError: (errors) => {
-                    setIsLoading(false); // Matikan loading setelah error
+                    setIsLoading(false);
                     if (typeof errors === "string") {
                         toast.error(errors, {
                             icon: <X className="w-5 h-5 text-red-500" />,
@@ -169,9 +166,9 @@ export default function PatientDataEntry({ questions, apiKey }) {
     const handleFileChange = async (event) => {
         const file = event.target.files?.[0];
         if (file) {
-            setImageFile(file); // Simpan file ke state untuk preview
-            setData("ktp_images", file); // Simpan file ke state form untuk pengiriman
-            await analyzeImageWrapper(file); // Analisis gambar menggunakan AI (opsional)
+            setImageFile(file);
+            setData("ktp_images", file);
+            await analyzeImageWrapper(file);
         }
     };
 
@@ -247,13 +244,11 @@ export default function PatientDataEntry({ questions, apiKey }) {
                 </div>
             ) : (
                 <div className="container p-4 mx-auto">
-                    {/* Stepper horizontal custom */}
                     <div className="mb-8">
                         <div className="w-full max-w-2xl mx-auto flex items-center px-8 py-6 rounded-xl">
                             {steps.map((s, i) => (
                                 <React.Fragment key={i}>
                                     <div className="flex flex-col items-center flex-1 min-w-0">
-                                        {/* Icon */}
                                         <div
                                             className={`flex items-center justify-center w-7 h-7 rounded-full border-2
                                                 ${s.status === "completed"
@@ -271,7 +266,6 @@ export default function PatientDataEntry({ questions, apiKey }) {
                                                 <span className="font-bold text-sm">{i + 1}</span>
                                             )}
                                         </div>
-                                        {/* Garis */}
                                         {i < steps.length - 1 && (
                                             <div
                                                 className={`h-1 w-full mt-1 mb-1
@@ -283,12 +277,10 @@ export default function PatientDataEntry({ questions, apiKey }) {
                                                     transition-colors`}
                                             />
                                         )}
-                                        {/* Label */}
                                         <div className="mt-1 text-xs font-semibold text-center"
                                             style={{ color: s.status === "current" ? "#2563eb" : undefined }}>
                                             {s.label}
                                         </div>
-                                        {/* Description */}
                                         <div className={`text-xs ${s.status === "completed" ? "text-green-600" : s.status === "current" ? "text-blue-500" : "text-muted-foreground"}`}>
                                             {s.description}
                                         </div>
@@ -300,27 +292,16 @@ export default function PatientDataEntry({ questions, apiKey }) {
                     <Card className="mb-6">
                         <Head title="Screening" />
                         <CardHeader>
-                            {/* Progress bar shadcn/ui di tengah atas */}
-
                             <CardTitle className="text-2xl font-bold">
                                 {step === 1 ? "Informasi Pendaki" : "Screening"}
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
-                            {/* Stepper indicator */}
-                            {/* <div className="flex items-center mb-6 gap-2">
-                                <div className={`w-8 h-8 flex items-center justify-center rounded-full border-2 ${step === 1 ? 'border-blue-500 bg-blue-100' : 'border-gray-300 bg-white'}`}>1</div>
-                                <span className={step === 1 ? 'font-bold text-blue-600' : 'text-gray-500'}>Data Pendaki</span>
-                                <div className="w-8 h-0.5 bg-gray-300 mx-2" />
-                                <div className={`w-8 h-8 flex items-center justify-center rounded-full border-2 ${step === 2 ? 'border-blue-500 bg-blue-100' : 'border-gray-300 bg-white'}`}>2</div>
-                                <span className={step === 2 ? 'font-bold text-blue-600' : 'text-gray-500'}>Screening</span>
-                            </div> */}
                             {step === 1 && (
                                 <>
                                     <form
                                         onSubmit={e => {
                                             e.preventDefault();
-                                            // Validasi data pasien minimal (misal: nama, nik, gender, tanggal lahir)
                                             const requiredFields = [
                                                 { key: 'nik', label: 'NIK' },
                                                 { key: 'name', label: 'Nama' },
@@ -329,14 +310,13 @@ export default function PatientDataEntry({ questions, apiKey }) {
                                             ];
                                             const missing = requiredFields.filter(f => !data[f.key]);
                                             if (missing.length > 0) {
-                                                toast.error(`Harap lengkapi Data Pendaki Terlebih Dahulu.`);
+                                                toast.error(`Silakan lengkapi data pasien terlebih dahulu.`);
                                                 return;
                                             }
                                             setShowConfirmDialog(true);
                                         }}
                                         className="space-y-4"
                                     >
-                                        {/* Alert pemberitahuan cek ulang data AI */}
                                         <Alert variant="warning">
                                             <AlertDescription>
                                                 <b>Perhatian:</b> Jika menggunakan AI (scan/upload KTP), mohon cek ulang data yang terisi otomatis. Data hasil AI kadang tidak sesuai, pastikan semua data sudah benar sebelum lanjut.

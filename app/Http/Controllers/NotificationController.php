@@ -36,7 +36,6 @@ class NotificationController extends Controller
                 'unread_count' => $notifications->count(),
             ]);
         } catch (\Exception $e) {
-            \Log::error('Error getting notifications: '.$e->getMessage());
 
             return response()->json(['error' => 'Internal server error'], 500);
         }

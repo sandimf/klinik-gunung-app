@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Services\QrCodeService;
 use Illuminate\Http\JsonResponse;
+use Inertia\Inertia;
 
 class PatientDataController extends Controller
 {
@@ -18,7 +19,7 @@ class PatientDataController extends Controller
     /**
      * Get patient data by unique link from QR code
      */
-    public function getPatientData($uniqueLink): JsonResponse
+    public function getPatientData($uniqueLink)
     {
         try {
             $patientData = $this->qrCodeService->getPatientDataByLink($uniqueLink);
@@ -30,9 +31,12 @@ class PatientDataController extends Controller
                 ], 404);
             }
 
-            return response()->json([
-                'Klinik Gunung' => $patientData,
-            ], 200);
+            // return response()->json([
+            //     'Klinik Gunung' => $patientData,
+            // ], 200);
+            return Inertia::render('Api/PatientData', [
+                'patient' => $patientData,
+            ]);
 
         } catch (\Exception $e) {
             return response()->json([

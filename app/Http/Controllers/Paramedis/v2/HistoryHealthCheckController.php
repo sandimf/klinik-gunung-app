@@ -12,7 +12,7 @@ class HistoryHealthCheckController extends Controller
     public function index(Request $request)
     {
         $page = $request->input('page', 1);
-        $perPage = 20;
+        $perPage = 10;
         $search = $request->input('search');
 
         // Screening Offline

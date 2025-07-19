@@ -2,7 +2,7 @@
 import AddProductButton from "./create-product"; // Impor tombol
 
 const ProductHeader = ({
-    title = 'Daftar Produk',
+    title = '',
     onAddProductClick,  // Event handler untuk membuka dialog
     children
 }) => {

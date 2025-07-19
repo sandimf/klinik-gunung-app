@@ -106,31 +106,104 @@ class PurchaseController extends Controller
         }
     }
 
-    public function history()
+    public function history(Request $request)
     {
-        // Ambil transaksi dan termasuk detail items terkait
-        $transactions = Transaction::orderBy('created_at', 'desc')->paginate(10);
-
-        // Memasukkan nama produk ke dalam items_details
-        foreach ($transactions as $transaction) {
-            // Meng-decode JSON dari items_details
-            $items = json_decode($transaction->items_details, true);
-
-            // Tambahkan nama produk ke setiap item
-            foreach ($items as &$item) {
-                $product = Product::find($item['item_id']);
-                if ($product) {
-                    // Menambahkan nama produk pada setiap item
-                    $item['product_name'] = $product->name;
-                }
-            }
-
-            // Update kembali items_details dengan nama produk
-            $transaction->items_details = $items;
+        $page = max(1, (int) filter_var($request->input('page', 1), FILTER_VALIDATE_INT, [
+            'options' => [
+                'default' => 1,
+                'min_range' => 1,
+            ],
+        ]));
+        $perPage = 10;
+        $search = $request->input('search');
+        if ($search !== null) {
+            $search = filter_var($search, FILTER_SANITIZE_STRING);
+            $search = trim(strip_tags($search));
         }
 
+        // Ambil transaksi produk
+        $productQuery = \App\Models\Transaction\Transaction::orderBy('created_at', 'desc');
+        $productTransactions = [];
+        if (!empty($search)) {
+            $productQuery->whereRaw('JSON_SEARCH(items_details, "all", ?) IS NOT NULL', ["%$search%"]);
+        }
+        $productPaginated = $productQuery->paginate($perPage, ['*'], 'page', $page);
+        foreach ($productPaginated as $transaction) {
+            $items = json_decode($transaction->items_details, true);
+            foreach ($items as &$item) {
+                $product = \App\Models\Product::find($item['item_id']);
+                $item['product_name'] = $product ? $product->name : null;
+            }
+            $productTransactions[] = [
+                'id' => $transaction->id,
+                'no_transaction' => $transaction->id,
+                'payment_method' => $transaction->payment_method,
+                'payment_proof' => $transaction->payment_proof,
+                'total_price' => $transaction->total_price,
+                'items_details' => $items,
+                'type' => 'product',
+                'created_at' => $transaction->created_at,
+                'patient_name' => null,
+            ];
+        }
+
+        // Ambil transaksi screening
+        $paymentQuery = \App\Models\Payments::with(['items', 'patient'])->orderBy('created_at', 'desc');
+        if (!empty($search)) {
+            $paymentQuery->whereHas('patient', function($q) use ($search) {
+                $q->where('name', 'like', "%$search%") ;
+            });
+        }
+        $paymentPaginated = $paymentQuery->paginate($perPage, ['*'], 'page', $page);
+        $paymentTransactions = [];
+        foreach ($paymentPaginated as $payment) {
+            $items = $payment->items->map(function ($item) {
+                return [
+                    'item_id' => $item->item_id,
+                    'item_type' => $item->item_type,
+                    'product_name' => $item->item_type === 'other' ? $item->item_name : null,
+                    'medicine_name' => $item->item_type === 'medicine' ? $item->item_name : null,
+                    'quantity' => $item->quantity,
+                    'price' => $item->price,
+                ];
+            });
+            $paymentTransactions[] = [
+                'id' => $payment->id,
+                'no_transaction' => $payment->no_transaction,
+                'payment_method' => $payment->payment_method,
+                'payment_proof' => $payment->payment_proof,
+                'total_price' => $payment->amount_paid,
+                'items_details' => $items,
+                'type' => 'screening',
+                'created_at' => $payment->created_at,
+                'patient_name' => $payment->patient ? $payment->patient->name : null,
+            ];
+        }
+
+        // Gabungkan dan paginasi manual hasilnya
+        $allTransactions = collect($productTransactions)->merge($paymentTransactions)->sortByDesc('created_at')->values();
+        $total = $productPaginated->total() + $paymentPaginated->total();
+        $from = ($page - 1) * $perPage + 1;
+        $to = $from + $allTransactions->count() - 1;
+        $pagination = [
+            'current_page' => $page,
+            'per_page' => $perPage,
+            'total' => $total,
+            'last_page' => ceil($total / $perPage),
+            'from' => $from,
+            'to' => $to,
+            'prev_page_url' => $page > 1 ? url()->current() . '?page=' . ($page - 1) . ($search ? '&search=' . urlencode($search) : '') : null,
+            'next_page_url' => $to < $total ? url()->current() . '?page=' . ($page + 1) . ($search ? '&search=' . urlencode($search) : '') : null,
+        ];
+
         return Inertia::render('Dashboard/Cashier/Transaction/History', [
-            'transactions' => $transactions,
+            'transactions' => [
+                'data' => $allTransactions,
+                ...$pagination,
+            ],
+            'filters' => [
+                'search' => $search,
+            ],
         ]);
     }
 }

@@ -50,7 +50,6 @@ class AppointmentController extends Controller
             // Menangani error spesifik dari aturan bisnis dengan pesan yang jelas ke user.
             return redirect()->back()->with('error', $e->getMessage());
         } catch (\Exception $e) {
-            Log::error('Gagal membuat janji temu: '.$e->getMessage(), ['exception' => $e]);
 
             return redirect()->back()->with('error', 'Terjadi kesalahan. Gagal membuat janji temu.');
         }
@@ -68,8 +67,6 @@ class AppointmentController extends Controller
             // Menggunakan exception yang sama untuk error aturan bisnis pembatalan.
             return redirect()->back()->with('error', $e->getMessage());
         } catch (\Exception $e) {
-            Log::error('Gagal membatalkan janji temu: '.$e->getMessage(), ['appointment_id' => $id, 'exception' => $e]);
-
             return redirect()->back()->with('error', 'Gagal membatalkan janji temu.');
         }
 

@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\Api\PatientQrController;
 use App\Http\Controllers\Auth\ProviderController;
 use App\Http\Controllers\Screening\GuestScreeningController;
 use Illuminate\Support\Facades\Route;
@@ -29,26 +28,27 @@ Route::get('/', function () {
 Route::resource('screening-now', GuestScreeningController::class)
     ->only(['index', 'store']);
 
-// Generate new QR code (protected route)
-Route::middleware(['auth'])->group(function () {
-    Route::post('/api/patient/{patient}/generate-qr', [PatientQrController::class, 'generateQrCode'])
-        ->name('patient.qr.generate');
-});
-
 // Social Authentication Routes
 Route::get('auth/{provider}/redirect', [ProviderController::class, 'redirect']);
 Route::get('auth/{provider}/callback', [ProviderController::class, 'callback']);
 
-
 Route::fallback(function () {
     return Inertia::render('Errors/Error', ['status' => 404]);
+
     return Inertia::render('Errors/Error', ['status' => 403]);
+
     return Inertia::render('Errors/Error', ['status' => 401]);
+
     return Inertia::render('Errors/Error', ['status' => 400]);
+
     return Inertia::render('Errors/Error', ['status' => 405]);
+
     return Inertia::render('Errors/Error', ['status' => 500]);
+
     return Inertia::render('Errors/Error', ['status' => 501]);
+
     return Inertia::render('Errors/Error', ['status' => 502]);
+
     return Inertia::render('Errors/Error', ['status' => 503]);
 });
 // ===================================================================

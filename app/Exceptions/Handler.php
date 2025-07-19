@@ -5,7 +5,6 @@ namespace App\Exceptions;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Inertia\Inertia;
 use Throwable;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Handler extends ExceptionHandler
 {
@@ -23,16 +22,22 @@ class Handler extends ExceptionHandler
     /**
      * Register the exception handling callbacks for the application.
      */
-   public function render($request, Throwable $exception)
-{
-    $response = parent::render($request, $exception);
+    public function render($request, Throwable $exception)
+    {
+        if ($request->header('X-Inertia')) {
+            $status = 500;
 
-    if ($request->header('X-Inertia') && in_array($response->status(), [500, 503, 404, 403])) {
-        return Inertia::render('Errors/Error', ['status' => $response->status()])
-            ->toResponse($request)
-            ->setStatusCode($response->status());
+            if ($exception instanceof HttpExceptionInterface) {
+                $status = $exception->getStatusCode();
+            }
+
+            if (in_array($status, [400, 401, 403, 404, 405, 500, 501, 502, 503])) {
+                return Inertia::render('Errors/Error', ['status' => $status])
+                    ->toResponse($request)
+                    ->setStatusCode($status);
+            }
+        }
+
+        return parent::render($request, $exception);
     }
-
-    return $response;
-}
 }

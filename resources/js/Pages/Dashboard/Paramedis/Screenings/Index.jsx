@@ -25,13 +25,13 @@ const ScreeningOfflineIndex = ({ screenings_offline, filters = {} }) => {
         router.reload({ only: ['screenings_offline'] });
     };
 
-const handleSearch = (searchValue) => {
-    router.get(
-        route("paramedis.screenings"),
-        { search: searchValue, page: 1 },
-        { preserveState: true, replace: true }
-    );
-};
+    const handleSearch = (searchValue) => {
+        router.get(
+            route("paramedis.screenings"),
+            { search: searchValue, page: 1 },
+            { preserveState: true, replace: true }
+        );
+    };
 
     const handlePageChange = (url) => {
         if (url) {
@@ -69,23 +69,23 @@ const handleSearch = (searchValue) => {
             accessorKey: "name",
             header: "Nama Pasien",
         },
-        {
-            accessorKey: "jenis_screening",
-            header: "Jenis Screening",
-            cell: ({ row }) => (
-                <Badge
-                    variant={
-                        row.original.answers?.[0]?.isOnline === 1
-                            ? "default"
-                            : "secondary" 
-                    }
-                >
-                    {row.original.answers?.[0]?.isOnline === 1
-                        ? "Screening Online"
-                        : "Screening Offline"}
-                </Badge>
-            ),
-        },
+        // {
+        //     accessorKey: "jenis_screening",
+        //     header: "Jenis Screening",
+        //     cell: ({ row }) => (
+        //         <Badge
+        //             variant={
+        //                 row.original.answers?.[0]?.isOnline === 1
+        //                     ? "default"
+        //                     : "secondary"
+        //             }
+        //         >
+        //             {row.original.answers?.[0]?.isOnline === 1
+        //                 ? "Screening Online"
+        //                 : "Screening Offline"}
+        //         </Badge>
+        //     ),
+        // },
         {
             id: "status_pemeriksaan",
             header: "Status Pemeriksaan",
@@ -95,15 +95,15 @@ const handleSearch = (searchValue) => {
                         row.original.screening_status === "completed"
                             ? "bg-blue-500 text-white dark:bg-blue-600"
                             : row.original.screening_status === "pending"
-                            ? "bg-yellow-500 text-white dark:bg-yellow-600"
-                            : "bg-gray-500 text-white dark:bg-gray-600"
+                                ? "bg-yellow-500 text-white dark:bg-yellow-600"
+                                : "bg-gray-500 text-white dark:bg-gray-600"
                     }
                 >
                     {row.original.screening_status === "pending"
-                    ? "Belum Diperiksa"
-                    : row.original.screening_status === "completed"
-                        ? "Selesai"
-                        : row.original.screening_status}
+                        ? "Belum Diperiksa"
+                        : row.original.screening_status === "completed"
+                            ? "Selesai"
+                            : row.original.screening_status}
                 </Badge>
             ),
         },
@@ -144,7 +144,7 @@ const handleSearch = (searchValue) => {
     return (
         <ParamedisSidebar header="Screening">
             <Head title="Daftar Screening" />
-            
+
 
             <DataTable
                 columns={columns}
@@ -159,20 +159,20 @@ const handleSearch = (searchValue) => {
                 title="Daftar Screening"
                 description="Daftar screening pasien yang belum diperiksa"
             />
-            
-        <div className="flex justify-start items-center gap-4 mt-8">
-                <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleManualRefresh}
-            >
-                <RefreshCcw/>
-            </Button>
-            <span className="bg-muted relative rounded px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold">
-                Terakhir diperbarui: {formatLastUpdate()}
-            </span>
 
-        </div>
+            <div className="flex justify-start items-center gap-4 mt-8">
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleManualRefresh}
+                >
+                    <RefreshCcw />
+                </Button>
+                <span className="bg-muted relative rounded px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold">
+                    Terakhir diperbarui: {formatLastUpdate()}
+                </span>
+
+            </div>
 
             <ScreeningDialog
                 isOpen={isDialogOpen}

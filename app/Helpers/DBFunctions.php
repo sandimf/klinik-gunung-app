@@ -13,12 +13,9 @@ class DBFunctions
         try {
             // Pastikan tabel patients ada
             $count = DB::table('patients')->count();
-            Log::info('Patient count retrieved:', ['count' => $count]);
 
             return $count;
         } catch (\Exception $e) {
-            Log::error('Error getting patient count:', ['error' => $e->getMessage()]);
-
             // Tidak ada dummy data, return null
             return null;
         }
@@ -34,8 +31,6 @@ class DBFunctions
                 ->get()
                 ->toArray();
         } catch (\Exception $e) {
-            Log::error('Error getting patient list:', ['error' => $e->getMessage()]);
-
             // Tidak ada dummy data, return array kosong
             return [];
         }
@@ -53,7 +48,6 @@ class DBFunctions
                 'this_month' => DB::table('patients')->whereMonth('created_at', now()->month)->count(),
             ];
         } catch (\Exception $e) {
-            Log::error('Error getting patient stats:', ['error' => $e->getMessage()]);
 
             // Tidak ada dummy data, return array kosong
             return [];
@@ -71,7 +65,6 @@ class DBFunctions
                 ->get()
                 ->toArray();
         } catch (\Exception $e) {
-            Log::error('Error searching patient by name or NIK:', ['error' => $e->getMessage()]);
 
             // Tidak ada dummy data, return array kosong
             return [];
@@ -91,7 +84,6 @@ class DBFunctions
 
             return $examination ? $examination->toArray() : null;
         } catch (\Exception $e) {
-            \Log::error('Error getting physical examination:', ['error' => $e->getMessage()]);
 
             return null;
         }
@@ -115,7 +107,6 @@ class DBFunctions
                 ];
             })->toArray();
         } catch (\Exception $e) {
-            \Log::error('Error getting screening answers:', ['error' => $e->getMessage()]);
 
             return [];
         }

@@ -18,6 +18,18 @@ class ScreeningPaymentsController extends Controller
 {
     public function store(ScreeningPaymentsRequest $request)
     {
+        // Cek apakah sudah ada pembayaran untuk patient_id ini di tabel payments
+        $existingPayment = Payments::where('patient_id', $request->input('patient_id'))
+            ->where('payment_status', 1)
+            ->first();
+        if ($existingPayment) {
+            return redirect()->back()->withErrors(['payment' => 'Pasien sudah melakukan pembayaran.']);
+        }
+        // Cek apakah pasien sudah membayar (dari tabel patients)
+        $patient = Patients::find($request->input('patient_id'));
+        if ($patient && $patient->payment_status === 'completed') {
+            return redirect()->back()->withErrors(['payment' => 'Pasien sudah melakukan pembayaran.']);
+        }
 
         // Menyiapkan data untuk disimpan
         $data = $request->only([
@@ -110,6 +122,27 @@ class ScreeningPaymentsController extends Controller
             }
         }
 
+        // Simpan produk
+        $selectedProducts = $request->input('selected_products', []);
+        foreach ($selectedProducts as $prod) {
+            $product = \App\Models\Product::find($prod['product_id']);
+            if ($product) {
+                $qty = (int) $prod['quantity'];
+                $price = $product->price;
+                \App\Models\PaymentItem::create([
+                    'payment_id' => $payment->id,
+                    'item_type' => 'other', // Ubah dari 'product' ke 'other'
+                    'item_id' => $product->id,
+                    'item_name' => $product->name,
+                    'quantity' => $qty,
+                    'price' => $price,
+                    'total' => $price * $qty,
+                ]);
+                // Kurangi stok produk
+                $product->decrement('stock', $qty);
+            }
+        }
+
         // Update status pembayaran pasien jika pembayaran selesai
         try {
             Patients::where('id', $data['patient_id'])->update(['payment_status' => 'completed']);
@@ -123,9 +156,9 @@ class ScreeningPaymentsController extends Controller
 
         // Mengarahkan kembali dengan pesan sukses
 
-        return redirect()->route('cashier.screening')->with('success', 'Pembayaran berhasil diproses.');
-    }
+       return back()->with('success', 'Pembayaran berhasil diproses.');
 
+    }
     public function generateNota($noTransaction)
     {
         // Log the transaction number we're looking for
@@ -201,15 +234,15 @@ class ScreeningPaymentsController extends Controller
         $groupedItems = [
             'services' => [],
             'medicines' => [],
+            'products' => [],
         ];
-
         // Hitung total untuk setiap kelompok
         $totals = [
             'services' => 0,
             'medicines' => 0,
+            'products' => 0,
             'grand_total' => 0,
         ];
-
         // Proses setiap item pembayaran
         foreach ($payment->items as $item) {
             if ($item->item_type === 'service') {
@@ -230,8 +263,16 @@ class ScreeningPaymentsController extends Controller
                     'total' => $item->total,
                 ];
                 $totals['medicines'] += $item->total;
+            } elseif ($item->item_type === 'other') { // <--- harusnya 'other'
+                $groupedItems['products'][] = [
+                    'id' => $item->id,
+                    'item_name' => $item->item_name,
+                    'price' => $item->price,
+                    'quantity' => $item->quantity,
+                    'total' => $item->total,
+                ];
+                $totals['products'] += $item->total;
             }
-
             // Debug: Log each item
             \Log::info('Processing item:', [
                 'id' => $item->id,
@@ -242,13 +283,11 @@ class ScreeningPaymentsController extends Controller
                 'total' => $item->total,
             ]);
         }
-
         // Debug: Log grouped items and totals
         \Log::info('Grouped Items:', $groupedItems);
         \Log::info('Totals:', $totals);
-
         // Hitung grand total
-        $totals['grand_total'] = $totals['services'] + $totals['medicines'];
+        $totals['grand_total'] = $totals['services'] + $totals['medicines'] + $totals['products'];
 
         // Jika ada produk yang dibeli, ambil informasi produk dan batch
         $product = null;

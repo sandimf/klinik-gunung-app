@@ -3,7 +3,7 @@
 use App\Http\Controllers\Api\PatientDataController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ParamedisScreeningController;
-use App\Http\Controllers\TestQrController;
+use App\Models\Notifications\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -96,9 +96,14 @@ Route::prefix('v1')->group(function () {
     Route::get('/verify/{uniqueLink}', [PatientDataController::class, 'verifyQrCode']);
 });
 
-// Test QR Code Routes (for development/testing)
-// Test QR Code Routes (for development/testing)ETQY3g6JrZ1s7m7ZKFmrD3KFm8psUsEuQAElwa3A81QwlX9TIQsKoHIBCvkZ1GFa
-Route::prefix('test-qr')->group(function () {
-    Route::get('/generate', [TestQrController::class, 'testQrGeneration']);
-    Route::get('/data/{uniqueLink}', [TestQrController::class, 'testPatientData']);
+
+Route::middleware(['web', 'auth'])->prefix('cashier')->group(function () {
+    Route::get('/notifications', function () {
+        $user = auth()->user();
+
+        return \App\Models\Notifications\Notification::where('user_id', $user->id)
+            ->orderBy('created_at', 'desc')
+            ->take(50)
+            ->get();
+    });
 });

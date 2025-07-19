@@ -8,6 +8,7 @@ use App\Models\Payments\PaymentOnline;
 use App\Models\Transaction\Transaction;
 use Illuminate\Support\Carbon;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\DB;
 
 class CashierDashboardController extends Controller
 {
@@ -57,6 +58,104 @@ class CashierDashboardController extends Controller
         // Data chart pemasukan produk per bulan (6 bulan terakhir)
         $chartDataProduct = $this->getChartDataProduct();
 
+        // Buat array tanggal 14 hari terakhir (termasuk hari ini)
+        $dates = [];
+        for ($i = 13; $i >= 0; $i--) {
+            $dates[] = now()->subDays($i)->toDateString();
+        }
+        // Query harian (offline)
+        $offline = Payments::select(
+            DB::raw("DATE(created_at) as date"),
+            DB::raw("SUM(amount_paid) as total")
+        )
+            ->where('payment_status', true)
+            ->where('created_at', '>=', now()->subDays(13)->startOfDay())
+            ->groupBy(DB::raw("DATE(created_at)"))
+            ->pluck('total', 'date')
+            ->toArray();
+        // Query harian (online)
+        $online = PaymentOnline::select(
+            DB::raw("DATE(created_at) as date"),
+            DB::raw("SUM(amount_paid) as total")
+        )
+            ->where('payment_status', true)
+            ->where('created_at', '>=', now()->subDays(13)->startOfDay())
+            ->groupBy(DB::raw("DATE(created_at)"))
+            ->pluck('total', 'date')
+            ->toArray();
+        // Gabungkan offline + online, pastikan semua tanggal ada
+        $chartDataDaily = [];
+        foreach ($dates as $date) {
+            $chartDataDaily[] = [
+                'date' => $date,
+                'total' => (float)($offline[$date] ?? 0) + (float)($online[$date] ?? 0),
+            ];
+        }
+
+        // Query mingguan 8 minggu terakhir (offline)
+        $chartDataWeeklyOffline = Payments::select(
+            DB::raw("YEARWEEK(created_at, 1) as week"),
+            DB::raw("MIN(DATE(created_at)) as week_start"),
+            DB::raw("SUM(amount_paid) as total")
+        )
+            ->where('payment_status', true)
+            ->where('created_at', '>=', now()->subWeeks(8))
+            ->groupBy(DB::raw("YEARWEEK(created_at, 1)"))
+            ->orderBy('week')
+            ->get()
+            ->toArray();
+
+        $chartDataWeeklyOnline = PaymentOnline::select(
+            DB::raw("YEARWEEK(created_at, 1) as week"),
+            DB::raw("MIN(DATE(created_at)) as week_start"),
+            DB::raw("SUM(amount_paid) as total")
+        )
+            ->where('payment_status', true)
+            ->where('created_at', '>=', now()->subWeeks(8))
+            ->groupBy(DB::raw("YEARWEEK(created_at, 1)"))
+            ->orderBy('week')
+            ->get()
+            ->toArray();
+
+        $chartDataWeekly = $this->mergeChartData($chartDataWeeklyOffline, $chartDataWeeklyOnline, 'week');
+
+        // Query bulanan 6 bulan terakhir (offline)
+        $chartDataMonthlyOffline = Payments::select(
+            DB::raw("DATE_FORMAT(created_at, '%Y-%m') as month"),
+            DB::raw("SUM(amount_paid) as total")
+        )
+            ->where('payment_status', true)
+            ->where('created_at', '>=', now()->subMonths(6))
+            ->groupBy(DB::raw("DATE_FORMAT(created_at, '%Y-%m')"))
+            ->orderBy('month')
+            ->get()
+            ->toArray();
+
+        $chartDataMonthlyOnline = PaymentOnline::select(
+            DB::raw("DATE_FORMAT(created_at, '%Y-%m') as month"),
+            DB::raw("SUM(amount_paid) as total")
+        )
+            ->where('payment_status', true)
+            ->where('created_at', '>=', now()->subMonths(6))
+            ->groupBy(DB::raw("DATE_FORMAT(created_at, '%Y-%m')"))
+            ->orderBy('month')
+            ->get()
+            ->toArray();
+
+        $chartDataMonthly = $this->mergeChartData($chartDataMonthlyOffline, $chartDataMonthlyOnline, 'month');
+
+        // Data pemasukan hari ini (offline)
+        $todayIncomeOffline = Payments::where('payment_status', true)
+            ->whereDate('created_at', now()->toDateString())
+            ->sum('amount_paid');
+        // Data pemasukan hari ini (online)
+        $todayIncomeOnline = PaymentOnline::where('payment_status', true)
+            ->whereDate('created_at', now()->toDateString())
+            ->sum('amount_paid');
+        // Total pemasukan hari ini (offline + online)
+        $todayIncome = $todayIncomeOffline + $todayIncomeOnline;
+        $formattedTodayIncome = $this->formatCurrency($todayIncome);
+
         // Kirim data ke view
         return Inertia::render('Dashboard/Cashier/Index', [
             'totalPayment' => $formattedTotalIncome,
@@ -68,6 +167,10 @@ class CashierDashboardController extends Controller
             'paymentsDetails' => $paymentsDetails,
             'chartData' => $chartData,
             'chartDataProduct' => $chartDataProduct,
+            'chartDataDaily' => $chartDataDaily,
+            'chartDataWeekly' => $chartDataWeekly,
+            'chartDataMonthly' => $chartDataMonthly,
+            'todayIncome' => $formattedTodayIncome,
         ]);
     }
 
@@ -148,5 +251,36 @@ class CashierDashboardController extends Controller
                 'produk' => $pemasukanProduk,
             ];
         });
+    }
+
+    private function mergeChartData($data1, $data2, $key = 'date')
+    {
+        $merged = [];
+        foreach ($data1 as $row) {
+            $merged[$row[$key]] = [
+                $key => $row[$key],
+                'total' => (float) $row['total'],
+            ];
+            if (isset($row['week_start'])) {
+                $merged[$row[$key]]['week_start'] = $row['week_start'];
+            }
+        }
+        foreach ($data2 as $row) {
+            if (isset($merged[$row[$key]])) {
+                $merged[$row[$key]]['total'] += (float) $row['total'];
+            } else {
+                $merged[$row[$key]] = [
+                    $key => $row[$key],
+                    'total' => (float) $row['total'],
+                ];
+                if (isset($row['week_start'])) {
+                    $merged[$row[$key]]['week_start'] = $row['week_start'];
+                }
+            }
+        }
+        // Sort by key ascending
+        ksort($merged);
+        // Re-index array
+        return array_values($merged);
     }
 }

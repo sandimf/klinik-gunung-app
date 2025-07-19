@@ -29,18 +29,16 @@ import { Head, useForm } from "@inertiajs/react";
 
 export default function GeminiApiKey({ apikeys, errors }) {
     const [setApiKeyStatus] = useState("Not Set");
-    const { data, setData, put, processing } = useForm({
+    const { data, setData, put, processing, error } = useForm({
         api_key: "",
     });
 
     useEffect(() => {
         if (errors?.api_key) {
-            // Coba ambil error validasi dari response
             const apiKeyError =
                 error?.response?.data?.message ||
                 "Terjadi kesalahan!";
 
-            // Tidak perlu menampilkan toast di sini, karena akan ditangani oleh FlashToast global
         }
     }, [errors?.api_key]);
 
@@ -52,12 +50,10 @@ export default function GeminiApiKey({ apikeys, errors }) {
                 setApiKeyStatus("Active");
             },
             onError: (error) => {
-                // Coba ambil error validasi dari response
                 const apiKeyError =
                     error?.response?.data?.message ||
                     "Terjadi kesalahan!";
 
-                // Tidak perlu menampilkan toast di sini, karena akan ditangani oleh FlashToast global
             },
         });
     };
@@ -66,7 +62,6 @@ export default function GeminiApiKey({ apikeys, errors }) {
         <Sidebar header={"Apikey"}>
             <Head title="Apikey" />
             <div className="container p-6 mx-auto space-y-6">
-                {/* <h1 className="mb-6 text-3xl font-bold">API KEY</h1> */}
                 <Card>
                     <CardHeader>
                         <CardTitle className="flex gap-2 items-center">
@@ -98,14 +93,11 @@ export default function GeminiApiKey({ apikeys, errors }) {
                                     }
                                     type="text"
                                 />
-                                {errors.apiKey && (
-                                    <p
-                                        className="text-sm text-red-500"
-                                        role="alert"
-                                    >
-                                        {errors.apiKey}
-                                    </p>
-                                )}
+                                {errors.api_key && (
+                                  <p className="text-sm text-red-500" role="alert">
+                                      {errors.api_key}
+                                  </p>
+                              )}
                             </div>
                         </div>
                     </CardContent>

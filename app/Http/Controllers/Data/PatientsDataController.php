@@ -35,8 +35,6 @@ class PatientsDataController extends Controller
                 $request->hasFile('ktp_images') ? $request->file('ktp_images') : null
             );
         } catch (\Exception $e) {
-            Log::error('Gagal menyimpan data pasien: '.$e->getMessage(), ['exception' => $e]);
-
             return redirect()->back()->with('error', 'Gagal menyimpan profil pasien. Silakan coba lagi.');
         }
 

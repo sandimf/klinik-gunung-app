@@ -9,12 +9,22 @@ use Inertia\Inertia;
 
 class ProductController extends Controller
 {
-    public function index()
-    {
-        $products = Product::paginate(10);
+    public function index() {
+        $perPage = 10;
+        $search = request('search');
+        $page = max(1, (int) request('page', 1));
+
+        $query = Product::query();
+        if (!empty($search)) {
+            $query->where('name', 'like', "%$search%") ;
+        }
+        $products = $query->orderBy('id', 'desc')->paginate($perPage, ['*'], 'page', $page);
 
         return Inertia::render('Dashboard/Cashier/Product/Index', [
             'products' => $products,
+            'filters' => [
+                'search' => $search,
+            ],
         ]);
     }
 
@@ -32,6 +42,29 @@ class ProductController extends Controller
         } catch (\Exception $e) {
             // Jika terjadi error, menampilkan pesan error
             return back()->with('error', 'Terjadi kesalahan saat menyimpan produk. Coba lagi.');
+        }
+    }
+
+    public function update(ProductRequest $request, $id)
+    {
+        $validatedData = $request->validated();
+        $product = Product::findOrFail($id);
+        try {
+            $product->update($validatedData);
+            return back()->with('success', 'Produk berhasil diupdate!');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Terjadi kesalahan saat update produk. Coba lagi.');
+        }
+    }
+
+    public function destroy($id)
+    {
+        $product = Product::findOrFail($id);
+        try {
+            $product->delete();
+            return back()->with('success', 'Produk berhasil dihapus!');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Terjadi kesalahan saat menghapus produk. Coba lagi.');
         }
     }
 

@@ -41,7 +41,9 @@ class ScreeningStressTestSeeder extends Seeder
                 'contact' => '08123456789',
                 'email' => 'testuser'.$i.'@example.com',
                 'screening_status' => 'pending',
+                'payment_status' => 'pending',
                 'health_status' => 'pending',
+
                 'health_check_status' => 'pending',
                 'created_at' => $now,
                 'updated_at' => $now,

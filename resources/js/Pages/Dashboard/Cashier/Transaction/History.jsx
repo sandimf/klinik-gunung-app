@@ -1,138 +1,113 @@
-import { useState } from "react";
-import { Head } from "@inertiajs/react";
+import DataTable from "@/Components/DataTable/DataTable";
+import React, { useState } from "react";
+import { Head, router } from "@inertiajs/react";
 import CashierSidebar from "@/Layouts/Dashboard/CashierSidebarLayout";
-import { Input } from "@/Components/ui/input";
-import {
-    Table,
-    TableHeader,
-    TableRow,
-    TableHead,
-    TableBody,
-    TableCell,
-    TableCaption,
-} from "@/Components/ui/table";
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogFooter
-} from "@/Components/ui/dialog";
-import { Button } from "@/Components/ui/button";
 
-export default function Product({ transactions }) {
-    const [searchTerm, setSearchTerm] = useState("");
-    const [openDialog, setOpenDialog] = useState(false);
-    const [previewImage, setPreviewImage] = useState(null);
+export default function TransactionHistory({ transactions, filters = {} }) {
+    const [searchTerm, setSearchTerm] = useState(() => filters.search || "");
 
-    const filteredTransaction = transactions.data.filter((transaction) =>
-        Object.values(transaction).some((value) =>
-            value.toString().toLowerCase().includes(searchTerm.toLowerCase())
-        )
-    );
-    const formatCurrency = (value) => {
-        return new Intl.NumberFormat("id-ID", {
-            style: "currency",
-            currency: "IDR",
-        }).format(value);
+    const handleSearch = (searchValue) => {
+        router.get(
+            route("cashier.transaction.history"),
+            { search: searchValue, page: 1 },
+            { preserveState: true, replace: true }
+        );
     };
 
-    return (
-        <CashierSidebar header="Produk">
-            <Head title="Produk" />
-            <Input
-                placeholder="Search medicines..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="max-w-sm"
-            />
-            <Table>
-                <TableCaption>Data Stok Obat</TableCaption>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead>No</TableHead>
-                        <TableHead>Nomor Transaksi</TableHead>
-                        <TableHead>Produk Di Beli</TableHead>
-                        <TableHead>Metode Pembayaran</TableHead>
-                        <TableHead>Bukti Pembayaran</TableHead>
-                        <TableHead>Total Pembayaran</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {filteredTransaction.map((transaction, idx) => (
-                        <TableRow key={transaction.id}>
-                            <TableCell>{idx + 1}</TableCell>
-                            <TableCell className="font-medium">
-                                {transaction.no_transaction}
-                            </TableCell>
-                            <TableCell className="font-medium">
-                                {transaction.items_details.map((item) => (
-                                    <div key={item.item_id}>
-                                        {item.product_name}
-                                    </div>
-                                ))}
-                            </TableCell>
-                            <TableCell className="font-medium">
-                                {transaction.payment_method}
-                            </TableCell>
-                            <TableCell className="font-medium">
-                                {transaction.payment_proof ? (
-                                    <button
-                                        className="text-blue-600 underline"
-                                        onClick={() => {
-                                            setPreviewImage(transaction.payment_proof);
-                                            setOpenDialog(true);
-                                        }}
-                                    >
-                                        Lihat Bukti
-                                    </button>
-                                ) : (
-                                    "-"
-                                )}
-                            </TableCell>
-                            <TableCell>
-                                {formatCurrency(
-                                    parseFloat(transaction.total_price)
-                                )}
-                            </TableCell>
-                            <TableCell></TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
+    const handlePageChange = (url) => {
+        if (url) {
+            router.get(url, { search: searchTerm }, { preserveState: true, replace: true });
+        }
+    };
 
-            {/* Dialog Preview Bukti Pembayaran */}
-            <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>Bukti Pembayaran</DialogTitle>
-                    </DialogHeader>
-                    <div className="flex flex-col items-center gap-4">
-                        {previewImage && (
-                            <>
-                                <img
-                                    src={`/storage/${previewImage}`}
-                                    alt="Bukti Pembayaran"
-                                    className="max-w-full max-h-[60vh] rounded"
-                                />
-                                <a
-                                    href={`/storage/${previewImage}`}
-                                    download
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    <Button variant="outline">
-                                        Download Bukti Pembayaran
-                                    </Button>
-                                </a>
-                            </>
-                        )}
-                    </div>
-                    <DialogFooter>
-                        <Button onClick={() => setOpenDialog(false)}>Tutup</Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
+    const columns = [
+        {
+            id: "no",
+            header: "No.",
+            cell: ({ row }) => {
+                const currentPage = transactions?.current_page || 1;
+                const perPage = transactions?.per_page || 10;
+                return (currentPage - 1) * perPage + row.index + 1;
+            },
+        },
+        {
+            accessorKey: "no_transaction",
+            header: "No Transaksi",
+        },
+        {
+            accessorKey: "patient_name",
+            header: "Nama Pasien",
+            cell: ({ row }) => row.original.patient_name || "-",
+        },
+        {
+            id: "produk_obat",
+            header: "Produk/Obat",
+            cell: ({ row }) => (
+                <div>
+                    {row.original.items_details.map((item) => (
+                        <div key={item.item_id}>
+                            {item.item_type === "medicine" && item.medicine_name && (
+                                <span>Obat: {item.medicine_name} x {item.quantity}</span>
+                            )}
+                            {item.item_type === "other" && item.product_name && (
+                                <span>Produk: {item.product_name} x {item.quantity}</span>
+                            )}
+                            {!item.item_type && item.product_name && (
+                                <span>Produk: {item.product_name} x {item.quantity}</span>
+                            )}
+                        </div>
+                    ))}
+                </div>
+            ),
+        },
+        {
+            accessorKey: "payment_method",
+            header: "Metode Pembayaran",
+        },
+        {
+            id: "bukti_pembayaran",
+            header: "Bukti Pembayaran",
+            cell: ({ row }) =>
+                row.original.payment_proof ? (
+                    <a
+                        href={`/storage/${row.original.payment_proof}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 underline"
+                    >
+                        Lihat Bukti
+                    </a>
+                ) : (
+                    "-"
+                ),
+        },
+        {
+            accessorKey: "total_price",
+            header: "Total Pembayaran",
+            cell: ({ row }) =>
+                new Intl.NumberFormat("id-ID", {
+                    style: "currency",
+                    currency: "IDR",
+                }).format(row.original.total_price),
+        },
+    ];
+
+    return (
+        <CashierSidebar header="Riwayat Transaksi">
+            <Head title="Riwayat Transaksi" />
+            <DataTable
+                columns={columns}
+                data={transactions.data || []}
+                pagination={transactions}
+                searchValue={searchTerm}
+                onSearchChange={setSearchTerm}
+                onSearch={handleSearch}
+                onPageChange={handlePageChange}
+                searchPlaceholder="Cari pasien, produk, atau obat..."
+                emptyState="Belum ada transaksi"
+                title="Riwayat Transaksi"
+                description="Daftar seluruh transaksi produk dan obat."
+            />
         </CashierSidebar>
     );
 }

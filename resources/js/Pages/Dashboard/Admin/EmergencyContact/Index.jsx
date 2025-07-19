@@ -19,22 +19,18 @@ import {
 } from "@/Components/ui/table";
 import Sidebar from "@/Layouts/Dashboard/AdminSidebarLayout";
 import { Head, useForm } from "@inertiajs/react";
-import { Contact, CheckCircle2 } from "lucide-react";
+import { Contact } from "lucide-react";
 
 export default function GeminiApiKey({ emergencyContacts }) {
     const { data, setData, put, processing, errors } = useForm({
         name: "",
         contact: "",
     });
-
     const saveContact = (e) => {
         e.preventDefault();
 
         put(route("emergecy-contact.update", 1), {
             onSuccess: () => {
-                // toast.success("Kontak darurat berhasil disimpan", {
-                //     icon: <CheckCircle2 className="w-5 h-5 text-green-500" />,
-                // });
             },
             onError: (error) => {
                 if (
@@ -51,7 +47,6 @@ export default function GeminiApiKey({ emergencyContacts }) {
                         }
                     );
                 } else {
-                    // toast.error("Emergency contact gagal disimpan");
                 }
             },
         });
@@ -137,17 +132,22 @@ export default function GeminiApiKey({ emergencyContacts }) {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {emergencyContacts.map((emergencyContact) => (
+                            {emergencyContacts.length > 0 ? (
+                                emergencyContacts.map((emergencyContact) => (
                                     <TableRow key={emergencyContact.id}>
-                                        <TableCell>
-                                            {emergencyContact.name}
-                                        </TableCell>
-                                        <TableCell>
-                                            {emergencyContact.contact}
-                                        </TableCell>
+                                        <TableCell>{emergencyContact.name}</TableCell>
+                                        <TableCell>{emergencyContact.contact}</TableCell>
                                     </TableRow>
-                                ))}
-                            </TableBody>
+                                ))
+                            ) : (
+                                <TableRow>
+                                    <TableCell colSpan={2} className="text-center text-muted-foreground">
+                                        Belum ada data kontak darurat.
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                        </TableBody>
+
                         </Table>
                     </CardContent>
                 </Card>

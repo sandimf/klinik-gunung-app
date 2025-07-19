@@ -32,6 +32,10 @@ class ScreeningPaymentsRequest extends FormRequest
             'medicine_batch_id' => 'nullable|exists:medicine_batches,id',
             'selectedOptions' => 'nullable|array',
             'medicine_quantity' => 'nullable|integer|min:1',
+            // Validasi produk
+            'selected_products' => 'nullable|array',
+            'selected_products.*.product_id' => 'required_with:selected_products|exists:products,id',
+            'selected_products.*.quantity' => 'required_with:selected_products|integer|min:1',
         ];
     }
 }

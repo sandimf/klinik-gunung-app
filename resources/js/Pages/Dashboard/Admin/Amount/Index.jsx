@@ -70,11 +70,11 @@ export default function AmountIndex({ amounts = [] }) {
       { amount: editAmount, _method: "put" },
       {
         onSuccess: () => {
-          toast.success("Harga berhasil diupdate.")
+          // toast.success("Harga berhasil diupdate.")
           setEditId(null)
         },
         onError: () => {
-          toast.error("Gagal update harga.")
+          // toast.error("Gagal update harga.")
         },
       }
     )

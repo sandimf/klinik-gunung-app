@@ -6,53 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Screenings\ScreeningAnswers;
 use App\Models\Users\PatientsOnline;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class ParamedisController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        $waitingCount = \App\Models\Users\Patients::where('screening_status', 'pending')->count();
-        $sehatCount = \App\Models\Users\Patients::where('health_status', 'sehat')->count();
-        $tidakSehatCount = \App\Models\Users\Patients::where('health_status', 'tidak_sehat')->count();
-        $finishedCount = \App\Models\Users\Patients::where('screening_status', 'completed')->count();
-        $waitingList = \App\Models\Users\Patients::where('screening_status', 'pending')
-            ->orderByDesc('created_at')
-            ->limit(3)
-            ->get(['id', 'name', 'created_at']);
-
-        return Inertia::render('Dashboard/Paramedis/Index', [
-            'waitingCount' => $waitingCount,
-            'sehatCount' => $sehatCount,
-            'tidakSehatCount' => $tidakSehatCount,
-            'finishedCount' => $finishedCount,
-            'waitingList' => $waitingList,
-        ]);
-    }
-
-    // test pdf
-    // public function index()
-    // {
-    //     return view('pdf.screening');
-    // }
-
-    public function profile()
-    {
-        return Inertia::render('Profile/Paramedis');
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
     public function showScreeningOnlineDetail($id)
     {
         $patient = PatientsOnline::with(['answers.question'])
@@ -129,5 +86,4 @@ class ParamedisController extends Controller
 
         return redirect()->back()->with('message', 'Berhasil Menyimpan Jawaban');
     }
-
 }

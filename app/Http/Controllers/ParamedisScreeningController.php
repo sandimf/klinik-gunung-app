@@ -73,7 +73,6 @@ class ParamedisScreeningController extends Controller
             ]);
 
         } catch (\Exception $e) {
-            \Log::error('Error getting screenings: '.$e->getMessage());
 
             return response()->json(['error' => 'Internal server error'], 500);
         }
@@ -103,7 +102,6 @@ class ParamedisScreeningController extends Controller
             ]);
 
         } catch (\Exception $e) {
-            \Log::error('Error getting screening count: '.$e->getMessage());
 
             return response()->json(['error' => 'Internal server error'], 500);
         }

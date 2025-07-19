@@ -10,8 +10,6 @@ use App\Models\Users\Paramedis;
 use App\Models\Users\Warehouse;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 
 class StaffQueryService
 {

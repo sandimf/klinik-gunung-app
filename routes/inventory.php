@@ -38,6 +38,8 @@ Route::prefix('dashboard/cashier')->middleware(['role:cashier'])->group(function
     // Product Management
     Route::get('product', [ProductController::class, 'index'])->name('product.cashier');
     Route::post('product/store', [ProductController::class, 'store'])->name('product.store.cashier');
+    Route::patch('product/{id}', [ProductController::class, 'update'])->name('product.update.cashier');
+    Route::delete('product/{id}', [ProductController::class, 'destroy'])->name('product.destroy.cashier');
 
     // Transaction Management
     Route::get('transaction/purchase', [PurchaseController::class, 'index'])->name('cashier.transcation');

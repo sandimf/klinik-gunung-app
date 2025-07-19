@@ -107,6 +107,15 @@
                 </tr>
                 @endforeach
             @endif
+    @if(!empty($groupedItems['products']))
+        @foreach($groupedItems['products'] as $product)
+        <tr>
+            <td>{{ $product['quantity'] }}</td>
+            <td>{{ $product['item_name'] }}</td>
+            <td class="text-right">Rp {{ number_format($product['price'], 0, ',', '.') }}</td>
+        </tr>
+        @endforeach
+    @endif
     </table>
 
     <div class="total">

@@ -17,6 +17,9 @@ use App\Http\Controllers\Roles\Paramedis\HealthCheck\HealthCheckController;
 use App\Http\Controllers\Roles\Paramedis\MedicalRecord\ParamedisMedicalRecordController;
 use App\Http\Controllers\Roles\Paramedis\ParamedisDasboardController;
 use App\Http\Controllers\Roles\Paramedis\PhysicalExaminations\PhysicalExaminationController;
+use App\Http\Controllers\Roles\Paramedis\Profile\ParamedisProfileController;
+use App\Http\Controllers\Roles\Paramedis\Screening\ParamedisScreeningHistoryController;
+use App\Http\Controllers\Roles\Paramedis\Screening\ParamedisScreeningListController;
 use App\Http\Controllers\Users\ParamedisController;
 use Illuminate\Support\Facades\Route;
 
@@ -68,9 +71,14 @@ Route::prefix('dashboard/doctor')->middleware(['role:doctor'])->group(function (
 
 Route::prefix('dashboard/paramedis')->middleware(['role:paramedis'])->group(function () {
     // Dashboard & Profile
-    Route::get('/', [ParamedisController::class, 'index'])->name('paramedis.dashboard');
-    Route::get('profile', [ParamedisController::class, 'profile'])->name('paramedis.profile');
-    Route::get('screenings', [ParamedisDasboardController::class, 'index'])->name('paramedis.screenings');
+    Route::get('/', [ParamedisDasboardController::class, 'index'])->name('paramedis.dashboard');
+    // Profile
+    Route::get('profile', [ParamedisProfileController::class, 'index'])->name('paramedis.profile');
+
+    // Screening List
+    Route::get('screenings', [ParamedisScreeningListController::class, 'index'])->name('paramedis.screenings');
+
+    // ChatAI
     Route::get('chatbot', [ChatbotController::class, 'paramedis'])->name('chatbot.paramedis');
 
     // Medical Records
@@ -99,7 +107,7 @@ Route::prefix('dashboard/paramedis')->middleware(['role:paramedis'])->group(func
     Route::resource('report', ParamedisReportController::class)
         ->only(['index']);
     // History & Reports
-    Route::get('history', [HistoryHealthCheckController::class, 'index'])->name('paramedis.history');
+    Route::get('history', [ParamedisScreeningHistoryController::class, 'index'])->name('paramedis.history');
     Route::get('activity', [ParamedisReportController::class, 'activity'])->name('activity.healthcheck');
 
     // PDF Generation
